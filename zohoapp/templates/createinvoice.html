@@ -96,32 +96,71 @@ crossorigin="anonymous"></script>
 
                 <input class="hidden" type="text" name="samp" id="samp" >
                 <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
-        <div class="row mb-4 border-top pt-5">
-            <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
-            <div class="col-sm-6">
-                <select  class="registration-type form-control text-dark" id="customer_sel" name="cx_name" >
-                    <option type="hidden" value="vendor">select</option>
-    
-                    {% for cust in c %}
-                    <option value="{{cust.id}} {{cust.customerName}}" data-pos="{{cust.placeofsupply}}">{{cust.customerName}}</option>
-                    {% endfor %}
-                    <!-- <option value="customer">Register as a customer</option> -->
-    
-                </select>
-            
-            </div>
+                <div class="row mb-4 border-top pt-5">
+                  <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
+                  <div class="col-sm-6">
+                      <select class="registration-type form-control text-dark" id="customer_sel" name="cx_name">
+                          <option type="hidden" value="vendor">select</option>
+              
+                          {% for cust in c %}
+                          <option value="{{ cust.id }}" data-email="{{ cust.customerEmail }}" data-gsttreatment="{{ cust.GSTTreatment }}" data-gstnumber="{{ cust.GSTIN }}" data-placeofsupply="{{ cust.placeofsupply }}">{{ cust.customerName }}</option>
+                          {% endfor %}
+                          <!-- <option value="customer">Register as a customer</option> -->
+              
+                      </select>
+                  </div>
+                     
             <div class="col-sm-4">
               <a  href="" data-toggle="modal" data-target="#newcustomer"><i class="fa-solid  fa fa-plus p-2 rounded"
                   style="color: white; background-color: rgb(210, 132, 30);height: 37px;"></i></a>
           </div>
+              </div>
+              
+              <div class="row mb-4">
+                  <div class="col-sm-2"><label for="customer_email">Customer Email</label></div>
+                  <div class="col-sm-6">
+                      <input type="text" class="form-control text-black" id="customer_email" name="customer_email" readonly>
+                  </div>
+              </div>
+              
+              <div class="row mb-4">
+                  <div class="col-sm-2"><label for="gst_treatment">GST Treatment</label></div>
+                  <div class="col-sm-6">
+                      <input type="text" class="form-control text-black" id="gst_treatment" name="gst_treatment" readonly>
+                  </div>
+              </div>
+              
+              <div class="row mb-4">
+                  <div class="col-sm-2"><label for="gst_number">GST Number</label></div>
+                  <div class="col-sm-6">
+                      <input type="text" class="form-control text-black" id="gst_number" name="gst_number" readonly>
+                  </div>
+              </div>
+              
+              <div class="row mb-4">
+                  <div class="col-sm-2"><label for="place_of_supply">Place of Supply</label></div>
+                  <div class="col-sm-6">
+                      <input type="text" class="form-control text-black" id="place_of_supply" name="place_of_supply" readonly>
+                  </div>
+              </div>
+              
+              <script>
+                  // Add an event listener to the customer selection dropdown
+                  document.getElementById('customer_sel').addEventListener('change', function () {
+                      // Get the selected option
+                      var selectedOption = this.options[this.selectedIndex];
+                      
+                      // Update the input fields with customer information
+                      document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+                      document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+                      document.getElementById('gst_number').value = selectedOption.getAttribute('data-gstnumber');
+                      document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
+                  });
+              </script>
+              
+           
         </div>
-        <div class="row mb-4 d-none" id="cemail_row">
-          <div class="col-sm-2 "><label for="estimate_number">Customer Mail</label></div>
-          <div class="col-sm-6"><input type="email" id="cx_mail" name="cx_mail" class="form-control text-dark">
-          </div>
-          <input type="text" id="customer_id" name="customer_id" style="display: none;"  readonly>
-
-      </div>
+       
         <div class="row mb-4">
             <div class="col-sm-2"><label for="estimate_number">Invoice#*</label></div>
             <div class="col-sm-6"><input type="text" class="form-control text-dark" id="estimate_number" name="inv_no" value="INV-{{count}}">
@@ -134,49 +173,190 @@ crossorigin="anonymous"></script>
                     </div>
         </div>
     
-     
+        
       
-      <div class="row mb-4 ">
+        <div class="row mb-4">
           <div class="col-sm-6 col-lg-2 col-md-2">
-            <label class="mr-3 " for="input-1">invoice Date</label>
+              <label class="mr-3" for="input-1">Invoice Date</label>
           </div>
           <div class="col-sm-6 col-lg-2 col-md-2">
-            <input type="date" class="form-control text-dark"   name="inv_date" id="input-1" >
+              <input type="date" class="form-control text-dark" name="inv_date" id="input-1">
           </div>
-          
-              
-              <div class="col-sm-6 col-md-2 col-lg-2">
-                <label for="input-2"class="ms-5"> Due Date</label>
-              </div>
-              <div class="col-sm-6 col-lg-2 col-md-2">
-                <input type="date"  class="form-control text-dark" name="due_date"  id="input-2" >
-              </div>
-              
+
+          <div class="col-sm-6 col-md-2 col-lg-2">
+            <label for="input-2" class="ms-5">Due Date</label>
+        </div>
+        <div class="col-sm-6 col-lg-2 col-md-2">
+            <input type="date" class="form-control text-dark" name="due_date" id="input-2" readonly>
+        </div>
+
       </div>
       
+    
+         
+      
+      
+      <div class="row mb-4 border-bottom pb-5">
+        <div class="col-sm-2">
+            <label for="input-3">Terms</label>
+        </div>
+        <div class="col-sm-6">
+            <select class="my-select form-control text-dark" name="term" id="inv_term">
+                <option selected value="15">NET 15</option>
+                <option value="30">NET 30</option>
+                <option value="45">NET 45</option>
+                <option value="60">NET 60</option>
+                <option value="90">NET 90</option>
+                <option value="Due end of the month">Due end of the month</option>
+                <option value="recpt">Due on receipt</option>
+            </select>
+        </div>
+        <div class="col-sm-4">
+            <a href="#" data-target="#newpayment" data-toggle="modal">
+                <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
+            </a>
+        </div>
+    </div>
+    
+       <!--.................................................... PAYMENT TERMS modal............................................... -->
 
 
-            <div class="row mb-4 border-bottom pb-5">
-              <div class="col-sm-2">
-                <label for="input-2">Terms</label>
+ <div class="modal fade" id="newpayment">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
+      <div class="modal-header " style="background: rgb(32, 35, 37);">
+          <h3 class="m-3 text-uppercase">Add Payment Term</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body" style="background: rgb(32, 35, 37);">
+        <div class="card p-3 m-3">
+          <form action="" method="post" class="needs-validation" novalidate autocomplete="off" id="modalPayment">
+            <div class="row mt-2">
+              <div class="col-md-2 mt-2"></div>
+              <div class="col-md-4 mt-2">
+                <center><label for="termname" style="color: rgb(190, 88, 88);">Term Name *</label></center>
               </div>
-              <div class="col-sm-6 ">
-                <select class="my-select form-control text-dark" name="term" id="inv_term">
-                  <!-- {% for p in pay %}
-                    <option value="{{p.Terms}}">{{p.Terms}}</option>
-                  {% endfor %} -->
-                  <option selected value="15">NET 15</option>
-                        <option value="30">NET 30</option>
-                        <option value="45">NET 45</option>
-                        <option value="60">NET 60</option>
-                        <option value="90">NET 90</option>
-                        <option value="Due end of the month">Due end of the month</option>
-                        <option value="recpt">Due on receipt</option>
-                   
-                  </select> 
-                  <!-- <a href=""data-target="#newpayment" data-toggle="modal"><i class="fa fa-gear"></i> Configure Payment Trems</a> -->
-                </div>
+
+              <div class="col-md-4 mt-2">
+                <center><label for="termdays" style="color: rgb(190, 88, 88);">Number of Days *</label></center>
+              </div>
+              <div class="col-md-2 mt-2"></div>
             </div>
+
+
+            <div class="row mt-2">
+              <div class="col-md-2 mt-2"></div>
+
+              <div class="col-md-4 mt-2">
+                <input type="text" class="form-control text-dark bg-light" id="term_name" name="term_name" required>      
+              </div>
+
+              <div class="col-md-4 mt-2">
+                <input type="text" class="form-control text-dark bg-light" id="term_days" name="term_days" required>
+              </div>
+              <div class="col-md-2 mt-2"></div>
+
+            </div>
+            
+            <div class="row mt-5">
+              <div class="col-md-4"></div>
+              <div class="col-md-4">
+                <div class="d-flex">
+                  <button class="btn save_btn rounded-pill text-grey w-50 my-4 mx-3"
+                  type="submit" data-dismiss="modal" id="paySave">Save
+                  </button> 
+                  
+
+                  <button type="button" class="close btn save_btn rounded-pill text-grey w-50 my-4" 
+                    data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">Cancel</span>
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-4"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>  
+</div>  
+<!-- ................................................  END PAYMENT TERMS MODAL..................................... -->
+
+
+      <script>
+        $(document).on("click", "#paySave", function () {
+          // Get the values from the input fields
+          var termName = $("#term_name").val();
+          var termDays = $("#term_days").val();
+      
+          $.ajax({
+              type: 'POST',
+              url: "{% url 'payment_terms_cust' %}",
+              data: {
+                  name: termName,
+                  days: termDays,
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+              },
+              success: function (response) {
+                  console.log('Welcome');
+      
+                  // Clear the input fields
+                  $("#term_name").val("");
+                  $("#term_days").val("");
+      
+                  // Add the new term to the dropdown
+                  var termValue = response.terms;
+                  var newOption = $('<option>', {
+                      value: termValue,
+                      text: termName + ' (' + termDays + ' days)'
+                  });
+                  $("#inv_term").append(newOption);
+      
+                  // Select the newly added option
+                  $("#inv_term").val(termValue);
+      
+                  // Close the modal
+                  $("#newpayment").modal("hide");
+              },
+          });
+      });
+      
+          </script>
+
+      
+      <script>
+        // Function to calculate the due date based on selected payment term and invoice date
+function calculateDueDate() {
+  const invoiceDate = new Date(document.getElementById('input-1').value);
+  const paymentTerm = document.getElementById('inv_term').value;
+  const dueDateField = document.getElementById('input-2');
+
+  if (paymentTerm === "recpt") {
+      // Due on receipt, no additional days
+      dueDateField.value = document.getElementById('input-1').value;
+  } else {
+      const dueDate = new Date(invoiceDate);
+      dueDate.setDate(invoiceDate.getDate() + parseInt(paymentTerm));
+      const formattedDueDate = dueDate.toISOString().slice(0, 10);
+      dueDateField.value = formattedDueDate;
+  }
+}
+
+// Add event listeners to the invoice date and payment term dropdown
+document.getElementById('input-1').addEventListener('change', calculateDueDate);
+document.getElementById('inv_term').addEventListener('change', calculateDueDate);
+
+// Calculate and set the initial due date based on default values
+calculateDueDate();
+
+      </script>
+      
+
+
+
 
             <div class="row">
               <div class="col-sm-12">
@@ -1158,72 +1338,6 @@ crossorigin="anonymous"></script>
 
 <!--................................................... END CUSTOMER MODAL ...................................................... -->
 
- <!--.................................................... PAYMENT TERMS modal............................................... -->
-
-
- <div class="modal fade" id="newpayment">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
-        <div class="modal-header " style="background: rgb(32, 35, 37);">
-            <h3 class="m-3 text-uppercase">Add Payment Term</h3>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body" style="background: rgb(32, 35, 37);">
-          <div class="card p-3 m-3">
-            <form action="" method="post" class="needs-validation" novalidate autocomplete="off" id="modalPayment">
-              <div class="row mt-2">
-                <div class="col-md-2 mt-2"></div>
-                <div class="col-md-4 mt-2">
-                  <center><label for="termname" style="color: rgb(190, 88, 88);">Term Name *</label></center>
-                </div>
-
-                <div class="col-md-4 mt-2">
-                  <center><label for="termdays" style="color: rgb(190, 88, 88);">Number of Days *</label></center>
-                </div>
-                <div class="col-md-2 mt-2"></div>
-              </div>
-
-
-              <div class="row mt-2">
-                <div class="col-md-2 mt-2"></div>
-
-                <div class="col-md-4 mt-2">
-                  <input type="text" class="form-control text-dark bg-light" id="term_name" name="term_name" required>      
-                </div>
-
-                <div class="col-md-4 mt-2">
-                  <input type="text" class="form-control text-dark bg-light" id="term_days" name="term_days" required>
-                </div>
-                <div class="col-md-2 mt-2"></div>
-
-              </div>
-              
-              <div class="row mt-5">
-                <div class="col-md-4"></div>
-                <div class="col-md-4">
-                  <div class="d-flex">
-                    <button class="btn save_btn rounded-pill text-grey w-50 my-4 mx-3"
-                    type="submit" data-dismiss="modal" id="paySave">Save
-                    </button> 
-                    
-
-                    <button type="button" class="close btn save_btn rounded-pill text-grey w-50 my-4" 
-                      data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">Cancel</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="col-md-4"></div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>  
-  </div>  
-<!-- ................................................  END PAYMENT TERMS MODAL..................................... -->
 
 
 
