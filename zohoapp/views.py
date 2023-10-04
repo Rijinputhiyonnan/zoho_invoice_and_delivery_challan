@@ -1961,6 +1961,7 @@ def addinvoice(request):
 
 def add_prod(request):
     c=customer.objects.all()
+    banks = Bankcreation.objects.all()
     company = company_details.objects.get(user=request.user.id)
     p=AddItem.objects.all()
     i=invoice.objects.all()
@@ -2077,6 +2078,7 @@ def add_prod(request):
             'units':unit,
             'count':count,
             'payments':payments,
+            'banks': banks
     }       
     return render(request,'createinvoice.html',context)
 
@@ -13752,20 +13754,7 @@ def amtcus(request):
     return render(request, 'view_customer.html', context)
     
     
-def payment_terms_cust(request):
-    if request.method=='POST':
-        print('hi')
-        terms=request.POST.get('name')
-        print(terms)
-        day=request.POST.get('days')
-        print(day)
-        ptr=payment(term=terms,days=day)
-        ptr.save()
-        response_data={
-            "message":"success",
-            "terms":terms,
-        }
-        return JsonResponse(response_data)
+
         
         
 def customer_active(request,id):
@@ -14950,4 +14939,71 @@ def itemdata_challan(request):
 
     return JsonResponse({"status": " not", 'place': place, 'rate': rate})
     return redirect('/')
+
+
+
+
+
+#rijin
+
+
+from django.http import JsonResponse
+
+def save_payment_term(request):
+    if request.method == 'POST':
+        term_name = request.POST.get('name')
+        term_days = request.POST.get('days')
+
+        # Create a new payment term object and save it to the database
+        new_term = payment_terms.objects.create(name=term_name, days=term_days)
+
+        # Return a JsonResponse with the ID of the newly created term
+        return JsonResponse({'id': new_term.id, 'name': new_term.name, 'days': new_term.days})
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
     
+    
+    
+    
+
+
+def get_payment_terms_view(request):
+    if request.method == 'GET':
+        payment_terms_list = payment_terms.objects.all()  # Rename the variable
+        terms = []
+        for term in payment_terms_list:
+            terms.append({
+                'id': term.id,
+                'Terms': term.Terms,
+                'Days': term.Days,
+            })
+        return JsonResponse({'payment_terms': terms})
+    
+    
+
+    
+    
+
+def payment_terms_cust(request):        #update
+    if request.method == 'POST':
+        terms = request.POST.get('name')
+        day = request.POST.get('days')
+        ptr = payment_terms(Terms=terms, Days=day)
+        ptr.save()
+        response_data = {
+            "message": "success",
+            "terms": terms,
+        }
+        return JsonResponse(response_data)
+
+
+
+
+def get_all_payment_terms(request):
+    
+    payment_terms = payment_terms.objects.all()
+
+    # Serialize payment terms to JSON
+    terms_list = [{'id': term.id, 'name': term.name, 'days': term.days} for term in payment_terms]
+
+    return JsonResponse(terms_list, safe=False)

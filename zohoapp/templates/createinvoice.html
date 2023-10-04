@@ -209,6 +209,8 @@ crossorigin="anonymous"></script>
                 <option value="90">NET 90</option>
                 <option value="Due end of the month">Due end of the month</option>
                 <option value="recpt">Due on receipt</option>
+
+
             </select>
         </div>
         <div class="col-sm-4">
@@ -352,8 +354,182 @@ document.getElementById('inv_term').addEventListener('change', calculateDueDate)
 // Calculate and set the initial due date based on default values
 calculateDueDate();
 
-      </script>
-      
+
+
+
+  $(document).ready(function () {
+    // Function to fetch all payment terms from the database
+    function fetchAllPaymentTerms() {
+      $.ajax({
+        type: 'GET',
+        url: '/get_all_payment_terms/', // Replace with the actual URL pattern you defined
+        success: function (response) {
+          // Clear existing options in the dropdown
+          $("#inv_term").empty();
+
+          // Loop through the retrieved terms and add them to the dropdown
+          response.forEach(function (term) {
+            var newOption = $('<option>', {
+              value: term.id,
+              text: term.name + ' (' + term.days + ' days)'
+            });
+            $("#inv_term").append(newOption);
+          });
+
+          // Calculate and set the initial due date based on default values
+          calculateDueDate();
+        },
+        error: function (error) {
+          console.error('Error:', error);
+        }
+      });
+    }
+
+    // Call the function to fetch and populate payment terms when the page loads
+    fetchAllPaymentTerms();
+
+    // Function to calculate the due date based on selected payment term and invoice date
+    function calculateDueDate() {
+      const invoiceDate = new Date(document.getElementById('input-1').value);
+      const paymentTerm = document.getElementById('inv_term').value;
+      const dueDateField = document.getElementById('input-2');
+
+      if (paymentTerm === "recpt") {
+        // Due on receipt, no additional days
+        dueDateField.value = document.getElementById('input-1').value;
+      } else {
+        const dueDate = new Date(invoiceDate);
+        dueDate.setDate(invoiceDate.getDate() + parseInt(paymentTerm));
+        const formattedDueDate = dueDate.toISOString().slice(0, 10);
+        dueDateField.value = formattedDueDate;
+      }
+    }
+
+    // Add event listeners to the invoice date and payment term dropdown
+    document.getElementById('input-1').addEventListener('change', calculateDueDate);
+    document.getElementById('inv_term').addEventListener('change', calculateDueDate);
+
+    // Add a new payment term
+    $("#paySave").click(function () {
+      // Get the values from the input fields
+      var termName = $("#term_name").val();
+      var termDays = $("#term_days").val();
+
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'payment_terms_cust' %}",
+        data: {
+          name: termName,
+          days: termDays,
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function (response) {
+          console.log('Welcome');
+
+          // Clear the input fields
+          $("#term_name").val("");
+          $("#term_days").val("");
+
+          // Call the function to fetch and populate payment terms again
+          fetchAllPaymentTerms();
+
+          // Close the modal
+          $("#newpayment").modal("hide");
+        },
+        error: function (error) {
+          console.error('Error:', error);
+        }
+      });
+    });
+  });
+</script>
+
+
+
+<!--payment method-->
+
+
+
+
+<div class="row mb-4">
+  <div class="col-sm-2">
+      <label for="payment_method" >Payment Method</label>
+  </div>
+  <div class="col-sm-6">
+      <select class="form-control text-black" name="payment_method" id="payment_method">
+          <option value="cash">Cash</option>
+          <option value="cheque">Cheque</option>
+          <option value="upi">UPI</option>
+          <option value="bank">Bank</option>
+      </select>
+  </div>
+</div>
+<!-- Payment Method: Cash -->
+<div class="form-group row" id="cash_section" style="display: none;">
+  <label for="cash" class="col-sm-2 col-form-label" style="color: black;">Cash</label>
+  <div class="col-sm-10">
+    <input style="color: black;" type="text" class="form-control text-dark" name="cash" id="cash">
+  </div>
+</div>
+
+<!-- Payment Method: Cheque -->
+<div class="form-group row" id="cheque_section" style="display: none;">
+  <label for="cheque_number" class="col-sm-2 col-form-label" style="color: black;">Cheque Number</label>
+  <div class="col-sm-10">
+    <input style="color: black;" type="text" class="form-control text-dark" name="cheque_number" id="cheque_number">
+  </div>
+</div>
+
+<!-- Payment Method: UPI -->
+<div class="form-group row" id="upi_section" style="display: none;">
+  <label for="upi_id" class="col-sm-2 col-form-label" style="color: black;">UPI ID</label>
+  <div class="col-sm-10">
+    <input style="color: black;" type="text" class="form-control text-dark" name="upi_id" id="upi_id">
+  </div>
+</div>
+
+<!-- Payment Method: Bank -->
+<div class="form-group row" id="bank_section" style="display: none;">
+  <label for="bank_name" class="col-sm-2 col-form-label" style="color: black;">Select a Bank</label>
+  <div class="col-sm-10">
+    <select class="form-control text-dark" name="bank_name" id="bank_name">
+      {% for bank in banks %}
+        <option style="color: black;" value="{{ bank.id }}">{{ bank.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+      $('#payment_method').change(function () {
+          var selectedMethod = $(this).val();
+
+          if (selectedMethod === 'cheque') {
+              $('#cheque_section').show();
+              $('#upi_section').hide();
+              $('#bank_section').hide();
+          } else if (selectedMethod === 'upi') {
+              $('#cheque_section').hide();
+              $('#upi_section').show();
+              $('#bank_section').hide();
+          } else if (selectedMethod === 'bank') {
+              $('#cheque_section').hide();
+              $('#upi_section').hide();
+              $('#bank_section').show();
+          } else {
+              $('#cheque_section').hide();
+              $('#upi_section').hide();
+              $('#bank_section').hide();
+          }
+      });
+
+      // Trigger the change event on page load to initialize field visibility
+      $('#payment_method').trigger('change');
+  });
+</script>
+
+
 
 
 

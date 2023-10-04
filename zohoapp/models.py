@@ -1394,6 +1394,17 @@ class invoice(models.Model):
     terms_condition=models.TextField(max_length=255)
     status=models.TextField(max_length=255)
     
+    
+    
+    
+    payment_method = models.CharField(max_length=50, choices=(         #updation
+        ('cash', 'Cash'),
+        ('cheque', 'Cheque'),
+        ('upi', 'UPI'),
+        ('bank', 'Bank'),  # Added 'bank' as a payment method
+    ), default='cash')
+    bank = models.ForeignKey(Bankcreation, on_delete=models.SET_NULL, null=True, blank=True)
+    
     def __str__(self) :
         return self.invoice_no
     
