@@ -209,7 +209,9 @@ crossorigin="anonymous"></script>
                 <option value="90">NET 90</option>
                 <option value="Due end of the month">Due end of the month</option>
                 <option value="recpt">Due on receipt</option>
-
+                {% for p in payments%}
+                <option value="{{p.Days}}">{{ p.Terms }}</option>
+                {% endfor%}
 
             </select>
         </div>
@@ -289,61 +291,23 @@ crossorigin="anonymous"></script>
 
 
       <script>
-        $(document).on("click", "#paySave", function () {
-          // Get the values from the input fields
-          var termName = $("#term_name").val();
-          var termDays = $("#term_days").val();
       
-          $.ajax({
-              type: 'POST',
-              url: "{% url 'payment_terms_cust' %}",
-              data: {
-                  name: termName,
-                  days: termDays,
-                  csrfmiddlewaretoken: '{{ csrf_token }}'
-              },
-              success: function (response) {
-                  console.log('Welcome');
-      
-                  // Clear the input fields
-                  $("#term_name").val("");
-                  $("#term_days").val("");
-      
-                  // Add the new term to the dropdown
-                  var termValue = response.terms;
-                  var newOption = $('<option>', {
-                      value: termValue,
-                      text: termName + ' (' + termDays + ' days)'
-                  });
-                  $("#inv_term").append(newOption);
-      
-                  // Select the newly added option
-                  $("#inv_term").val(termValue);
-      
-                  // Close the modal
-                  $("#newpayment").modal("hide");
-              },
-          });
-      });
-      
-          </script>
-
-      
-      <script>
-        // Function to calculate the due date based on selected payment term and invoice date
+// Function to calculate the due date based on selected payment term and invoice date
 function calculateDueDate() {
   const invoiceDate = new Date(document.getElementById('input-1').value);
   const paymentTerm = document.getElementById('inv_term').value;
   const dueDateField = document.getElementById('input-2');
 
   if (paymentTerm === "recpt") {
-      // Due on receipt, no additional days
-      dueDateField.value = document.getElementById('input-1').value;
+    // Due on receipt, no additional days
+    dueDateField.value = document.getElementById('input-1').value;
   } else {
-      const dueDate = new Date(invoiceDate);
-      dueDate.setDate(invoiceDate.getDate() + parseInt(paymentTerm));
-      const formattedDueDate = dueDate.toISOString().slice(0, 10);
-      dueDateField.value = formattedDueDate;
+    // Get the number of days from the selected payment term
+    const days = parseInt(paymentTerm);
+    const dueDate = new Date(invoiceDate);
+    dueDate.setDate(invoiceDate.getDate() + days);
+    const formattedDueDate = dueDate.toISOString().slice(0, 10);
+    dueDateField.value = formattedDueDate;
   }
 }
 
@@ -351,97 +315,74 @@ function calculateDueDate() {
 document.getElementById('input-1').addEventListener('change', calculateDueDate);
 document.getElementById('inv_term').addEventListener('change', calculateDueDate);
 
-// Calculate and set the initial due date based on default values
-calculateDueDate();
+// Function to fetch and populate payment terms
+function fetchAllPaymentTerms() {
+  $.ajax({
+    type: 'GET',
+    url: "{% url 'fetch_payment_terms' %}",
+    success: function (data) {
+      // Clear existing options in the dropdown
+      $("#inv_term").empty();
 
+      // Add default options
+      $("#inv_term").append(new Option("NET 15", "15"));
+      $("#inv_term").append(new Option("NET 30", "30"));
+      $("#inv_term").append(new Option("NET 45", "45"));
+      $("#inv_term").append(new Option("NET 60", "60"));
+      $("#inv_term").append(new Option("NET 90", "90"));
+      $("#inv_term").append(new Option("Due end of the month", "end_of_month"));
+      $("#inv_term").append(new Option("Due on receipt", "recpt"));
 
-
-
-  $(document).ready(function () {
-    // Function to fetch all payment terms from the database
-    function fetchAllPaymentTerms() {
-      $.ajax({
-        type: 'GET',
-        url: '/get_all_payment_terms/', // Replace with the actual URL pattern you defined
-        success: function (response) {
-          // Clear existing options in the dropdown
-          $("#inv_term").empty();
-
-          // Loop through the retrieved terms and add them to the dropdown
-          response.forEach(function (term) {
-            var newOption = $('<option>', {
-              value: term.id,
-              text: term.name + ' (' + term.days + ' days)'
-            });
-            $("#inv_term").append(newOption);
-          });
-
-          // Calculate and set the initial due date based on default values
-          calculateDueDate();
-        },
-        error: function (error) {
-          console.error('Error:', error);
-        }
-      });
-    }
-
-    // Call the function to fetch and populate payment terms when the page loads
-    fetchAllPaymentTerms();
-
-    // Function to calculate the due date based on selected payment term and invoice date
-    function calculateDueDate() {
-      const invoiceDate = new Date(document.getElementById('input-1').value);
-      const paymentTerm = document.getElementById('inv_term').value;
-      const dueDateField = document.getElementById('input-2');
-
-      if (paymentTerm === "recpt") {
-        // Due on receipt, no additional days
-        dueDateField.value = document.getElementById('input-1').value;
-      } else {
-        const dueDate = new Date(invoiceDate);
-        dueDate.setDate(invoiceDate.getDate() + parseInt(paymentTerm));
-        const formattedDueDate = dueDate.toISOString().slice(0, 10);
-        dueDateField.value = formattedDueDate;
+      // Add fetched payment terms to the dropdown
+      for (let i = 0; i < data.length; i++) {
+        $("#inv_term").append(new Option(data[i].Terms + " (" + data[i].Days + " days)", data[i].Days));
       }
+
+      // Calculate the due date based on the selected payment term
+      calculateDueDate();
+    },
+    error: function (error) {
+      console.error('Error:', error);
     }
-
-    // Add event listeners to the invoice date and payment term dropdown
-    document.getElementById('input-1').addEventListener('change', calculateDueDate);
-    document.getElementById('inv_term').addEventListener('change', calculateDueDate);
-
-    // Add a new payment term
-    $("#paySave").click(function () {
-      // Get the values from the input fields
-      var termName = $("#term_name").val();
-      var termDays = $("#term_days").val();
-
-      $.ajax({
-        type: 'POST',
-        url: "{% url 'payment_terms_cust' %}",
-        data: {
-          name: termName,
-          days: termDays,
-          csrfmiddlewaretoken: '{{ csrf_token }}'
-        },
-        success: function (response) {
-          console.log('Welcome');
-
-          // Clear the input fields
-          $("#term_name").val("");
-          $("#term_days").val("");
-
-          // Call the function to fetch and populate payment terms again
-          fetchAllPaymentTerms();
-
-          // Close the modal
-          $("#newpayment").modal("hide");
-        },
-        error: function (error) {
-          console.error('Error:', error);
-        }
-      });
-    });
   });
+}
+
+// Call the function to fetch and populate payment terms initially
+fetchAllPaymentTerms();
+
+// Add a new payment term
+$("#paySave").click(function () {
+  // Get the values from the input fields
+  var termName = $("#term_name").val();
+  var termDays = $("#term_days").val();
+
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'payment_terms_cust' %}",
+    data: {
+      name: termName,
+      days: termDays,
+      csrfmiddlewaretoken: '{{ csrf_token }}'
+    },
+    success: function (response) {
+      console.log('Welcome');
+
+      // Clear the input fields
+      $("#term_name").val("");
+      $("#term_days").val("");
+
+      // Call the function to fetch and populate payment terms again
+      fetchAllPaymentTerms();
+
+      // Close the modal
+      $("#newpayment").modal("hide");
+    },
+    error: function (error) {
+      console.error('Error:', error);
+    }
+  });
+});
+
 </script>
 
 
@@ -467,31 +408,31 @@ calculateDueDate();
 <!-- Payment Method: Cash -->
 <div class="form-group row" id="cash_section" style="display: none;">
   <label for="cash" class="col-sm-2 col-form-label" style="color: black;">Cash</label>
-  <div class="col-sm-10">
+  <div class="col-sm-6">
     <input style="color: black;" type="text" class="form-control text-dark" name="cash" id="cash">
   </div>
 </div>
 
 <!-- Payment Method: Cheque -->
 <div class="form-group row" id="cheque_section" style="display: none;">
-  <label for="cheque_number" class="col-sm-2 col-form-label" style="color: black;">Cheque Number</label>
-  <div class="col-sm-10">
+  <label for="cheque_number" class="col-sm-2 " >Cheque Number</label>
+  <div class="col-sm-6">
     <input style="color: black;" type="text" class="form-control text-dark" name="cheque_number" id="cheque_number">
   </div>
 </div>
 
 <!-- Payment Method: UPI -->
 <div class="form-group row" id="upi_section" style="display: none;">
-  <label for="upi_id" class="col-sm-2 col-form-label" style="color: black;">UPI ID</label>
-  <div class="col-sm-10">
+  <label for="upi_id" class="col-sm-2 col-form-label" >UPI ID</label>
+  <div class="col-sm-6">
     <input style="color: black;" type="text" class="form-control text-dark" name="upi_id" id="upi_id">
   </div>
 </div>
 
 <!-- Payment Method: Bank -->
 <div class="form-group row" id="bank_section" style="display: none;">
-  <label for="bank_name" class="col-sm-2 col-form-label" style="color: black;">Select a Bank</label>
-  <div class="col-sm-10">
+  <label for="bank_name" class="col-sm-2 col-form-label">Select a Bank</label>
+  <div class="col-sm-6">
     <select class="form-control text-dark" name="bank_name" id="bank_name">
       {% for bank in banks %}
         <option style="color: black;" value="{{ bank.id }}">{{ bank.name }}</option>
@@ -557,7 +498,9 @@ calculateDueDate();
                       <div class='form-group'><select
                               class='form-control bg-transparent  text-light border-0 item_select itm'
                               name='item[]' id='item1'>
+                              <option class="text-dark" >Select</option>
                               {% for i in p %}
+                              
                               <option class="text-dark" value="{{i.Name}}">{{ i.Name }}</option>
                               {% endfor %}
                           </select></div>
@@ -565,10 +508,35 @@ calculateDueDate();
                  
                   <td class='text-right'><input type='text' id='hsn1'
                     class='form-control bg-transparent border-0 text-light text-right hsn'  placeholder="6 Digit No" pattern="[0-9]{6}" name='hsn[]'
-                    value=''  >
+                    value='' readonly >
                     <!-- <span class='hsn-validation'></span> -->
 
                   </td>
+                  <script>
+                    // Create a JavaScript object to map product names to HSN numbers
+                    var productHSNMap = {
+                      {% for i in p %}
+                        "{{ i.Name }}": "{{ i.hsn }}",
+                      {% endfor %}
+                    };
+                  
+                    // Function to update the HSN input field when a product is selected
+                    function updateHSN() {
+                      var selectedProduct = document.getElementById('item1').value;
+                      var hsnInput = document.getElementById('hsn1');
+                  
+                      // Check if the selected product exists in the map
+                      if (productHSNMap[selectedProduct]) {
+                        hsnInput.value = productHSNMap[selectedProduct];
+                      } else {
+                        hsnInput.value = ''; // Clear the HSN input if product not found
+                      }
+                    }
+                  
+                    // Add an event listener to the product dropdown
+                    document.getElementById('item1').addEventListener('change', updateHSN);
+                  </script>
+                  
              <!-- <script>
              $(document).on("input", ".hsn", function() {
                     var hsn_value = $(this).val();
@@ -888,6 +856,80 @@ calculateDueDate();
                         </center>
                       </th>
                     </tr>
+
+                 
+                    
+
+            
+               
+                    <tr>
+                      <th class="" style="font-weight: bold;color: rgb(231, 152, 3);">Paid Amount (&#x20B9;)</th>
+                      <th>
+                          <center>
+                              <input type="number" id="paid_amount" name="paid_amount" value="0.00"
+                                  style="width: 50%;" class="form-control bg-transparent text-warning border-0 text-right">
+                          </center>
+                      </th>
+                  </tr>
+                  <tr id="balance-row" style="display: none;">
+                      <th class="" style="font-weight: bold;color: rgb(231, 152, 3);">Balance (&#x20B9;)</th>
+                      <th>
+                          <center>
+                              <input type="number" id="balance" name="balance" value="0.00"
+                                  style="width: 50%;" class="form-control bg-transparent text-warning border-0 text-right" readonly>
+                          </center>
+                      </th>
+                  </tr>
+                  <tr id="warning-message" style="display: none; color: red;">
+                      <th colspan="2">
+                          <center>
+                              Paid Amount cannot be greater than Total.
+                          </center>
+                      </th>
+                  </tr>
+                  
+                  <script>
+                    // Function to calculate the balance based on paid amount and total
+                    function calculateBalance() {
+                        const totalWithTax = parseFloat(document.getElementById('total_with_tax').value) || 0;
+                        const paidAmount = parseFloat(document.getElementById('paid_amount').value) || 0;
+                        const balanceField = document.getElementById('balance');
+                        const balanceRow = document.getElementById('balance-row');
+                        const warningMessage = document.getElementById('warning-message');
+                  
+                        // Calculate the balance
+                        const balance = totalWithTax - paidAmount;
+                  
+                        // Display the calculated balance
+                        balanceField.value = balance.toFixed(2);
+                  
+                        // Show the balance row only if paidAmount is greater than 0
+                        if (paidAmount > 0) {
+                            balanceRow.style.display = 'table-row';
+                        } else {
+                            balanceRow.style.display = 'none';
+                        }
+                  
+                        // Check if paidAmount is greater than the total
+                        if (paidAmount > totalWithTax) {
+                            // Hide the balance row
+                            balanceRow.style.display = 'none';
+                            // Show the warning message
+                            warningMessage.style.display = 'table-row';
+                        } else {
+                            // Hide the warning message
+                            warningMessage.style.display = 'none';
+                        }
+                    }
+                  
+                    // Add event listener to paid amount input for calculation
+                    document.getElementById('paid_amount').addEventListener('input', calculateBalance);
+                  </script>
+                  
+
+
+
+                               
                 </table>
             </div>
         </div>
@@ -1555,6 +1597,43 @@ calculateDueDate();
                 <input type="text" class="form-control text-dark bg-light" id="item_name" name="item_name" required>
               </div>
             </div>
+
+            <div class="row mt-2">
+              <div class="col-md-3">
+                  <label for="hsn" style="color: rgb(190, 88, 88);">HSN Number *</label>
+              </div>
+              <div class="col-md-6">
+                  <input type="text" class="form-control text-dark bg-light" id="hsn_number" name="hsn_number" required>
+                  <span id="hsn_error" style="color: red;"></span>
+              </div>
+          </div>
+          
+          <script>
+              // Get the HSN number input element
+              const hsnInput = document.getElementById('hsn_number');
+              // Get the error span element
+              const hsnError = document.getElementById('hsn_error');
+          
+              // Add an event listener for input changes
+              hsnInput.addEventListener('input', function () {
+                  // Get the input value
+                  const hsnValue = hsnInput.value;
+          
+                  // Check if it's a 6-digit number
+                  if (/^\d{6}$/.test(hsnValue)) {
+                      // Clear the error message
+                      hsnError.textContent = '';
+                  } else {
+                      // Display an error message
+                      hsnError.textContent = 'HSN number should be a 6-digit number';
+                  }
+              });
+          </script>
+          
+          
+          
+          
+          
             <div class="row mt-2">
               <div class="col-md-3 ">
                 <label for="units">Unit</label>
@@ -2081,53 +2160,45 @@ $("#item-tax2").click(function() {
 });
 
 
-$(document).on("click","#itemSave",function(){
+$(document).on("click", "#itemSave", function () {
 
-if ($('input[name="radioOption"]:checked').val() == 'Goods'){
-
-    itemtype = $('#item_type1').val();
+  if ($('input[name="radioOption"]:checked').val() == 'Goods') {
+      itemtype = $('#item_type1').val();
+  } else {
+      itemtype = $('#item_type2').val();
   }
-else{
-  itemtype = $('#item_type2').val();
-}
 
-if ($('input[name="radioOption1"]:checked').val() == 'Taxable'){
-    inter_st = $('#inter').val();
-    intra_st = $('#intra').val();
+  if ($('input[name="radioOption1"]:checked').val() == 'Taxable') {
+      inter_st = $('#inter').val();
+      intra_st = $('#intra').val();
+  } else {
+      inter_st = 0;
+      intra_st = 0;
   }
-else{
-  inter_st = 0;
-  intra_st = 0;
-}
 
-$.ajax({
-  
-  type : 'POST',
-  url:"{% url 'recurbills_item' %}",
-  
-  data:{
-      type : itemtype,
-      name : $("#item_name").val(),
-      unit : $("#item_units").val(),
-      inter : inter_st,
-      intra : intra_st,
-      sell_price : $("#sell_price").val(),
-      cost_price : $("#cost_price").val(),
-      sell_acc : $("#sell_acc").val(),
-      cost_acc : $("#cost_acc").val(),
-      sell_desc : $("#sell_desc").val(),
-      cost_desc : $("#cost_desc").val(),
-      
-      csrfmiddlewaretoken: '{{ csrf_token }}'
-      
-    },
-  
-    success: function(response) {
-      // console.log(response)
-      document.getElementById("modalItem").reset();
-      reloadItem();
-    },
-});        
+  $.ajax({
+      type: 'POST',
+      url: "{% url 'recurbills_item' %}",
+      data: {
+          type: itemtype,
+          name: $("#item_name").val(),
+          unit: $("#item_units").val(),
+          inter: inter_st,
+          intra: intra_st,
+          sell_price: $("#sell_price").val(),
+          cost_price: $("#cost_price").val(),
+          sell_acc: $("#sell_acc").val(),
+          cost_acc: $("#cost_acc").val(),
+          sell_desc: $("#sell_desc").val(),
+          cost_desc: $("#cost_desc").val(),
+          hsn_number: $("#hsn_number").val(), 
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+      },
+      success: function (response) {
+          document.getElementById("modalItem").reset();
+          reloadItem();
+      },
+  });
 });
 
 

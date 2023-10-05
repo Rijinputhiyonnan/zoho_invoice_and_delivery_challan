@@ -4500,7 +4500,7 @@ def unit_dropdown(request):
     return JsonResponse(options)
 
 @login_required(login_url='login')
-def recurbills_item(request):
+def recurbills_item(request):    #updation
 
     company = company_details.objects.get(user = request.user)
 
@@ -4517,6 +4517,8 @@ def recurbills_item(request):
         cost_price=request.POST.get('cost_price')
         cost_acc=request.POST.get('cost_acc')      
         cost_desc=request.POST.get('cost_desc')
+        hsn_number = request.POST.get('hsn_number')
+        
         
         units=Unit.objects.get(id=ut)
         sel=Sales.objects.get(id=sell_acc)
@@ -4527,7 +4529,7 @@ def recurbills_item(request):
         u  = User.objects.get(id = request.user.id)
 
         item=AddItem(type=type,Name=name,p_desc=cost_desc,s_desc=sell_desc,s_price=sell_price,p_price=cost_price,
-                     user=u ,creat=history,interstate=inter,intrastate=intra,unit = units,sales = sel, purchase = cost)
+                     user=u ,creat=history,interstate=inter,intrastate=intra,unit = units,sales = sel, purchase = cost, hsn=hsn_number)
 
         item.save()
 
@@ -15007,3 +15009,16 @@ def get_all_payment_terms(request):
     terms_list = [{'id': term.id, 'name': term.name, 'days': term.days} for term in payment_terms]
 
     return JsonResponse(terms_list, safe=False)
+
+
+def fetch_payment_terms(request):
+    # Query the payment terms from the database
+    payment_terms = PaymentTerm.objects.all()
+
+    # Serialize payment terms to JSON
+    terms_list = [{'id': term.id, 'name': term.name, 'days': term.days} for term in payment_terms]
+
+    # Create a JSON response with the payment terms
+    data = {'payment_terms': terms_list}
+
+    return JsonResponse(data)
