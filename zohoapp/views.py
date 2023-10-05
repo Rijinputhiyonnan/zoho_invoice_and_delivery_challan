@@ -15013,7 +15013,7 @@ def get_all_payment_terms(request):
 
 def fetch_payment_terms(request):
     # Query the payment terms from the database
-    payment_terms = PaymentTerm.objects.all()
+    payment_terms = payment_terms.objects.all()
 
     # Serialize payment terms to JSON
     terms_list = [{'id': term.id, 'name': term.name, 'days': term.days} for term in payment_terms]
