@@ -208,7 +208,7 @@ crossorigin="anonymous"></script>
                 <option value="60">NET 60</option>
                 <option value="90">NET 90</option>
                 <option value="Due end of the month">Due end of the month</option>
-                <option value="recpt">Due on receipt</option>
+                
                 {% for p in payments%}
                 <option value="{{p.Days}}">{{ p.Terms }}</option>
                 {% endfor%}
@@ -291,8 +291,33 @@ crossorigin="anonymous"></script>
 
 
       <script>
-      
-// Function to calculate the due date based on selected payment term and invoice date
+      // Function to calculate the due date based on selected payment term and invoice date
+function calculateDueDate() {
+  const invoiceDate = new Date(document.getElementById('input-1').value);
+  const paymentTerm = document.getElementById('inv_term').value;
+  const dueDateField = document.getElementById('input-2');
+
+  if (paymentTerm === "recpt") {
+    // Due on receipt, no additional days
+    dueDateField.value = document.getElementById('input-1').value;
+  } else if (paymentTerm === "end_of_month") {
+    // Calculate due date as the end of the month
+    const dueDate = new Date(invoiceDate);
+    dueDate.setMonth(dueDate.getMonth() + 1);
+    dueDate.setDate(0); // Set to the last day of the current month
+    const formattedDueDate = dueDate.toISOString().slice(0, 10);
+    dueDateField.value = formattedDueDate;
+  } else {
+    // Get the number of days from the selected payment term
+    const days = parseInt(paymentTerm);
+    const dueDate = new Date(invoiceDate);
+    dueDate.setDate(invoiceDate.getDate() + days);
+    const formattedDueDate = dueDate.toISOString().slice(0, 10);
+    dueDateField.value = formattedDueDate;
+  }
+}
+
+
 function calculateDueDate() {
   const invoiceDate = new Date(document.getElementById('input-1').value);
   const paymentTerm = document.getElementById('inv_term').value;

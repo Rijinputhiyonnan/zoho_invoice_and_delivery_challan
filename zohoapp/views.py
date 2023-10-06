@@ -1959,7 +1959,7 @@ def addinvoice(request):
 
 @login_required(login_url='login')
 
-def add_prod(request):
+def add_prod(request):              #updation
     c=customer.objects.all()
     banks = Bankcreation.objects.all()
     company = company_details.objects.get(user=request.user.id)
@@ -2017,6 +2017,17 @@ def add_prod(request):
             tc=request.POST['ter_cond']
 
             status=request.POST['sd']
+            payment_method = request.POST.get('payment_method')
+            if payment_method == 'cash':
+                cash = request.POST.get('cash')
+            elif payment_method == 'cheque':
+                cheque_number = request.POST.get('cheque_number')
+            elif payment_method == 'upi':
+                upi_id = request.POST.get('upi_id')
+            elif payment_method == 'bank':
+                bank_id = request.POST.get('bank_name') 
+            paid_amount = request.POST.get('paid_amount')
+            balance = request.POST.get('balance')
             if status=='draft':
                 print(status)   
             else:
@@ -2040,10 +2051,21 @@ def add_prod(request):
                 taxx=request.POST.getlist('taxx[]')
                 amountt=request.POST.getlist('amountt[]')
                 # term=payment_terms.objects.get(id=term.id)
+                
 
             inv=invoice(user=user,customer=custo,invoice_no=invoice_no,terms=terms,order_no=order_no,inv_date=inv_date,due_date=due_date,
                         cxnote=cxnote,subtotal=subtotal,igst=igst,cgst=cgst,sgst=sgst,t_tax=totaltax,
-                        grandtotal=t_total,status=status,terms_condition=tc,file=file)
+                        grandtotal=t_total,status=status,terms_condition=tc,file=file, payment_method=payment_method, paid_amount=paid_amount, balance=balance )
+            
+            if payment_method == 'cash':
+                inv.cash = cash
+            elif payment_method == 'cheque':
+                inv.cheque_number = cheque_number
+            elif payment_method == 'upi':
+                inv.upi_id = upi_id
+            elif payment_method == 'bank':
+                bank = Bankcreation.objects.get(id=bank_id)
+                inv.bank_name = bank
             inv.save()
             if x==y:
                 inv_id=invoice.objects.get(id=inv.id)
@@ -15013,7 +15035,8 @@ def get_all_payment_terms(request):
 
 def fetch_payment_terms(request):
     # Query the payment terms from the database
-    payment_terms = payment_terms.objects.all()
+    payment_terms_queryset = payment_terms.objects.all()
+    
 
     # Serialize payment terms to JSON
     terms_list = [{'id': term.id, 'name': term.name, 'days': term.days} for term in payment_terms]

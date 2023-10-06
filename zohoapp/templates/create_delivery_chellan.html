@@ -537,37 +537,94 @@ transition: transform 0.4s ,top 0.4s;
                 <input class="hidden" type="text" name="samp" id="samp" >
                 <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
 
-    <div class="row mb-4">
-        <div class="col-sm-2">
-          <label for="customer_name">Customer Name*</label>
-        </div>
-        <div class="col-sm-6 col-md-6 col-lg-6">
-            <select class="form-control text-dark" id="customer_sel" name="customer_name" onchange="cust_mail()" >
-                <option>Select Customer</option>
-                <option id="crt_cust"></option>
-                {% for cust in customers %}
-                <option value="{{cust.id}} {{cust.customerName}}" data-pos="{{cust.placeofsupply}}">
-                    {{cust.customerName}} </option>
-                {% endfor %}
-            </select>
-            <!-- <a href="" data-toggle="modal" data-target="#create_customer"
-              style="text-decoration: none;"><i class="mdi mdi-plus p-2 rounded"
-                    style="color: white; background-color: rgb(210, 132, 30);height: 35px;"></i></a> -->
-        </div>
-        <div class="col-sm-4">
-          <a  href="" data-toggle="modal" data-target="#newcustomer"><i class="fa-solid  fa fa-plus p-2 rounded"
-              style="color: white; background-color: rgb(210, 132, 30);height: 37px;"></i></a>
-      </div>
+  
+<!-- Customer Name -->
+<div class="row mb-4">
+  <div class="col-sm-2">
+    <label for="customer_name">Customer Name*</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <select class="form-control text-dark" id="customer_sel" name="customer_name" onchange="getCustInfo()">
+      <option>Select Customer</option>
+      {% for cust in customers %}
+        <option value="{{ cust.id }}" data-email="{{ cust.customerEmail }}" data-gst-treatment="{{ cust.GSTTreatment }}" data-gst-number="{{ cust.GSTIN }}" data-place-of-supply="{{ cust.placeofsupply }}">
+          {{ cust.customerName }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-sm-4">
+    <a href="" data-toggle="modal" data-target="#newcustomer">
+      <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
+    </a>
+  </div>
+</div>
 
-    </div>
+<!-- Customer Email -->
+<div class="row mb-4 d-none" id="cemail_row">
+  <div class="col-sm-2">
+    <label for="customer_mail">Customer Email</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <input type="email" id="customer_mail" name="customer_mail" class="form-control text-dark">
+    <input type="text" id="customer_id" name="customer_id" style="display: none;" readonly>
+  </div>
+</div>
 
-    <div class="row mb-4 d-none" id="cemail_row">
-        <div class="col-sm-2 "><label for="customer_mail">Customer Email</label></div>
-        <div class="col-sm-6 col-md-6 col-lg-6">
-            <input type="email" id="customer_mail" name="customer_mail" class="form-control text-dark">
-          <input type="text" id="customer_id" name="customer_id" style="display: none;"  readonly>
-        </div>
-    </div>
+<!-- GST Treatment -->
+<div class="row mb-4 d-none" id="gst_treatment_row">
+  <div class="col-sm-2">
+    <label for="gst_treatment">GST Treatment</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <input type="text" id="gst_treatment" name="gst_treatment" class="form-control text-dark">
+  </div>
+</div>
+
+<!-- GST Number -->
+<div class="row mb-4 d-none" id="gst_number_row">
+  <div class="col-sm-2">
+    <label for="gst_number">GST Number</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <input type="text" id="gst_number" name="gst_number" class="form-control text-dark">
+  </div>
+</div>
+
+<!-- Place of Supply -->
+<div class="row mb-4 d-none" id="place_of_supply_row">
+  <div class="col-sm-2">
+    <label for="place_of_supply">Place of Supply</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <input type="text" id="place_of_supply" name="place_of_supply" class="form-control text-dark">
+  </div>
+</div>
+
+<script>
+  function getCustInfo() {
+    var customerDropdown = document.getElementById("customer_sel");
+    var selectedCustomerOption = customerDropdown.options[customerDropdown.selectedIndex];
+    
+    // Update the email field
+    var customerEmailInput = document.getElementById("customer_mail");
+    customerEmailInput.value = selectedCustomerOption.getAttribute("data-email");
+
+    // Update the GST Treatment field
+    var gstTreatmentInput = document.getElementById("gst_treatment");
+    gstTreatmentInput.value = selectedCustomerOption.getAttribute("data-gst-treatment");
+
+    // Update the GST Number field
+    var gstNumberInput = document.getElementById("gst_number");
+    gstNumberInput.value = selectedCustomerOption.getAttribute("data-gst-number");
+
+    // Update the Place of Supply field
+    var placeOfSupplyInput = document.getElementById("place_of_supply");
+    placeOfSupplyInput.value = selectedCustomerOption.getAttribute("data-place-of-supply");
+
+    // You can also update other fields as needed here
+  }
+</script>
 
     <div class="row mb-4 ">
       <div class="col-sm-2"><label for="chellan_number">Delivery Challan#*</label></div>
