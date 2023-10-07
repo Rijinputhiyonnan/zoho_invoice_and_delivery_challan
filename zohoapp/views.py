@@ -14077,6 +14077,8 @@ def create_delivery_chellan(request):
     company = company_details.objects.get(user=user)
     items = AddItem.objects.filter(user_id=user.id)
     customers = customer.objects.filter(user_id=user.id)
+    p=AddItem.objects.all()
+    
     dates=date.today()
     # estimates_count = DeliveryChellan.objects.filter(user_id=user.id).count()
     # estimates_count = DeliveryChellan.objects.last().id
@@ -14112,6 +14114,7 @@ def create_delivery_chellan(request):
                 "accounts":accounts,
                 "account_types":account_types,
                 'payments':payments,
+                'p':p,
                }
 
     return render(request, 'create_delivery_chellan.html', context)
