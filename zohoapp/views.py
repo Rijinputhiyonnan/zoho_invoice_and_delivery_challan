@@ -14127,95 +14127,106 @@ def delivery_chellan_home(request):
     return render(request,'delivery_chellan.html',{'view':viewitem,"company":company})  
     
     
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import DeliveryChellan, ChallanItems, customer
+from django.contrib.auth.models import User
+
+from django.http import HttpResponseServerError
+
 def create_challan_draft(request):
-    
-    cur_user = request.user
-    user = User.objects.get(id=cur_user.id)
-   
     if request.method == 'POST':
-        x=request.POST["hidden_state"]
-        y=request.POST["hidden_cus_place"]
-        c=request.POST['customer_id']
-        cus=customer.objects.get(id=c) 
-        custo=cus
-        cust_name =cus.customerName
-        chellan_no = request.POST['chellan_number']
-        reference = request.POST['reference']
-        chellan_date = request.POST['chellan_date']
-        customer_mailid = request.POST['customer_mail']
-        chellan_type = request.POST['chellan_type']
+        try:
+            x = request.POST["hidden_state"]
+            y = request.POST["hidden_cus_place"]
+            c = request.POST['customer_id']
+            cus = customer.objects.get(id=c)
+            
+            # Retrieve the current user
+            cur_user = request.user
+            user = User.objects.get(id=cur_user.id)
+            
+            custo = cus
+            cust_name = cus.customerName
+            chellan_no = request.POST['chellan_number']
+            reference = request.POST['reference']
+            chellan_date = request.POST['chellan_date']
+            customer_mailid = request.POST['customer_mail']
+            chellan_type = request.POST['chellan_type']
 
-        if x==y:
+            if x == y:
+                item = request.POST.getlist('item[]')
+                quantity1 = request.POST.getlist('quantity[]')
+                quantity = [float(x) for x in quantity1]
+                rate1 = request.POST.getlist('rate[]')
+                rate = [float(x) for x in rate1]
+                discount1 = request.POST.getlist('discount[]')
+                discount = [float(x) for x in discount1]
+                tax1 = request.POST.getlist('tax[]')
+                tax = [float(x) for x in tax1]
+                amount1 = request.POST.getlist('amount[]')
+                amount = [float(x) for x in amount1]
+            else:
+                item = request.POST.getlist('itemm[]')
+                quantity1 = request.POST.getlist('quantityy[]')
+                quantity = [float(x) for x in quantity1]
+                rate1 = request.POST.getlist('ratee[]')
+                rate = [float(x) for x in rate1]
+                discount1 = request.POST.getlist('discountt[]')
+                discount = [float(x) for x in discount1]
+                tax1 = request.POST.getlist('taxx[]')
+                tax = [float(x) for x in tax1]
+                amount1 = request.POST.getlist('amountt[]')
+                amount = [float(x) for x in amount1]
 
-            item = request.POST.getlist('item[]')
-            quantity1 = request.POST.getlist('quantity[]')
-            quantity = [float(x) for x in quantity1]
-            rate1 = request.POST.getlist('rate[]')
-            rate = [float(x) for x in rate1]
-            discount1 = request.POST.getlist('discount[]')
-            discount = [float(x) for x in discount1]
-            tax1 = request.POST.getlist('tax[]')
-            tax = [float(x) for x in tax1]
-            amount1 = request.POST.getlist('amount[]')
-            amount = [float(x) for x in amount1]
-        
-        else:
-            itemm = request.POST.getlist('itemm[]')
-            quantityy1 = request.POST.getlist('quantityy[]')
-            quantityy = [float(x) for x in quantityy1]
-            ratee1 = request.POST.getlist('ratee[]')
-            ratee = [float(x) for x in ratee1]
-            discountt1 = request.POST.getlist('discountt[]')
-            discountt = [float(x) for x in discountt1]
-            taxx1 = request.POST.getlist('taxx[]')
-            taxx = [float(x) for x in taxx1]
-            amountt1 = request.POST.getlist('amountt[]')
-            amountt = [float(x) for x in amountt1]
-       
+            cust_note = request.POST['customer_note']
+            sub_total = float(request.POST['subtotal'])
+            igst = float(request.POST['igst'])
+            sgst = float(request.POST['sgst'])
+            cgst = float(request.POST['cgst'])
+            tax_amnt = float(request.POST['total_taxamount'])
+            shipping = float(request.POST['shipping_charge'])
+            adjustment = float(request.POST['adjustment_charge'])
+            total = float(request.POST['total'])
+            tearms_conditions = request.POST['tearms_conditions']
+            attachment = request.FILES.get('file')
+            status = "Draft"
+            tot_in_string = str(total)
 
-        cust_note = request.POST['customer_note']
-        sub_total = float(request.POST['subtotal'])
-        igst = float(request.POST['igst'])
-        sgst = float(request.POST['sgst'])
-        cgst = float(request.POST['cgst'])
-        tax_amnt = float(request.POST['total_taxamount'])
-        shipping = float(request.POST['shipping_charge'])
-        adjustment = float(request.POST['adjustment_charge'])
-        total = float(request.POST['total'])
-        tearms_conditions = request.POST['tearms_conditions']
-        attachment = request.FILES.get('file')
-        status = "Draft"
-        tot_in_string = str(total)
+            challan = DeliveryChellan(
+                user=user, customer=custo, customer_name=cust_name, chellan_no=chellan_no, reference=reference,
+                chellan_date=chellan_date, customer_mailid=customer_mailid,
+                sub_total=sub_total, igst=igst, sgst=sgst, cgst=cgst, tax_amount=tax_amnt, chellan_type=chellan_type,
+                shipping_charge=shipping, adjustment=adjustment, total=total, status=status,
+                customer_notes=cust_note, terms_conditions=tearms_conditions, attachment=attachment
+            )
+            challan.save()
 
-        challan = DeliveryChellan(user=user,customer=custo,customer_name=cust_name, chellan_no=chellan_no, reference=reference, chellan_date=chellan_date, customer_mailid=customer_mailid,
-                              sub_total=sub_total,igst=igst,sgst=sgst,cgst=cgst,tax_amount=tax_amnt,chellan_type=chellan_type, shipping_charge=shipping,
-                             adjustment=adjustment, total=total, status=status, customer_notes=cust_note, terms_conditions=tearms_conditions, 
-                             attachment=attachment)
-        challan.save()
-
-        if x==y:
             if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
-                mapped = zip(item, quantity, rate, discount, tax, amount)
-                mapped = list(mapped)
-                for element in mapped:
-                    created = ChallanItems.objects.create(
-                        chellan=challan, item_name=element[0], quantity=element[1], rate=element[2], discount=element[3], tax_percentage=element[4], amount=element[5])
-        
-        else:
-            if len(itemm) == len(quantityy) == len(ratee) == len(discountt) == len(taxx) == len(amountt):
-                mapped = zip(itemm, quantityy, ratee, discountt, taxx, amountt)
-                mapped = list(mapped)
-                for element in mapped:
-                    created = ChallanItems.objects.create(
-                        chellan=challan, item_name=element[0], quantity=element[1], rate=element[2], discount=element[3], tax_percentage=element[4], amount=element[5])
+                items_data = list(zip(item, quantity, rate, discount, tax, amount))
+                for item_data in items_data:
+                    ChallanItems.objects.create(
+                        chellan=challan, item_name=item_data[0], quantity=item_data[1], rate=item_data[2],
+                        discount=item_data[3], tax_percentage=item_data[4], amount=item_data[5]
+                    )
 
-        cust_email = customer.objects.get(
-            user=user, customerName=cust_name).customerEmail
-        
-        # subject = 'Estimate'
-        # message = 'Dear Customer,\n Your Estimate has been Saved for a total amount of: ' + tot_in_string
-        # recipient = cust_email
-        # send_mail(subject, message, settings.EMAIL_HOST_USER, [recipient])
+            cust_email = custo.customerEmail
+
+            subject = 'Delivery Challan'
+            message = f'Dear Customer,\n Your Delivery Challan has been saved for a total amount of: {tot_in_string}'
+            recipient = cust_email
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [recipient])
+
+            return redirect('delivery_chellan_home')
+
+        except Exception as e:
+            # Handle exceptions or errors here
+            # You can log the error or display an error message
+            return HttpResponseServerError(f"An error occurred: {str(e)}")
+    return render(request, 'create_challan.html')  # Render the create_challan template when it's a GET request
+
+# Define create_and_send_challan view function similarly as needed.
 
     return redirect('delivery_chellan_home')
 
