@@ -3,7 +3,7 @@
 {% block content %}
 
 
-<!-- ...................                  edited by Nikhila Ajayan............................ -->
+<!-- ...................                  edited by Rijin............................ -->
 
 
 <style>
@@ -538,16 +538,14 @@ transition: transform 0.4s ,top 0.4s;
                 <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
 
   
+
 <!-- Customer Name -->
 <div class="row mb-4">
   <div class="col-sm-2">
     <label for="customer_name">Customer Name*</label>
   </div>
   <div class="col-sm-6 col-md-6 col-lg-6">
-    <select class="form-control text-dark" id="customer_sel" name="customer_name" onchange="getCustInfo()">
-      <!-- Inside your HTML form, add this input field to capture the customer_id -->
-<input type="hidden" name="customer_id" value="{{ customer_id }}">
-
+    <select class="form-control text-dark" id="customer_sel" name="customer_name">
       <option>Select Customer</option>
       {% for cust in customers %}
         <option value="{{ cust.id }}" data-email="{{ cust.customerEmail }}" data-gst-treatment="{{ cust.GSTTreatment }}" data-gst-number="{{ cust.GSTIN }}" data-place-of-supply="{{ cust.placeofsupply }}">
@@ -563,78 +561,89 @@ transition: transform 0.4s ,top 0.4s;
   </div>
 </div>
 
+<!-- Customer Email -->
+<div class="row mb-4">
+  <div class="col-sm-2">
+    <label for="customer_mail">Customer Email</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <input type="email" id="customer_mail" name="customer_mail" class="form-control text-dark" readonly>
+  </div>
+</div>
+
+<!-- GST Treatment -->
+<div class="row mb-4">
+  <div class="col-sm-2">
+    <label for="gst_treatment">GST Treatment</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <input type="text" id="gst_treatment" name="gst_treatment" class="form-control text-dark" readonly>
+  </div>
+</div>
+
+<!-- GST Number -->
+<div class="row mb-4">
+  <div class="col-sm-2">
+    <label for="gst_number">GST Number</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <input type="text" id="gst_number" name="gst_number" class="form-control text-dark" readonly>
+  </div>
+</div>
+
+<!-- Place of Supply -->
+<div class="row mb-4">
+  <div class="col-sm-2">
+    <label for="place_of_supply">Place of Supply</label>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6">
+    <input type="text" id="place_of_supply" name="place_of_supply" class="form-control text-dark" readonly>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#customer_sel').change(function () {
+      var selectedCustomerId = $(this).val();  // Get the selected customer ID
+
+      // Check if a customer is selected
+      if (selectedCustomerId) {
+        // Make an AJAX request to fetch customer details
+        $.ajax({
+          url: '/get_customer_details/',  // Replace with the correct URL for your view
+          data: {
+            customer_id: selectedCustomerId  // Pass the selected customer ID
+          },
+          dataType: 'json',
+          success: function (data) {
+            // Update form fields with customer details
+            $('#customer_mail').val(data.email);
+            $('#gst_treatment').val(data.gst_treatment);
+            $('#gst_number').val(data.gst_number);
+            $('#place_of_supply').val(data.place_of_supply);
+          },
+          error: function () {
+            // Handle error if customer details cannot be fetched
+            alert('Failed to fetch customer details.');
+          }
+        });
+      } else {
+        // Clear the form fields if no customer is selected
+        $('#customer_mail').val('');
+        $('#gst_treatment').val('');
+        $('#gst_number').val('');
+        $('#place_of_supply').val('');
+      }
+    });
+  });
+</script>
 
 
-    <!-- Customer Email -->
-    <div class="row mb-4 d-none" id="cemail_row">
-        <div class="col-sm-2">
-            <label for="customer_mail">Customer Email</label>
-        </div>
-        <div class="col-sm-6 col-md-6 col-lg-6">
-            <input type="email" id="customer_mail" name="customer_mail" class="form-control text-dark">
-        </div>
-    </div>
 
-    <!-- GST Treatment -->
-    <div class="row mb-4 d-none" id="gst_treatment_row">
-        <div class="col-sm-2">
-            <label for="gst_treatment">GST Treatment</label>
-        </div>
-        <div class="col-sm-6 col-md-6 col-lg-6">
-            <input type="text" id="gst_treatment" name="gst_treatment" class="form-control text-dark">
-        </div>
-    </div>
 
-    <!-- GST Number -->
-    <div class="row mb-4 d-none" id="gst_number_row">
-        <div class="col-sm-2">
-            <label for="gst_number">GST Number</label>
-        </div>
-        <div class="col-sm-6 col-md-6 col-lg-6">
-            <input type="text" id="gst_number" name="gst_number" class="form-control text-dark">
-        </div>
-    </div>
 
-    <!-- Place of Supply -->
-    <div class="row mb-4 d-none" id="place_of_supply_row">
-        <div class="col-sm-2">
-            <label for="place_of_supply">Place of Supply</label>
-        </div>
-        <div class="col-sm-6 col-md-6 col-lg-6">
-            <input type="text" id="place_of_supply" name="place_of_supply" class="form-control text-dark">
-        </div>
-    </div>
 
-    <!-- JavaScript Function to Update Fields -->
-    <script>
-      function getCustInfo() {
-        var customerDropdown = document.getElementById("customer_sel");
-        var selectedCustomerOption = customerDropdown.options[customerDropdown.selectedIndex];
-    
-        // Debugging: Print the attributes to the console
-        console.log("Email:", selectedCustomerOption.getAttribute("data-email"));
-        console.log("GST Treatment:", selectedCustomerOption.getAttribute("data-gst-treatment"));
-        console.log("GST Number:", selectedCustomerOption.getAttribute("data-gst-number"));
-        console.log("Place of Supply:", selectedCustomerOption.getAttribute("data-place-of-supply"));
-    
-        // Update the email field
-        var customerEmailInput = document.getElementById("customer_mail");
-        customerEmailInput.value = selectedCustomerOption.getAttribute("data-email");
-    
-        // Update the GST Treatment field
-        var gstTreatmentInput = document.getElementById("gst_treatment");
-        gstTreatmentInput.value = selectedCustomerOption.getAttribute("data-gst-treatment");
-    
-        // Update the GST Number field
-        var gstNumberInput = document.getElementById("gst_number");
-        gstNumberInput.value = selectedCustomerOption.getAttribute("data-gst-number");
-    
-        // Update the Place of Supply field
-        var placeOfSupplyInput = document.getElementById("place_of_supply");
-        placeOfSupplyInput.value = selectedCustomerOption.getAttribute("data-place-of-supply");
-    }
-    
-    </script>
+
 
 
 

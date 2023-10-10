@@ -732,7 +732,8 @@ urlpatterns = [
     path('get_payment_terms/', views.get_payment_terms_view, name='get_payment_terms'),
     path('get_all_payment_terms/', views.get_all_payment_terms, name='get_all_payment_terms'),
     path('fetch_payment_terms/', views.fetch_payment_terms, name='fetch_payment_terms'),
-    
+      path('get_customer_details/', views.get_customer_details, name='get_customer_details'),
+
     
     
     

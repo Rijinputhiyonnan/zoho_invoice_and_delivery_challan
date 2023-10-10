@@ -14226,8 +14226,6 @@ def create_challan_draft(request):
             return HttpResponseServerError(f"An error occurred: {str(e)}")
     return render(request, 'create_challan.html')  # Render the create_challan template when it's a GET request
 
-# Define create_and_send_challan view function similarly as needed.
-
     return redirect('delivery_chellan_home')
 
 def create_and_send_challan(request):
@@ -15059,3 +15057,27 @@ def fetch_payment_terms(request):
     data = {'payment_terms': terms_list}
 
     return JsonResponse(data)
+
+
+
+
+
+from django.http import JsonResponse
+from .models import customer  # Import your Customer model
+
+def get_customer_details(request):
+    if request.method == 'GET':
+        customer_id = request.GET.get('customer_id')
+        try:
+            cust = customer.objects.get(id=customer_id)
+            customer_data = {
+                'email': cust.customerEmail,
+                'gst_treatment': cust.GSTTreatment,
+                'gst_number': cust.GSTIN,
+                'place_of_supply': cust.placeofsupply,
+            }
+            return JsonResponse(customer_data)
+        except customer.DoesNotExist:
+            return JsonResponse({'error': 'Customer not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
