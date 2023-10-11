@@ -537,7 +537,9 @@ transition: transform 0.4s ,top 0.4s;
                 <input class="hidden" type="text" name="samp" id="samp" >
                 <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
 
-  
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+                <input type="hidden" name="customer_id" id="customer_id">
 
 <!-- Customer Name -->
 <div class="row mb-4">
@@ -545,14 +547,18 @@ transition: transform 0.4s ,top 0.4s;
     <label for="customer_name">Customer Name*</label>
   </div>
   <div class="col-sm-6 col-md-6 col-lg-6">
-    <select class="form-control text-dark" id="customer_sel" name="customer_name">
+    <select class="form-control text-dark" id="customer_sel" name="customer_name" onchange="getCustInfo()">
+      <!-- Add a hidden input field to store the selected customer's ID -->
+
       <option>Select Customer</option>
       {% for cust in customers %}
-        <option value="{{ cust.id }}" data-email="{{ cust.customerEmail }}" data-gst-treatment="{{ cust.GSTTreatment }}" data-gst-number="{{ cust.GSTIN }}" data-place-of-supply="{{ cust.placeofsupply }}">
+        <option value="{{ cust.id }}" data-customer-id="{{ cust.id }}" data-email="{{ cust.customerEmail }}" data-gst-treatment="{{ cust.GSTTreatment }}" data-gst-number="{{ cust.GSTIN }}" data-place-of-supply="{{ cust.placeofsupply }}">
           {{ cust.customerName }}
         </option>
       {% endfor %}
     </select>
+    
+    
   </div>
   <div class="col-sm-4">
     <a href="" data-toggle="modal" data-target="#newcustomer">
@@ -602,40 +608,34 @@ transition: transform 0.4s ,top 0.4s;
 </div>
 
 <script>
+
+  
   $(document).ready(function () {
     $('#customer_sel').change(function () {
-      var selectedCustomerId = $(this).val();  // Get the selected customer ID
-
-      // Check if a customer is selected
-      if (selectedCustomerId) {
-        // Make an AJAX request to fetch customer details
+        var selectedCustomerId = $(this).find(":selected").data("customer-id"); // Get the customer ID
         $.ajax({
-          url: '/get_customer_details/',  // Replace with the correct URL for your view
-          data: {
-            customer_id: selectedCustomerId  // Pass the selected customer ID
-          },
-          dataType: 'json',
-          success: function (data) {
-            // Update form fields with customer details
-            $('#customer_mail').val(data.email);
-            $('#gst_treatment').val(data.gst_treatment);
-            $('#gst_number').val(data.gst_number);
-            $('#place_of_supply').val(data.place_of_supply);
-          },
-          error: function () {
-            // Handle error if customer details cannot be fetched
-            alert('Failed to fetch customer details.');
-          }
+            url: '/get_customer_details/',
+            data: {
+                customer_id: selectedCustomerId // Send the customer ID
+            },
+            dataType: 'json',
+            success: function (data) {
+                // Update form fields with customer details
+                $('#customer_mail').val(data.email);
+                $('#gst_treatment').val(data.gst_treatment);
+                $('#gst_number').val(data.gst_number);
+                $('#place_of_supply').val(data.place_of_supply);
+            },
+            error: function () {
+                // Handle error if customer details cannot be fetched
+                alert('Failed to fetch customer details.');
+            }
         });
-      } else {
-        // Clear the form fields if no customer is selected
-        $('#customer_mail').val('');
-        $('#gst_treatment').val('');
-        $('#gst_number').val('');
-        $('#place_of_supply').val('');
-      }
     });
-  });
+});
+
+
+
 </script>
 
 

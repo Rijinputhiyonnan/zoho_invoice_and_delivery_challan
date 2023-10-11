@@ -14071,53 +14071,59 @@ def delete_customer(request,id):
 
 
    
+from datetime import date
+from django.http import HttpResponseServerError
+
 def create_delivery_chellan(request):
     user = request.user
-    # print(user_id)
-    company = company_details.objects.get(user=user)
-    items = AddItem.objects.filter(user_id=user.id)
-    customers = customer.objects.filter(user_id=user.id)
-    p=AddItem.objects.all()
-    
-    dates=date.today()
-    # estimates_count = DeliveryChellan.objects.filter(user_id=user.id).count()
-    # estimates_count = DeliveryChellan.objects.last().id
-    if  DeliveryChellan.objects.all().exists():
-        chellan_count = RetainerInvoice.objects.last().id
-        count=chellan_count+1 
-    else:
-        count=1 
-    # print(estimates_count)
-    # next_count = estimates_count+1
+    try:
+        company = company_details.objects.get(user=user)
+        items = AddItem.objects.filter(user_id=user.id)
+        customers = customer.objects.filter(user_id=user.id)
+        p = AddItem.objects.all()
 
-    unit=Unit.objects.all()
-    sale=Sales.objects.all()
-    purchase=Purchase.objects.all()
-    accounts = Purchase.objects.all()
-    account_types = set(Purchase.objects.values_list('Account_type', flat=True))
+        today = date.today()
 
-    
-    account = Sales.objects.all()
-    account_type = set(Sales.objects.values_list('Account_type', flat=True))
-    payments=payment_terms.objects.all()
+        # Count the number of DeliveryChellan objects
+        chellan_count = DeliveryChellan.objects.count()
 
-    context = {'company': company,
-               'items': items,
-               'customers': customers,
-               'count': count,
-               'date':dates,
-               'unit':unit,
-               'sale':sale,
-               'purchase':purchase,
-                "account":account,
-                "account_type":account_type,
-                "accounts":accounts,
-                "account_types":account_types,
-                'payments':payments,
-                'p':p,
-               }
+        if chellan_count > 0:
+            count = chellan_count + 1
+        else:
+            count = 1
 
-    return render(request, 'create_delivery_chellan.html', context)
+        unit = Unit.objects.all()
+        sale = Sales.objects.all()
+        purchase = Purchase.objects.all()
+        accounts = Purchase.objects.all()
+        account_types = set(Purchase.objects.values_list('Account_type', flat=True))
+
+        account = Sales.objects.all()
+        account_type = set(Sales.objects.values_list('Account_type', flat=True))
+        payments = payment_terms.objects.all()
+
+        context = {
+            'company': company,
+            'items': items,
+            'customers': customers,
+            'count': count,
+            'date': today,
+            'unit': unit,
+            'sale': sale,
+            'purchase': purchase,
+            "account": account,
+            "account_type": account_type,
+            "accounts": accounts,
+            "account_types": account_types,
+            'payments': payments,
+            'p': p,
+        }
+
+        return render(request, 'create_delivery_chellan.html', context)
+
+    except company_details.DoesNotExist:
+        return HttpResponseServerError("Company details not found.")
+
 
 
 def delivery_chellan_home(request):
@@ -14129,11 +14135,9 @@ def delivery_chellan_home(request):
     
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
+from django.http import HttpResponseServerError
 from django.conf import settings
 from .models import DeliveryChellan, ChallanItems, customer
-from django.contrib.auth.models import User
-
-from django.http import HttpResponseServerError
 
 def create_challan_draft(request):
     if request.method == 'POST':
@@ -14195,21 +14199,43 @@ def create_challan_draft(request):
             tot_in_string = str(total)
 
             challan = DeliveryChellan(
-                user=user, customer=custo, customer_name=cust_name, chellan_no=chellan_no, reference=reference,
-                chellan_date=chellan_date, customer_mailid=customer_mailid,
-                sub_total=sub_total, igst=igst, sgst=sgst, cgst=cgst, tax_amount=tax_amnt, chellan_type=chellan_type,
-                shipping_charge=shipping, adjustment=adjustment, total=total, status=status,
-                customer_notes=cust_note, terms_conditions=tearms_conditions, attachment=attachment
+                user=user,
+                cu=custo,  # Assign the customer to the 'cu' field
+                customer_name=cust_name,
+                chellan_no=chellan_no,
+                reference=reference,
+                chellan_date=chellan_date,
+                customer_mailid=customer_mailid,
+                # Set other fields as needed
+                sub_total=sub_total,
+                igst=igst,
+                sgst=sgst,
+                cgst=cgst,
+                tax_amount=tax_amnt,
+                chellan_type=chellan_type,
+                shipping_charge=shipping,
+                adjustment=adjustment,
+                total=total,
+                status=status,
+                customer_notes=cust_note,
+                terms_conditions=tearms_conditions,
+                attachment=attachment
             )
             challan.save()
 
-            if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
-                items_data = list(zip(item, quantity, rate, discount, tax, amount))
-                for item_data in items_data:
-                    ChallanItems.objects.create(
-                        chellan=challan, item_name=item_data[0], quantity=item_data[1], rate=item_data[2],
-                        discount=item_data[3], tax_percentage=item_data[4], amount=item_data[5]
-                    )
+
+            # Handle dynamic items
+            for i in range(len(item)):
+                item_data = ChallanItems(
+                    chellan=challan,
+                    item_name=item[i],
+                    quantity=quantity[i],
+                    rate=rate[i],
+                    discount=discount[i],
+                    tax_percentage=tax[i],
+                    amount=amount[i]
+                )
+                item_data.save()
 
             cust_email = custo.customerEmail
 
@@ -14224,9 +14250,9 @@ def create_challan_draft(request):
             # Handle exceptions or errors here
             # You can log the error or display an error message
             return HttpResponseServerError(f"An error occurred: {str(e)}")
+
     return render(request, 'create_challan.html')  # Render the create_challan template when it's a GET request
 
-    return redirect('delivery_chellan_home')
 
 def create_and_send_challan(request):
     cur_user = request.user
@@ -14472,8 +14498,8 @@ def delivery_challan_edit(request,id):
     customers = customer.objects.filter(user_id=user.id)
     items = AddItem.objects.filter(user_id=user.id)
     estimate = DeliveryChellan.objects.get(id=id)
-    cust=estimate.customer.placeofsupply
-    cust_id=estimate.customer.id
+    cust = estimate.cu.placeofsupply 
+    cust_id = estimate.cu.id
     payments=payment_terms.objects.all()
     
     pls= customer.objects.get(customerName=estimate.customer_name)

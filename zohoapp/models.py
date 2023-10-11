@@ -1333,7 +1333,7 @@ class JournalComment(models.Model):
 class DeliveryChellan(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     cu= models.ForeignKey(customer,on_delete=models.CASCADE,null=True,blank=True)
-
+   
     customer_name = models.CharField(max_length=100,null=True,blank=True)
     customer_mailid = models.CharField(max_length=100,null=True,blank=True)
     chellan_no = models.CharField(max_length=100,null=True,blank=True)
