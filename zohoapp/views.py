@@ -2055,7 +2055,7 @@ def add_prod(request):              #updation
 
             inv=invoice(user=user,customer=custo,invoice_no=invoice_no,terms=terms,order_no=order_no,inv_date=inv_date,due_date=due_date,
                         cxnote=cxnote,subtotal=subtotal,igst=igst,cgst=cgst,sgst=sgst,t_tax=totaltax,
-                        grandtotal=t_total,status=status,terms_condition=tc,file=file, payment_method=payment_method, paid_amount=paid_amount, balance=balance )
+                        grandtotal=t_total,status=status,terms_condition=tc,file=file, payment_method=payment_method, )
             
             if payment_method == 'cash':
                 inv.cash = cash
@@ -2075,7 +2075,7 @@ def add_prod(request):              #updation
                     mapped = list(mapped)
                     for element in mapped:
                         created = invoice_item.objects.get_or_create(inv=inv_id,product=element[0],hsn=element[1],
-                                            quantity=element[2],desc=element[3],tax=element[4],total=element[5],rate=element[6])
+                                            quantity=element[2],desc=element[3],tax=element[4],total=element[5],rate=element[6], paid_amount=element[7], balance=element[8])
                         
                     return redirect('invoiceview')
             else:
@@ -2086,7 +2086,7 @@ def add_prod(request):              #updation
                     mapped = list(mapped)
                     for element in mapped:
                         created = invoice_item.objects.get_or_create(inv=inv_id,product=element[0],hsn=element[1],
-                                            quantity=element[2],desc=element[3],tax=element[4],total=element[5],rate=element[6])
+                                            quantity=element[2],desc=element[3],tax=element[4],total=element[5],rate=element[6], paid_amount=element[7], balance=element[8])
                         
                     return redirect('invoiceview')
 
@@ -14252,27 +14252,30 @@ def create_challan_draft(request):
             return HttpResponseServerError(f"An error occurred: {str(e)}")
 
     return render(request, 'create_challan.html')  # Render the create_challan template when it's a GET request
-
+from django.core.mail import send_mail
+from django.conf import settings
+from django.shortcuts import render, redirect
+from .models import DeliveryChellan, ChallanItems
+from .models import User, customer
 
 def create_and_send_challan(request):
     cur_user = request.user
     user = User.objects.get(id=cur_user.id)
     
-   
     if request.method == 'POST':
-        x=request.POST["hidden_state"]
-        y=request.POST["hidden_cus_place"]
-        c=request.POST['customer_id']
-        cus=customer.objects.get(id=c) 
-        custo=cus.id
-        cust_name =cus.customerName
+        x = request.POST["hidden_state"]
+        y = request.POST["hidden_cus_place"]
+        c = request.POST['customer_id']
+        cus = customer.objects.get(id=c)
+        custo = cus.id
+        cust_name = cus.customerName
         chellan_no = request.POST['chellan_number']
         reference = request.POST['reference']
         chellan_date = request.POST['chellan_date']
         customer_mailid = request.POST['customer_mail']
         chellan_type = request.POST['chellan_type']
-        if x==y:
-
+        
+        if x == y:
             item = request.POST.getlist('item[]')
             quantity1 = request.POST.getlist('quantity[]')
             quantity = [float(x) for x in quantity1]
@@ -14284,7 +14287,6 @@ def create_and_send_challan(request):
             tax = [float(x) for x in tax1]
             amount1 = request.POST.getlist('amount[]')
             amount = [float(x) for x in amount1]
-        
         else:
             itemm = request.POST.getlist('itemm[]')
             quantityy1 = request.POST.getlist('quantityy[]')
@@ -14297,8 +14299,6 @@ def create_and_send_challan(request):
             taxx = [float(x) for x in taxx1]
             amountt1 = request.POST.getlist('amountt[]')
             amountt = [float(x) for x in amountt1]
- 
-      
 
         cust_note = request.POST['customer_note']
         sub_total = float(request.POST['subtotal'])
@@ -14314,27 +14314,37 @@ def create_and_send_challan(request):
         status = 'Send'
         tot_in_string = str(total)
 
-        challan = DeliveryChellan(user=user,customer=custo,customer_name=cust_name, chellan_no=chellan_no, reference=reference, chellan_date=chellan_date, customer_mailid=customer_mailid,
-                              sub_total=sub_total,igst=igst,sgst=sgst,cgst=cgst,tax_amount=tax_amnt,chellan_type=chellan_type, shipping_charge=shipping,
-                             adjustment=adjustment, total=total, status=status, customer_notes=cust_note, terms_conditions=tearms_conditions, 
-                             attachment=attachment)
+        challan = DeliveryChellan(
+            user=user,
+            cu=cus,
+            customer_name=cust_name,
+            chellan_no=chellan_no,
+            reference=reference,
+            chellan_date=chellan_date,
+            customer_mailid=customer_mailid,
+            sub_total=sub_total,
+            igst=igst,
+            sgst=sgst,
+            cgst=cgst,
+            tax_amount=tax_amnt,
+            chellan_type=chellan_type,
+            shipping_charge=shipping,
+            adjustment=adjustment,
+            total=total,
+            status=status,
+            customer_notes=cust_note,
+            terms_conditions=tearms_conditions,
+            attachment=attachment
+        )
         challan.save()
 
-        # if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
-        #     mapped = zip(item, quantity, rate, discount, tax, amount)
-        #     mapped = list(mapped)
-        #     for element in mapped:
-        #         created = ChallanItems.objects.create(
-        #             chellan=challan, item_name=element[0], quantity=element[1], rate=element[2], discount=element[3], tax_percentage=element[4], amount=element[5])
-
-        if x==y:
+        if x == y:
             if len(item) == len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
                 mapped = zip(item, quantity, rate, discount, tax, amount)
                 mapped = list(mapped)
                 for element in mapped:
                     created = ChallanItems.objects.create(
                         chellan=challan, item_name=element[0], quantity=element[1], rate=element[2], discount=element[3], tax_percentage=element[4], amount=element[5])
-        
         else:
             if len(itemm) == len(quantityy) == len(ratee) == len(discountt) == len(taxx) == len(amountt):
                 mapped = zip(itemm, quantityy, ratee, discountt, taxx, amountt)
@@ -14343,9 +14353,7 @@ def create_and_send_challan(request):
                     created = ChallanItems.objects.create(
                         chellan=challan, item_name=element[0], quantity=element[1], rate=element[2], discount=element[3], tax_percentage=element[4], amount=element[5])
 
-
-        cust_email = customer.objects.get(
-            user=user, customerName=cust_name).customerEmail
+        cust_email = customer.objects.get(user=user, customerName=cust_name).customerEmail
       
         subject = 'Delivery Challan'
         message = 'Dear Customer,\n Your Delivery Challan has been Saved for a total amount of: ' + tot_in_string
@@ -14353,7 +14361,6 @@ def create_and_send_challan(request):
         send_mail(subject, message, settings.EMAIL_HOST_USER, [recipient])
 
     return redirect('delivery_chellan_home')
-
 
 def add_customer_for_challan(request):
    
@@ -15031,7 +15038,7 @@ def save_payment_term(request):
 
 def get_payment_terms_view(request):
     if request.method == 'GET':
-        payment_terms_list = payment_terms.objects.all()  # Rename the variable
+        payment_terms_list = payment_terms.objects.all()  
         terms = []
         for term in payment_terms_list:
             terms.append({
@@ -15071,18 +15078,19 @@ def get_all_payment_terms(request):
     return JsonResponse(terms_list, safe=False)
 
 
+
 def fetch_payment_terms(request):
     # Query the payment terms from the database
     payment_terms_queryset = payment_terms.objects.all()
-    
 
     # Serialize payment terms to JSON
-    terms_list = [{'id': term.id, 'name': term.name, 'days': term.days} for term in payment_terms]
+    terms_list = [{'id': term.id, 'name': term.Terms, 'days': term.Days} for term in payment_terms_queryset]
 
     # Create a JSON response with the payment terms
     data = {'payment_terms': terms_list}
 
     return JsonResponse(data)
+
 
 
 

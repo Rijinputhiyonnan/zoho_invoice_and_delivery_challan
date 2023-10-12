@@ -48,23 +48,21 @@
 
 
 <script>
-function printForm() {
- 
-    var selectedArea = document.getElementById("selected-area");
-    
+    function printForm() {
+        var selectedArea = document.getElementById("selected-area");
 
-    var printWindow = window.open('', 'PrintWindow', 'height=800,width=800');
-    
+        var printWindow = window.open('', 'PrintWindow', 'height=800,width=800');
 
-    printWindow.document.write('<html><head><title>Print Selected Area</title></head><body>' + selectedArea.innerHTML + '</body></html>');
-    
-
-    printWindow.print();
-    
-    
-    printWindow.close();
+        // Check if selectedArea exists
+        if (selectedArea) {
+            printWindow.document.write('<html><head><title>Print Selected Area</title></head><body>' + selectedArea.innerHTML + '</body></html>');
+            printWindow.print();
+            printWindow.close();
+        } else {
+            alert("No content to print!");
+        }
     }
-
+    
 
 </script>
 
@@ -164,6 +162,9 @@ function printForm() {
                     <a href="{% url 'emailattachment' %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
                          data-toggle="tooltip" title="Email">
                         <i class="mdi mdi-email"></i></a>
+                        <button type="submit" class="btn btn-sm m-1 text-white" style="background-color: rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" data-toggle="tooltip" title="Change Status">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
                     
                         <div class="dropdown m-0 p-0 ms-1 mt-1" title="comments" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;">
                             <a href=" " class=" fas fa-comment-dots dropdown-toggle  btn-sm text-white ms-1"  
@@ -198,9 +199,10 @@ function printForm() {
 <!-- .................................................................................. -->
 
 <div id="div_estimate" class="mx-2 my-4 p-4 "
-style="background-color: rgba(124, 124, 123, 0.507); height: 600px; overflow-y: scroll;">
+style="background-color: rgba(124, 124, 123, 0.507); height: 800px;">
+<div id="selected-area">
 <div class="slip p-5 convert_to_pdf bg-light" id="whatToPrint"
-    style="box-shadow: 5px 5px 10px rgb(45, 45, 45);">
+    style="box-shadow: 5px 5px 20px rgb(45, 45, 45);">
     <div class="row ">
         <div class="col-md-6 ">
             <h2 class="text-dark" style="text-transform: uppercase;">{{ company.company_name }}</h2>
@@ -316,7 +318,7 @@ style="background-color: rgba(124, 124, 123, 0.507); height: 600px; overflow-y: 
 
 
 </div>
-
+</div>
 
 
 <!-- comment modal -->

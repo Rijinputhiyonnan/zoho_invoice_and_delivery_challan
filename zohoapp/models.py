@@ -1417,11 +1417,11 @@ class invoice_item(models.Model):
     discount = models.FloatField(null=True,blank=True)
     rate=models.TextField(max_length=255)
     inv=models.ForeignKey(invoice,on_delete=models.CASCADE)
-    paid_amount = models.FloatField(default=0.0)  # Default to 0
-    balance = models.FloatField(null=True, blank=True)  # Balance can be null initially
+    paid_amount = models.FloatField(default=0.0)  # updation
+    balance = models.FloatField(null=True, blank=True)  
     
     def save(self, *args, **kwargs):
-        # Calculate the balance based on the total and paid amount
+        
         self.balance = self.total - self.paid_amount
         super().save(*args, **kwargs)
     
