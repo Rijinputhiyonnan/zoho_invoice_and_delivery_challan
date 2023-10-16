@@ -1396,18 +1396,6 @@ class invoice(models.Model):
     
     
     
-    
-    payment_method = models.CharField(max_length=50, choices=(         #updation
-        ('cash', 'Cash'),
-        ('cheque', 'Cheque'),
-        ('upi', 'UPI'),
-        ('bank', 'Bank'),  # Added 'bank' as a payment method
-    ), default='cash')
-    bank = models.ForeignKey(Bankcreation, on_delete=models.SET_NULL, null=True, blank=True)
-    
-    def __str__(self) :
-        return self.invoice_no
-    
 class invoice_item(models.Model):
     product=models.TextField(max_length=255)
     quantity=models.IntegerField() 
@@ -1431,3 +1419,16 @@ class invoice_comments(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     invoice=models.ForeignKey(invoice,on_delete=models.CASCADE,null=True,blank=True)
     comments=models.CharField(max_length=500,null=True,blank=True)
+    
+
+class InvoicePayment(models.Model):
+    invoice = models.ForeignKey(invoice, on_delete=models.CASCADE)
+    payment_method = models.CharField(max_length=50, choices=(
+        ('cash', 'Cash'),
+        ('cheque', 'Cheque'),
+        ('upi', 'UPI'),
+        ('bank', 'Bank'),
+    ))
+    cheque_number = models.CharField(max_length=100, null=True, blank=True)
+    upi_id = models.CharField(max_length=100, null=True, blank=True)
+    bank = models.ForeignKey(Bankcreation, on_delete=models.SET_NULL, null=True, blank=True)
