@@ -1956,129 +1956,185 @@ def addinvoice(request):
        
     return render(request,'createinvoice.html',context)
 
-
+from django.db import IntegrityError
 @login_required(login_url='login')
 
+
 def add_prod(request):
-    c=customer.objects.all()
+    c = customer.objects.all()
     company = company_details.objects.get(user=request.user.id)
-    p=AddItem.objects.all()
-    i=invoice.objects.all()
-    payments=payment_terms.objects.all()
-    sales=Sales.objects.all()
-    purchase=Purchase.objects.all()
-    unit=Unit.objects.all()
+    p = AddItem.objects.all()
+    i = invoice.objects.all()
+    payments = payment_terms.objects.all()
+    sales = Sales.objects.all()
+    purchase = Purchase.objects.all()
+    unit = Unit.objects.all()
     if invoice.objects.all().exists():
         invoice_count = invoice.objects.last().id
-        count=invoice_count+1
+        count = invoice_count + 1
     else:
-        count=1 
+        count = 1
     # invoice_count = invoice.objects.last().id
     # count=invoice_count+1
-    if not payment_terms.objects.filter(Terms='net 15').exists(): 
-       payment_terms(Terms='net 15',Days=15).save()
+    if not payment_terms.objects.filter(Terms='net 15').exists():
+       payment_terms(Terms='net 15', Days=15).save()
     if not payment_terms.objects.filter(Terms='due end of month').exists():
-        payment_terms(Terms='due end of month',Days=60).save()
-    elif not  payment_terms.objects.filter(Terms='net 30').exists():
-        payment_terms(Terms='net 30',Days=30).save() 
-    
-    
-   
+        payment_terms(Terms='due end of month', Days=60).save()
+    elif not payment_terms.objects.filter(Terms='net 30').exists():
+        payment_terms(Terms='net 30', Days=30).save()
+
     if request.user.is_authenticated:
-        if request.method=='POST':
-            user=request.user
-            x=request.POST["hidden_state"]
-            y=request.POST["hidden_cus_place"]
-            c=request.POST['customer_id']
-            cus=customer.objects.get(id=c) 
-            print(cus.id)  
-            custo=cus
-            invoice_no=request.POST['inv_no']
-            terms=request.POST['term']
+        if request.method == 'POST':
+            user = request.user
+            x = request.POST["hidden_state"]
+            y = request.POST["hidden_cus_place"]
+            if 'customer_id' in request.POST:
+                customer_id = request.POST['customer_id']
+                try:
+                    cus = customer.objects.get(id=customer_id)
+        # Handle the single result
+                except customer.DoesNotExist:
+                    pass
+        # Handle the case where the customer does not exist
+                except customer.MultipleObjectsReturned:
+                    pass
+        # Handle the case where multiple customers with the same ID are returned
+
+    
+
+            cus = customer.objects.get(id=customer_id)
+
+            print(cus.id)
+            custo = cus
+            invoice_no = request.POST['inv_no']
+            terms = request.POST['term']
             # term=payment_terms.objects.get(id=terms)
-            order_no=request.POST['ord_no']
-            inv_date=request.POST['inv_date']
-            due_date=request.POST['due_date']
-        
+            order_no = request.POST['ord_no']
+            inv_date_str = request.POST['inv_date']  # Retrieve the invoice date as a string
+            due_date_str = request.POST['due_date']  # Retrieve the due date as a string
             
-            cxnote=request.POST['customer_note']
-            subtotal=request.POST['subtotal']
-            igst=request.POST['igst']
-            cgst=request.POST['cgst']
-            sgst=request.POST['sgst']
-            totaltax=request.POST['totaltax']
-            t_total=request.POST['t_total']
+            inv_date_str = request.POST.get('inv_date', "")
+            due_date_str = request.POST.get('due_date', "")
+
+            inv_date = None
+            due_date = None
+
+            if inv_date_str and due_date_str:
+                try:
+                    inv_date = datetime.strptime(inv_date_str, '%Y-%m-%d')
+                    due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+
+                    cxnote = request.POST.get('customer_note', "")
+                    subtotal = request.POST.get('subtotal', "")
+                    igst = request.POST.get('igst', "")
+                    cgst = request.POST.get('cgst', "")
+                    sgst = request.POST.get('sgst', "")
+                    totaltax = request.POST.get('totaltax', "")
+                    t_total = request.POST.get('t_total', "")
+                    file = request.FILES.get('file', None)
+                    tc = request.POST.get('ter_cond', "")
+                    status = request.POST.get('sd', "")
+
+                    # Code for different scenarios based on x and y values
+
+                    inv = invoice(user=user, customer=custo, invoice_no=invoice_no, terms=terms, order_no=order_no, 
+                                  inv_date=inv_date, due_date=due_date, cxnote=cxnote, subtotal=subtotal, 
+                                  igst=igst, cgst=cgst, sgst=sgst, t_tax=totaltax, grandtotal=t_total, 
+                                  status=status, terms_condition=tc, file=file)
+                    inv.save()
+
+                    # Additional code for creating invoice items
+
+                except ValueError as e:
+                    print(f"Value Error: {e}")
+
+            cxnote = request.POST['customer_note']
+            subtotal = request.POST['subtotal']
+            igst = request.POST['igst']
+            cgst = request.POST['cgst']
+            sgst = request.POST['sgst']
+            totaltax = request.POST['totaltax']
+            t_total = request.POST['t_total']
             # if request.FILES.get('file') is not None:
-            file=request.FILES.get('file')
+            file = request.FILES.get('file')
             # attachment = request.FILES.get('file')
             # else:
-                # file="/static/images/alt.jpg"
-            tc=request.POST['ter_cond']
+            # file="/static/images/alt.jpg"
+            tc = request.POST['ter_cond']
 
-            status=request.POST['sd']
-            if status=='draft':
-                print(status)   
+            status = request.POST['sd']
+            if status == 'draft':
+                print(status)
             else:
-                print(status)  
-        
-            if x==y:
-                item=request.POST.getlist('item[]')
-                hsn=request.POST.getlist('hsn[]')
-                quantity=request.POST.getlist('quantity[]')
-                rate=request.POST.getlist('rate[]')
-                desc=request.POST.getlist('desc[]')
-                tax=request.POST.getlist('tax[]')
-                amount=request.POST.getlist('amount[]')
+                print(status)
+
+            if x == y:
+                item = request.POST.getlist('item[]')
+                hsn = request.POST.getlist('hsn[]')
+                quantity = request.POST.getlist('quantity[]')
+                rate = request.POST.getlist('rate[]')
+                desc = request.POST.getlist('desc[]')
+                tax = request.POST.getlist('tax[]')
+                amount = request.POST.getlist('amount[]')
                 # term=payment_terms.objects.get(id=term.id)
             else:
-                itemm=request.POST.getlist('itemm[]')
-                hsnn=request.POST.getlist('hsnn[]')
-                quantityy=request.POST.getlist('quantityy[]')
-                ratee=request.POST.getlist('ratee[]')
-                descc=request.POST.getlist('descc[]')
-                taxx=request.POST.getlist('taxx[]')
-                amountt=request.POST.getlist('amountt[]')
+                itemm = request.POST.getlist('itemm[]')
+                hsnn = request.POST.getlist('hsnn[]')
+                quantityy = request.POST.getlist('quantityy[]')
+                ratee = request.POST.getlist('ratee[]')
+                descc = request.POST.getlist('descc[]')
+                taxx = request.POST.getlist('taxx[]')
+                amountt = request.POST.getlist('amountt[]')
                 # term=payment_terms.objects.get(id=term.id)
 
-            inv=invoice(user=user,customer=custo,invoice_no=invoice_no,terms=terms,order_no=order_no,inv_date=inv_date,due_date=due_date,
-                        cxnote=cxnote,subtotal=subtotal,igst=igst,cgst=cgst,sgst=sgst,t_tax=totaltax,
-                        grandtotal=t_total,status=status,terms_condition=tc,file=file)
-            inv.save()
-            if x==y:
-                inv_id=invoice.objects.get(id=inv.id)
-                if len(item)==len(hsn)==len(quantity)==len(desc)==len(tax)==len(amount)==len(rate):
+            inv = invoice(user=user, customer=custo, invoice_no=invoice_no, terms=terms, order_no=order_no, inv_date=inv_date, due_date=due_date,
+                        cxnote=cxnote, subtotal=subtotal, igst=igst, cgst=cgst, sgst=sgst, t_tax=totaltax,
+                        grandtotal=t_total, status=status, terms_condition=tc, file=file)
+            try:
+                inv.save()  # Attempt to save the invoice object
+                if x == y:
+                    inv_id = invoice.objects.get(id=inv.id)
+                    if len(item) == len(hsn) == len(quantity) == len(desc) == len(tax) == len(amount) == len(rate):
+                        mapped = zip(item, hsn, quantity, desc, tax, amount, rate)
+                        mapped = list(mapped)
+                        for element in mapped:
+                            created = invoice_item.objects.create(
+                                inv_id=inv_id, product=element[0], hsn=element[1], quantity=element[2],
+                                desc=element[3], tax=element[4], total=element[5], rate=element[6]
+                            )
+                        return HttpResponseRedirect('/invoiceview')  # Redirect to invoiceview URL
+                else:
+                    inv_id = invoice.objects.get(id=inv.id)
+                    if len(itemm) == len(hsnn) == len(quantityy) == len(descc) == len(taxx) == len(amountt) == len(ratee):
+                        mapped = zip(itemm, hsnn, quantityy, descc, taxx, amountt, ratee)
+                        mapped = list(mapped)
+                        for element in mapped:
+                            created = invoice_item.objects.create(
+                                inv_id=inv_id, product=element[0], hsn=element[1], quantity=element[2],
+                                desc=element[3], tax=element[4], total=element[5], rate=element[6]
+                            )
+                        return HttpResponseRedirect('/invoiceview')  # Redirect to invoiceview URL
 
-                    mapped = zip(item,hsn,quantity,desc,tax,amount,rate)
-                    mapped = list(mapped)
-                    for element in mapped:
-                        created = invoice_item.objects.get_or_create(inv=inv_id,product=element[0],hsn=element[1],
-                                            quantity=element[2],desc=element[3],tax=element[4],total=element[5],rate=element[6])
-                        
-                    return redirect('invoiceview')
-            else:
-                inv_id=invoice.objects.get(id=inv.id)
-                if len(itemm)==len(hsnn)==len(quantityy)==len(descc)==len(taxx)==len(amountt)==len(ratee):
+            except IntegrityError as e:
+                print(f"Integrity Error: {e}")
+            except ValueError as ve:
+                print(f"Value Error: {ve}")
+            except MultiValueDictKeyError as me:
+                print(f"MultiValueDict Key Error: {me}")
 
-                    mapped = zip(itemm,hsnn,quantityy,descc,taxx,amountt,ratee)
-                    mapped = list(mapped)
-                    for element in mapped:
-                        created = invoice_item.objects.get_or_create(inv=inv_id,product=element[0],hsn=element[1],
-                                            quantity=element[2],desc=element[3],tax=element[4],total=element[5],rate=element[6])
-                        
-                    return redirect('invoiceview')
+    context = {
+        'c': c,
+        'p': p,
+        'i': i,
+        'company': company,
+        'sales': sales,
+        'purchase': purchase,
+        'units': unit,
+        'count': count,
+        'payments': payments,
+    }
+    return render(request, 'createinvoice.html', context)
 
-    context={
-            'c':c,
-            'p':p,
-            'i':i,
-            'company':company,
-            'sales':sales,
-            'purchase':purchase,
-            'units':unit,
-            'count':count,
-            'payments':payments,
-    }       
-    return render(request,'createinvoice.html',context)
 
 @login_required(login_url='login')
 

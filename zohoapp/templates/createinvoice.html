@@ -103,7 +103,7 @@ crossorigin="anonymous"></script>
                     <option type="hidden" value="vendor">select</option>
     
                     {% for cust in c %}
-                    <option value="{{cust.id}} {{cust.customerName}}" data-pos="{{cust.placeofsupply}}">{{cust.customerName}}</option>
+                    <option value="{{cust.id}} {{cust.customerName}}"    data-email="{{ cust.customerEmail }}" data-gsttreatment="{{ cust.GSTTreatment }}" data-gstnumber="{{ cust.GSTIN }}" data-placeofsupply="{{ cust.placeofsupply }}">{{cust.customerName}}</option>
                     {% endfor %}
                     <!-- <option value="customer">Register as a customer</option> -->
     
@@ -115,13 +115,50 @@ crossorigin="anonymous"></script>
                   style="color: white; background-color: rgb(210, 132, 30);height: 37px;"></i></a>
           </div>
         </div>
-        <div class="row mb-4 d-none" id="cemail_row">
-          <div class="col-sm-2 "><label for="estimate_number">Customer Mail</label></div>
-          <div class="col-sm-6"><input type="email" id="cx_mail" name="cx_mail" class="form-control text-dark">
+        <div class="row mb-4">
+          <div class="col-sm-2"><label for="customer_email">Customer Email</label></div>
+          <div class="col-sm-6">
+              <input type="text" class="form-control text-black" id="customer_email" name="customer_email" readonly>
           </div>
-          <input type="text" id="customer_id" name="customer_id" style="display: none;"  readonly>
-
       </div>
+      
+      <div class="row mb-4">
+          <div class="col-sm-2"><label for="gst_treatment">GST Treatment</label></div>
+          <div class="col-sm-6">
+              <input type="text" class="form-control text-black" id="gst_treatment" name="gst_treatment" readonly>
+          </div>
+      </div>
+      
+      <div class="row mb-4">
+          <div class="col-sm-2"><label for="gst_number">GST Number</label></div>
+          <div class="col-sm-6">
+              <input type="text" class="form-control text-black" id="gst_number" name="gst_number" readonly>
+          </div>
+      </div>
+      
+      <div class="row mb-4">
+          <div class="col-sm-2"><label for="place_of_supply">Place of Supply</label></div>
+          <div class="col-sm-6">
+              <input type="text" class="form-control text-black" id="place_of_supply" name="place_of_supply" readonly>
+          </div>
+      </div>
+      
+      <script>
+          // Add an event listener to the customer selection dropdown
+          document.getElementById('customer_sel').addEventListener('change', function () {
+              // Get the selected option
+              var selectedOption = this.options[this.selectedIndex];
+              
+              // Update the input fields with customer information
+              document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+              document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+              document.getElementById('gst_number').value = selectedOption.getAttribute('data-gstnumber');
+              document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
+          });
+      </script>
+      
+   
+</div>
         <div class="row mb-4">
             <div class="col-sm-2"><label for="estimate_number">Invoice#*</label></div>
             <div class="col-sm-6"><input type="text" class="form-control text-dark" id="estimate_number" name="inv_no" value="INV-{{count}}">
