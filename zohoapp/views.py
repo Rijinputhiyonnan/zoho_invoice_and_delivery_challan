@@ -1969,9 +1969,10 @@ def add_prod(request):
     sales = Sales.objects.all()
     purchase = Purchase.objects.all()
     unit = Unit.objects.all()
+    banks = Bankcreation.objects.all()
     if invoice.objects.all().exists():
         invoice_count = invoice.objects.last().id
-        count = invoice_count + 1
+        count = invoice_count
     else:
         count = 1
     # invoice_count = invoice.objects.last().id
@@ -1988,28 +1989,37 @@ def add_prod(request):
             user = request.user
             x = request.POST["hidden_state"]
             y = request.POST["hidden_cus_place"]
-            if 'customer_id' in request.POST:
-                customer_id = request.POST['customer_id']
-                try:
-                    cus = customer.objects.get(id=customer_id)
-        # Handle the single result
-                except customer.DoesNotExist:
-                    pass
-        # Handle the case where the customer does not exist
-                except customer.MultipleObjectsReturned:
-                    pass
-        # Handle the case where multiple customers with the same ID are returned
-
-    
-
-            cus = customer.objects.get(id=customer_id)
-
+            c = request.POST['cx_name']
+            print(c)
+            cus = customer.objects.get(id=c)
             print(cus.id)
             custo = cus
             invoice_no = request.POST['inv_no']
             terms = request.POST['term']
             # term=payment_terms.objects.get(id=terms)
             order_no = request.POST['ord_no']
+            cheque_number = ''
+            upi_id = ''
+            payment_method = request.POST['payment_method']
+            if payment_method == 'cash':
+                pass
+                # Handle cash related operations here
+            elif payment_method == 'cheque':
+                cheque_number = request.POST.get('cheque_number', '')
+                # Handle cheque related operations here
+            elif payment_method == 'upi':
+                upi_id = request.POST.get('upi_id', '')
+                # Handle UPI related operations here
+            elif payment_method == 'bank':
+                bank_id = request.POST.get('bank_name')
+                cheque_number = request.POST.get('cheque_number', '')
+                upi_id = request.POST.get('upi_id', '')
+                
+            else:
+                
+                pass
+
+            
             inv_date_str = request.POST['inv_date']  # Retrieve the invoice date as a string
             due_date_str = request.POST['due_date']  # Retrieve the due date as a string
             
@@ -2036,91 +2046,91 @@ def add_prod(request):
                     status = request.POST.get('sd', "")
 
                     # Code for different scenarios based on x and y values
+                    
+    # Save the invoice_payment instance to persist the changes in the database
+    
+
+                        
+                    
 
                     inv = invoice(user=user, customer=custo, invoice_no=invoice_no, terms=terms, order_no=order_no, 
                                   inv_date=inv_date, due_date=due_date, cxnote=cxnote, subtotal=subtotal, 
                                   igst=igst, cgst=cgst, sgst=sgst, t_tax=totaltax, grandtotal=t_total, 
                                   status=status, terms_condition=tc, file=file)
                     inv.save()
+                    
+                    invoice_payment = InvoicePayment(
+                                        invoice=inv,
+                                        payment_method=payment_method,
+                                        cheque_number=cheque_number,
+                                        upi_id=upi_id,
+                                    )
+                    if payment_method == 'bank' and bank_id:
+                        bank_instance = Bankcreation.objects.get(id=bank_id)
+                        invoice_payment.bank = bank_instance
+                    invoice_payment.save()
 
                     # Additional code for creating invoice items
 
                 except ValueError as e:
                     print(f"Value Error: {e}")
 
-            cxnote = request.POST['customer_note']
-            subtotal = request.POST['subtotal']
-            igst = request.POST['igst']
-            cgst = request.POST['cgst']
-            sgst = request.POST['sgst']
-            totaltax = request.POST['totaltax']
-            t_total = request.POST['t_total']
-            # if request.FILES.get('file') is not None:
-            file = request.FILES.get('file')
-            # attachment = request.FILES.get('file')
-            # else:
-            # file="/static/images/alt.jpg"
-            tc = request.POST['ter_cond']
-
-            status = request.POST['sd']
-            if status == 'draft':
-                print(status)
-            else:
-                print(status)
+           
 
             if x == y:
                 item = request.POST.getlist('item[]')
                 hsn = request.POST.getlist('hsn[]')
                 quantity = request.POST.getlist('quantity[]')
                 rate = request.POST.getlist('rate[]')
-                desc = request.POST.getlist('desc[]')
-                tax = request.POST.getlist('tax[]')
+                discount = request.POST.getlist('discount[]')
+                tax = request.POST.getlist('taxamount1[]')
                 amount = request.POST.getlist('amount[]')
+                paid_amount = request.POST.get('paid_amount', "")
+                balance = request.POST.get('balance', "")
                 # term=payment_terms.objects.get(id=term.id)
             else:
                 itemm = request.POST.getlist('itemm[]')
                 hsnn = request.POST.getlist('hsnn[]')
                 quantityy = request.POST.getlist('quantityy[]')
                 ratee = request.POST.getlist('ratee[]')
-                descc = request.POST.getlist('descc[]')
-                taxx = request.POST.getlist('taxx[]')
+                discount = request.POST.getlist('discountt[]')
+                taxx = request.POST.getlist('taxamountt1')
                 amountt = request.POST.getlist('amountt[]')
+                paid_amount = request.POST.get('paid_amount', "")
+                balance = request.POST.get('balance', "")
                 # term=payment_terms.objects.get(id=term.id)
 
-            inv = invoice(user=user, customer=custo, invoice_no=invoice_no, terms=terms, order_no=order_no, inv_date=inv_date, due_date=due_date,
-                        cxnote=cxnote, subtotal=subtotal, igst=igst, cgst=cgst, sgst=sgst, t_tax=totaltax,
-                        grandtotal=t_total, status=status, terms_condition=tc, file=file)
+            
             try:
-                inv.save()  # Attempt to save the invoice object
+               
                 if x == y:
                     inv_id = invoice.objects.get(id=inv.id)
-                    if len(item) == len(hsn) == len(quantity) == len(desc) == len(tax) == len(amount) == len(rate):
-                        mapped = zip(item, hsn, quantity, desc, tax, amount, rate)
+                    if len(item) == len(hsn) == len(quantity) == len(discount) == len(tax) == len(amount) == len(rate):
+                        mapped = zip(item, hsn, quantity, discount, tax, amount, rate)
                         mapped = list(mapped)
                         for element in mapped:
                             created = invoice_item.objects.create(
-                                inv_id=inv_id, product=element[0], hsn=element[1], quantity=element[2],
-                                desc=element[3], tax=element[4], total=element[5], rate=element[6]
+                                inv=inv_id, product=element[0], hsn=element[1], quantity=element[2],
+                                discount=element[3], tax=element[4], total=element[5], rate=element[6], paid_amount=paid_amount, balance=balance
                             )
-                        return HttpResponseRedirect('/invoiceview')  # Redirect to invoiceview URL
+                        return redirect('invoiceview')  # Redirect to invoiceview URL
                 else:
                     inv_id = invoice.objects.get(id=inv.id)
-                    if len(itemm) == len(hsnn) == len(quantityy) == len(descc) == len(taxx) == len(amountt) == len(ratee):
-                        mapped = zip(itemm, hsnn, quantityy, descc, taxx, amountt, ratee)
+                    if len(itemm) == len(hsnn) == len(quantityy) == len(discount) == len(taxx) == len(amountt) == len(ratee):
+                        mapped = zip(itemm, hsnn, quantityy, discount, taxx, amountt, ratee)
                         mapped = list(mapped)
                         for element in mapped:
                             created = invoice_item.objects.create(
-                                inv_id=inv_id, product=element[0], hsn=element[1], quantity=element[2],
-                                desc=element[3], tax=element[4], total=element[5], rate=element[6]
+                                inv=inv_id, product=element[0], hsn=element[1], quantity=element[2],
+                                discount=element[3], tax=element[4], total=element[5], rate=element[6], paid_amount=paid_amount, balance=balance
                             )
-                        return HttpResponseRedirect('/invoiceview')  # Redirect to invoiceview URL
+                        return redirect('invoiceview')  # Redirect to invoiceview URL
 
             except IntegrityError as e:
                 print(f"Integrity Error: {e}")
             except ValueError as ve:
                 print(f"Value Error: {ve}")
-            except MultiValueDictKeyError as me:
-                print(f"MultiValueDict Key Error: {me}")
+            
 
     context = {
         'c': c,
@@ -2132,6 +2142,7 @@ def add_prod(request):
         'units': unit,
         'count': count,
         'payments': payments,
+        'banks' : banks
     }
     return render(request, 'createinvoice.html', context)
 
@@ -15162,3 +15173,24 @@ def get_customer_details(request):
             return JsonResponse({'error': 'Customer not found'}, status=404)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+
+
+def invoice_overview(request,id):
+    user=request.user
+    inv_dat=invoice.objects.filter(user=user)
+    inv_master=invoice.objects.get(id=id)
+    invoiceitem=invoice_item.objects.filter(inv_id=id)
+    company=company_details.objects.get(user_id=request.user.id)
+    inv_comments=invoice_comments.objects.filter(user=user,invoice=id)
+    
+    
+    context={
+        'inv_dat':inv_dat,
+        'invoiceitem':invoiceitem,
+        'comp':company,
+        'invoice':inv_master,
+        'inv_comments':inv_comments,
+    }
+    return render(request,'invoice_overview.html',context)
