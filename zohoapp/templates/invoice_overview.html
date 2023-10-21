@@ -1,4 +1,3 @@
-<!-- RIJIN -->
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
@@ -42,7 +41,7 @@
     }
 
     .table tr:hover {
-        background-color: rgb(19, 19, 19);
+        background-color: #d3f3f2;
     }
 
     .overview .bar .btn {
@@ -140,10 +139,10 @@
 }
 </style>
 <section>
-    <div class="row p-3">
+    <div class="row p-3 ">
         <div class="list col-4 col-lg-4 col-md-3  col-sm-2 py-3">
             <div class="header">
-                <h5>ALL EMPLOYEES LOAN LIST</h5>
+                <h5>ALL INVOICE LIST</h5>
             </div>
             <div class="searchbar">
                 
@@ -156,27 +155,47 @@
                 </a>
                
                 <div class="dropdown-menu actoinacto" >
-                    <a class="dropdown-item filter-link" data-status="all" href="#" style="font-size: 14px;">All</a>
-                    <a class="dropdown-item filter-link" data-status="active" href="#" style="font-size: 14px;">Active</a>
-                    <a class="dropdown-item filter-link" data-status="inactive" href="#" style="font-size: 14px;">Inactive</a>
+                    <a class="dropdown-item" href="{% url 'detailedview' invoice.id %}">All</a>
+  
+                    <a class="dropdown-item" href="{% url 'filter_inv_det_draft' invoice.id %}">Draft</a>
+                    <a class="dropdown-item" href="{% url 'filter_inv_det_send' invoice.id %}">Send</a>
                 </div>
                 
-                <a class="btn btn-outline-primary mr-1" href="{% url 'create_loan' %}"><i class="fa fa-plus"></i></a>
+                <a class="btn btn-outline-primary mr-1" href="{% url 'add_prod' %}"><i class="fa fa-plus"></i></a>
             </div>
             <hr>
-            <table class="table table-borderless" id="mytable">
-                <tr></tr>
-                {% for l in l %}
-                <tr class='clickable-row' data-href="{% url 'employee_loan_details' l.payroll_id %}" data-status="{{ l.active }}">
-                    <td class="pt-2">
-                        <p class="bold">{{ l.payroll.first_name }} {{ l.payroll.last_name }}</p>
-                        <p>{{ l.date_issue }}</p>
+            <table class="text-white" style="width: 100%; ">
+                {% for v in inv_dat %}
+                <tbody id="table">
+                <tr id="tr_data" class="border-bottom clickable-row" style="cursor: pointer;" >
+                    <td>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- <h5 style="color: rgb(218, 143, 5);">{{v.customer.customerName}}</h5> -->
+                                <h5><a href="{% url 'detailedview' v.id %}" style="color: rgb(218, 143, 5);cursor: pointer;">{{v.customer.customerName}}</a></h5>
+                            </div>
+                            <div class="col-md-6 text-right" style="color: rgb(218, 143, 5);">&#x20B9;{{v.grandtotal}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p>{{v.invoice_no}}</p>
+                            </div>
+                            <div class="col-md-3 text-left">
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <p>{{v.status}}</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+      
+                        </div>
                     </td>
-                    <td class="pt-2">{{ l.loan_amount }}</td>
                 </tr>
+               
+            </tbody>
+      
                 {% endfor %}
             </table>
-            
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const filterLinks = document.querySelectorAll(".filter-link");
@@ -343,140 +362,127 @@
 
                 <div class="div-to-pdf row" id="div-to-pdf" style="height: 100%;background-color: burlywood">
                     <div class="bar pt-2 pb-4">
-                        <div class="left text-uppercase" style="font-size: 1rem;font-weight: 600;"> {{p.designation}}
+                        <div class="left" style="font-size: 1rem;font-weight: 600;"> {{p.designation}}
+                            <h6 class="text-dark">Client :</h6>
+                            <h6  style="color: rgb(0, 0, 0);font-weight: bold"><div class="text-uppercase">{{ invoice.customer.customerName }} </div><span class="text-dark" style="color: rgb(0, 0, 0);font-weight: bold">{{ invoice.customer.customerEmail }}</span>  <br><span class="text-dark">{{ invoice.customer.customerMobile }}</span></h6>
                         </div>
-                        <div class="right" style="font-size: 1rem;font-weight: 600;">Emp no: {{p.emp_number}} <br>join
-                            Date: {{p.joindate}}</div>
+                        <div class="right" style="font-size: 1rem;font-weight: 600;">Order No &nbsp;&nbsp;&nbsp;&nbsp; : {{ invoice.order_no }} <br> Invoice Date&nbsp;: {{invoice.inv_date}}  </div>
                     </div>
 
                     <div class="row text-center">
-                        <h3 style="color: #000000;">EMPLOYEE LOAN DETAILS
-                            <hr>
+                        <h3 style="color: #000000;">INVOICE
+                           
                         </h3>
+                        <h6 class="text-dark" style="font-weight: bold;">Invoice Number : {{invoice.invoice_no}}</h6>
                     </div>
-                    <div class="gen-info col-6 " style="padding-left: 3rem;">
+                    <hr>
+                    
                        
-                        <div class="row text-center">
-                            <h5 class="h4 text-dark">{{p.title}} {{p.first_name}} {{p.last_name}}</h5>
-                            <div class="h5">({{p.alias}}) {{p.gender}}</div>
-                        </div>
-                        
-                        <div class="row mt-5">
-                            <div class="col-4"><label for="">Email :</label></div>
-                            <div class="col-8">
-                                <p class="bold">{{p.email}}</p>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-4"><label for="">Phone :</label></div>
-                            <div class="col-8">
-                                <p class="bold">{{p.Phone}}</p>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-5"><label for="">Location :</label></div>
-                            <div class="col-7">
-                                <p class="bold">{{p.location}}</p>
-                            </div>
-                        </div>
-
-                        <div class="h4 mt-3">More info
-                            <hr>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-7"><label for="">Emergency Contact number :</label></div>
-                            <div class="col-5">
-                                <p class="bold">{{p.emergency_phone}}</p>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-7"><label for="">Permanent Address :</label></div>
-                            <div class="col-5">
-                                <p class="bold" style="max-width: 10rem;word-wrap: break-word;">{{p.permanent_address}}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-7"><label for="">Temperory Address :</label></div>
-                            <div class="col-5">
-                                <p class="bold" style="max-width: 10rem;word-wrap: break-word;">{{p.address}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-info col-6 my-2" style="height: 100%;">
-                        <div class="card" style="background-color: rgb(110, 61, 46); padding:1rem;">
-                            {% for loan in loans %}
-                            <div class="row my-2">
-                                <div class="col-4"><label for="">Issued loan amount :</label></div>
-                                <div class="col-8">
-                                    <p class="h3">{{ loan.loan_amount }} INR</p>
-                                </div>
-                            </div>
-                            <hr>
-                            {% endfor %}
-                            <!-- <div class="card-title my-2">General information <hr></div> -->
-
-                            <div class="row mt-2">
-                                <div class="col-5"><label for="">Salary:</label></div>
-                                <div class="col-7">
-                                    <p class="bold">{{ p.salary }}</p>
-                                </div>
-
-                                {% for loan in loans %}
-                                <div class="col-5"><label for="">Date of Issue:</label></div>
-                                <div class="col-7">
-                                    <p class="bold">{{ loan.date_issue }}</p>
-                                </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-5"><label for="">Date of Expiry:</label></div>
-                                <div class="col-7">
-                                    <p class="bold">{{ loan.date_expiry }}</p>
-                                </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-5"><label for="">Loan Amount:</label></div>
-                                <div class="col-7">
-                                    <p class="bold">{{ loan.loan_amount }} ₹</p>
-                                </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-5"><label for="">Monthly Cutting Type:</label></div>
-                                <div class="col-7">
-                                    {% if loan.monthly_cutting_type == 'amount_wis' %}
-                                        <p class="bold">Amount Wise</p>
-
-                             </div>       
-                                        
-                                            <div class="col-5"><label for="">Monthly Cutting Amount:</label></div>
-                                            <div class="col-7">
-                                                <p class="bold">{{ loan.monthly_cutting_amount }} ₹</p>
-                                            </div>
-                                        </div>
-                                    {% elif loan.monthly_cutting_type == 'percentage' %}
-                                        <p class="bold">Percentage Wise</p>
-                                    </div>
-                                        <div class="row mt-2">
-                                            <div class="col-5"><label for="">Percentage:</label></div>
-                                            <div class="col-7">
-                                                <p class="bold">{{ loan.monthly_cutting_percentage }}%</p>
-                                            </div>
-                                        </div>
-                                        
-                                            <div class="col-5"><label for="">Monthly Cutting Amount:</label></div>
-                                            <div class="col-7">
-                                                <p class="bold">{{ loan.monthly_cutting_amount }} ₹</p>
-                                            </div>
-                                        </div>
+                        <table class="table mt-2 " style="border-color: black;">
+                            <thead >
+                                <tr>
+                                    <th style="color: black;font-weight: bold;">#</th>
+                                    <th style="width: 30rem;color: black;font-weight: bold;">Product</th>
+                                    <!-- <th class="text-right;" style="color: black;font-weight: bold;">Hsn</th> -->
+                                    <!-- <th class="text-right;" style="color: black;font-weight: bold;">Description</th> -->
+                                    <th class="text-right;" style="color: black;font-weight: bold;">Quantity</th>
+                                    <th class="text-right;" style="color: black;font-weight: bold;">Price</th>
+                                    <th class="text-right;" style="color: black;font-weight: bold;">Discount</th>
+                    
+                                    <th class="text-right;" style="color: black;font-weight: bold;">Tax%</th>
+                                    <th class="text-right;" style="color: black;font-weight: bold;">Total</th>
+                                </tr>
+                                
+                            </thead>
+                            <tbody>
+                                {% for item in invoiceitem %}
+                                <tr>
+                                    <td style="color: black;font-weight: bold;">{{ forloop.counter }}</td>
+                                    <td style="color: black;font-weight: bold;">{{ item.product }}</td>
+                                    <!-- <td class="text-right">{{ item.hsn }}</td> -->
+                                    <!-- <td class="text-right">{{ item.desc }}</td> -->
+                                    <td class="text-right" style="color: black;font-weight: bold;">{{ item.quantity }}</td>
+                                    <td class="text-right" style="color: black;font-weight: bold;">{{ item.rate|floatformat:1 }}</td>
+                                    <td class="text-right" style="color: black;font-weight: bold;">{{ item.discount|floatformat:1 }}</td>
+                    
+                                    <td class="text-right" style="color: black;font-weight: bold;">{{ item.tax }}</td>
+                                    <td class="text-right" style="color: black;font-weight: bold;">{{ item.total|floatformat:1 }}</td>
+                                </tr>
+                                {% endfor %}
+                                
+                            </tbody>
+                        </table>
+                            
+                                <table class="table  mt-2  ">
+                                    <tr>
+                                        <td class="text-dark" style="font-weight: bold;">Sub-Total:</td>
+                                        <td class="text-right" style="color: black;font-weight: bold; text-align: end;" style="">{{ invoice.subtotal|floatformat:1 }}</td>
+                                    </tr>
+                                    {% if invoice.cgst|floatformat:1 != 0|floatformat:1 %}
+                                    <tr>
+                                        <td class=" text-dark"  style="color: black;font-weight: bold;" >CGST:</td>
+                                        <td class="text-right" style="color: black;font-weight: bold; text-align: end;" >{{ invoice.cgst|floatformat:1 }}</td>
+                                    </tr>
                                     {% endif %}
-                                </div>
-                            </div>
-                            
-                            
-                            
-                            
-                            {% endfor %}
-                            <!-- Add more fields as needed -->
+                    
+                                    {% if invoice.sgst|floatformat:1 != 0|floatformat:1 %}
+                                    <tr>
+                                        <td class="text-dark"  style="color: black;font-weight: bold;" >SGST:</td>
+                                        <td class="text-right"  style="color: black;font-weight: bold; text-align: end;" >{{ invoice.sgst|floatformat:1 }}</td>
+                                    </tr>
+                                    {% endif %}
+                    
+                                    {% if invoice.igst|floatformat:1 != 0|floatformat:1 %}
+                                    <tr>
+                                        <td class="text-dark" style="color: black;font-weight: bold;" >IGST:</td>
+                                        <td class="text-right" style="color: black;font-weight: bold; text-align: end;" >{{ invoice.igst|floatformat:1 }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                      <td class="text-dark"  style="color: black;font-weight: bold;" >TAX:</td>
+                                      <td class="text-right" style="color: black;font-weight: bold; text-align: end;" >{{ invoice.t_tax}}</td>
+                                  </tr>
+                                  {% if invoice.shipping_charge != 0 %}
+                                    <tr>
+                                        <td class="text-dark"  style="color: black;font-weight: bold;" >Shipping Charge:</td>
+                                        <td class="text-right"  style="color: black;font-weight: bold; text-align: end;" >{{ invoice.shipping_charge }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if invoice.adjustment != 0 %}
+                                    <tr>
+                                        <td class="text-dark"  style="color: black;font-weight: bold;" >Adjustment Charge:</td>
+                                        <td class="text-right" style="color: black;font-weight: bold; text-align: end;" >{{ invoice.adjustment|floatformat:1}}</td>
+                                    </tr>
+                                    {% endif %}
+                                    
+                                    
+                                    <tr>
+                    
+                                        <td class="text-right"  style="color: black;font-weight: bold;" >Total:</td>
+                                        
+                                        <td class="text-right " style="color: black;font-weight: bold; text-align: end;" >{{ invoice.grandtotal|floatformat:1}}</td>
+                                    </tr>
+                                   
+                                    {% if invoice.paid_amount != 0 %}
+                                    <tr>
+                    
+                                        <td class="text-right"  style="color: black;font-weight: bold;" >Paid Amount:</td>
+                                        
+                                        <td class="text-right " style="color: black;font-weight: bold; text-align: end;" >{{ invoice.paid_amount|floatformat:1}}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if invoice.balance != 0 %}
+                                    <tr>
+                    
+                                        <td class="text-right"  style="color: black;font-weight: bold;" >Balance:</td>
+                                        
+                                        <td class="text-right " style="color: black;font-weight: bold; text-align: end;" >{{ invoice.balance|floatformat:1}}</td>
+                                    </tr>
+                                    {% endif %}
+
+                                   
+                                </table>
+                    
                             
                             
                 <!-- </div> -->

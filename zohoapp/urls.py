@@ -627,7 +627,7 @@ urlpatterns = [
     path('loan/deactivate/<int:loan_id>/', views.deactivate_loan, name='deactivate_loan'),
     path('toggle_loan_active/<int:loan_id>/', views.toggle_loan_active, name='toggle_loan_active'),
 
-    path('employee_loan_template/<int:payroll_id>/', views.employee_loan_template, name='employee_loan_template'),
+    path('employee/loan/template/<int:payroll_id>/', views.employee_loan_template, name='employee_loan_template'),
 
     path('add_loan_comment/<int:payroll_id>/', views.add_loan_comment, name='add_loan_comment'),
     path('delete_loan_comment/<int:comment_id>/', views.delete_loan_comment, name='delete_loan_comment'),
@@ -732,7 +732,9 @@ urlpatterns = [
     path('get_payment_terms/', views.get_payment_terms_view, name='get_payment_terms'),
     path('get_all_payment_terms/', views.get_all_payment_terms, name='get_all_payment_terms'),
     #path('fetch_payment_terms/', views.fetch_payment_terms, name='fetch_payment_terms'),
-      path('get_customer_details/', views.get_customer_details, name='get_customer_details'),
+    path('get_customer_details/', views.get_customer_details, name='get_customer_details'),
+    path('invoice/overview/<int:id>', views.invoice_overview, name='invoice_overview'),
+
 
     
     

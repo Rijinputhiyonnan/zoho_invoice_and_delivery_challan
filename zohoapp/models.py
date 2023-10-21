@@ -1393,6 +1393,22 @@ class invoice(models.Model):
     file=models.ImageField(upload_to='documents')
     terms_condition=models.TextField(max_length=255)
     status=models.TextField(max_length=255)
+    estimate=models.CharField(max_length=100,null=True,blank=True)
+    paid_amount = models.FloatField(default=0.0)  # updation
+    balance = models.FloatField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # Convert self.total to a float if it is a string
+        if isinstance(self.grandtotal, str):
+            self.grandtotal = float(self.grandtotal)
+
+        # Ensure that self.paid_amount is always a float
+        if not isinstance(self.paid_amount, float):
+            self.paid_amount = float(self.paid_amount)
+
+        self.balance = self.grandtotal - self.paid_amount
+        super().save(*args, **kwargs)
+
     
     
     
@@ -1401,25 +1417,11 @@ class invoice_item(models.Model):
     quantity = models.IntegerField()
     hsn = models.TextField(max_length=255)
     tax = models.FloatField()
-    total = models.FloatField()  # Ensure that this field is defined as a FloatField
+    total = models.FloatField()  
     discount = models.FloatField(null=True, blank=True)
     rate = models.TextField(max_length=255)
     inv = models.ForeignKey(invoice, on_delete=models.CASCADE)
-    paid_amount = models.FloatField(default=0.0)  # updation
-    balance = models.FloatField(null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        # Convert self.total to a float if it is a string
-        if isinstance(self.total, str):
-            self.total = float(self.total)
-
-        # Ensure that self.paid_amount is always a float
-        if not isinstance(self.paid_amount, float):
-            self.paid_amount = float(self.paid_amount)
-
-        self.balance = self.total - self.paid_amount
-        super().save(*args, **kwargs)
-
+    
     
     
 class invoice_comments(models.Model):

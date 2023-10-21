@@ -182,7 +182,7 @@
 
    
 <div id="selected-areaa" class="mx-2 my-4 p-4 "
-style="background-color: rgba(124, 124, 123, 0.507); height: 600px; overflow-y: scroll;">
+style="background-color: rgba(124, 124, 123, 0.507);">
 <div class="slip p-5 convert_to_pdf bg-light" id="whatToPrint"
     style="box-shadow: 5px 5px 10px rgb(45, 45, 45);">
     <div class="row ">
@@ -283,7 +283,7 @@ style="background-color: rgba(124, 124, 123, 0.507); height: 600px; overflow-y: 
               {% if invoice.shipping_charge != 0 %}
                 <tr>
                     <td class="text-right text-dark">Shipping Charge:</td>
-                    <td class="text-right" style="text-align: end;">{{ invoice.shipping_charge|floatformat:1 }}</td>
+                    <td class="text-right" style="text-align: end;">{{ invoice.shipping_charge }}</td>
                 </tr>
                 {% endif %}
                 {% if invoice.adjustment != 0 %}
