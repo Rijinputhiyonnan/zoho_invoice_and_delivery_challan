@@ -15091,73 +15091,76 @@ def add_prod(request):     #updation
 
             if x == y:
                 item = request.POST.getlist("item[]")
-                print(item)
+                print("Item List:", item) 
+
                 hsn = request.POST.getlist("hsn[]")
                 quantity = request.POST.getlist("quantity[]")
-                rate = request.POST.getlist('rate[]')
+                rate = request.POST.getlist("rate[]")
                 discount = request.POST.getlist("discount[]")
-                tax = request.POST.getlist("taxamount1[]")
+                tax = request.POST.getlist("tax[]")
                 amount = request.POST.getlist("amount[]")
                 print('amount:', amount)
                 for i in range(len(item)):
                     print(f"Item: {item[i]}, HSN: {hsn[i]}, Quantity: {quantity[i]}, Rate: {rate[i]}, Discount: {discount[i]}, Tax: {tax[i]}, Amount: {amount[i]}")
 
-                
+                    
                 # term=payment_terms.objects.get(id=term.id)
             else:
                 itemm = request.POST.getlist('itemm[]')
                 hsnn = request.POST.getlist('hsnn[]')
                 quantityy = request.POST.getlist('quantityy[]')
                 ratee = request.POST.getlist('ratee[]')
-                discount = request.POST.getlist('discountt[]')
-                taxx = request.POST.getlist('taxamountt1')
+                discountt = request.POST.getlist('discountt[]')
+                taxx = request.POST.getlist('taxx[]')
                 amountt = request.POST.getlist('amountt[]')
-                
+                for i in range(len(itemm)):
+                    print(f"Item: {itemm[i]}, HSN: {hsnn[i]}, Quantity: {quantityy[i]}, Rate: {ratee[i]}, Discount: {discountt[i]}, Tax: {taxx[i]}, Amount: {amountt[i]}")
+
                 # term=payment_terms.objects.get(id=term.id)
 
             
             
                
             if x == y:
-                    inv_id = invoice.objects.get(id=inv.id)
-                    if len(item) == len(hsn) == len(quantity) == len(discount) == len(tax) == len(amount) == len(rate):
-                        mapped = list(zip(item, hsn, quantity, discount, tax, amount, rate))
-                        print(mapped)
-                        created_objects = [
-                            invoice_item(
-                                inv=inv_id,
-                                product=element[0],
-                                hsn=element[1],
-                                quantity=element[2],
-                                discount=element[3],
-                                tax=element[4],
-                                total=element[5],
-                                rate=element[6],
-                            )
-                            for element in mapped
-                        ]
-                        invoice_item.objects.bulk_create(created_objects)
-                        return redirect('invoiceview')     
+                inv_id = invoice.objects.get(id=inv.id)
+                if len(item) == len(hsn) == len(quantity) == len(discount) == len(tax) == len(amount) == len(rate):
+                    mapped = list(zip(item, hsn, quantity, discount, tax, amount, rate))
+                    print(mapped)
+                    created_objects = [
+                        invoice_item(
+                            inv=inv_id,
+                            product=element[0],
+                            hsn=element[1],
+                            quantity=element[2],
+                            discount=element[3],
+                            tax=element[4],
+                            total=element[5],
+                            rate=element[6],
+                        )
+                        for element in mapped
+                    ]
+                    invoice_item.objects.bulk_create(created_objects)
+                    return redirect('invoiceview')     
 
             else:
-                    inv_id = invoice.objects.get(id=inv.id)
-                    if len(itemm) == len(hsnn) == len(quantityy) == len(discount) == len(taxx) == len(amountt) == len(ratee):
-                        mapped = list(zip(itemm, hsnn, quantityy, discount, taxx, amountt, ratee))
-                        created_objects = [
-                            invoice_item(
-                                inv=inv_id,
-                                product=element[0],
-                                hsn=element[1],
-                                quantity=element[2],
-                                discount=element[3],
-                                tax=element[4],
-                                total=element[5],
-                                rate=element[6],
-                            )
-                            for element in mapped
-                        ]
-                        invoice_item.objects.bulk_create(created_objects)
-                        return redirect('invoiceview')    
+                inv_id = invoice.objects.get(id=inv.id)
+                if len(itemm) == len(hsnn) == len(quantityy) == len(discountt) == len(taxx) == len(amountt) == len(ratee):
+                    mapped = list(zip(itemm, hsnn, quantityy, discountt, taxx, amountt, ratee))
+                    created_objects = [
+                        invoice_item(
+                            inv=inv_id,
+                            product=element[0],
+                            hsn=element[1],
+                            quantity=element[2],
+                            discount=element[3],
+                            tax=element[4],
+                            total=element[5],
+                            rate=element[6],
+                        )
+                        for element in mapped
+                    ]
+                    invoice_item.objects.bulk_create(created_objects)
+                    return redirect('invoiceview')   
 
 
             

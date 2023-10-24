@@ -487,7 +487,7 @@ crossorigin="anonymous"></script>
 
       <td class='text-right'><input type='number' id='rate1'
               class='form-control bg-transparent border-0 text-light text-right rate' name='rate[]'
-              value='0.00' >
+              value='0.00' readonly >
       </td>
 
       <td class='text-right'><input type='number' id='discount1'
@@ -2677,19 +2677,19 @@ modalEl.addEventListener('click', (event) => {
                         </select></div>
                 </td>
                 <td class='text-right'>
-            <input type='text' id='hsn${RowCount}'  class='form-control bg-transparent  text-white border-0  text-right hsn' name='hsn[]' placeholder="6 Digit No" pattern="[0-9]{6}" value='' readonly required>
+            <input type='text' id='hsn${RowCount}'  class='form-control bg-transparent  text-white border-0  text-right hsn' name="hsn[]" placeholder="6 Digit No" pattern="[0-9]{6}" value='' readonly required>
             <span class='hsn-validation'></span>
         </td>
                 <td class='text-right'><input type='number' id='qty${RowCount}'
-                        class='form-control border-0 bg-transparent  text-white text-right qty' name='quantity[]' value='0' onchange="calc()">
+                        class='form-control border-0 bg-transparent  text-white text-right qty' name="quantity[]" value='0' onchange="calc()">
                 </td>
                 <td class='text-right'><input type='number' id='rate${RowCount}'
-                        class='form-control border-0 bg-transparent  text-white text-right rate' name='rate[]' value='0.00'
+                        class='form-control border-0 bg-transparent  text-white text-right rate' name="rate[]" value='0.00'
                         ></td>
                   <td class='text-right'><input type='number' id='discount${RowCount}'
-                        class='form_control bg-transparent border-0 text-light text-right discount' name='discount[]' value='0.00' style="width:85%">
+                        class='form_control bg-transparent border-0 text-light text-right discount' name="discount[]" value='0.00' style="width:85%">
                 </td>
-                <td class='text-right'> <select name='tax[]' id='tax${RowCount}'
+                <td class='text-right'> <select name="tax[]" id='tax${RowCount}'
                         class="form-control  bg-transparent  text-white text-right border-0 tax">
                         <option>Select Tax</option>
                     <option value="0" class="text-dark">GST 0%</option>
@@ -2703,10 +2703,10 @@ modalEl.addEventListener('click', (event) => {
                        
                     </select></td>
                 <td style="display: none;">
-                    <input type="text" name='taxamount1' id="taxamount${RowCount}" class="form-control taxamount" />
+                    <input type="text" name="taxamount1[]" id="taxamount${RowCount}" class="form-control taxamount" />
                             </td>
                 <td class='text-right'><input type='number' id='amount${RowCount}'
-                        class='form-control border-0 bg-transparent  text-white text-right amount' name='amount[]' value='0.00'></td>
+                        class='form-control border-0 bg-transparent  text-white text-right amount' name="amount[]" value='0.00'></td>
                 <td class='text-center'><button type='button' id='del_btn${RowCount}'
                         class='btn btn-transparent text-danger btn-sm btn-outline-danger rounded-circle delete-row'
                         style='width:30px'><i class='fa fa-times'></i></button>

@@ -147,9 +147,9 @@
             <div class="searchbar">
                 
                 <input class="form-control" type="text" placeholder="Search by Name" name="search" id="search"
-                    onkeyup="searchFunction()"
+                    
                     style="color: rgb(255, 255, 255);background: transparent;margin-right: 5px;">
-                <a class="btn btn-outline-primary mx-1" href="" data-bs-toggle="dropdown" aria-haspopup="true"
+                <a class="btn btn-outline mx-1" style="color: #ccc;background-color: rgb(210, 132, 30);"  href="" data-bs-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false" role="button">
                     <i class="fa fa-filter"></i>
                 </a>
@@ -161,7 +161,7 @@
                     <a class="dropdown-item" href="{% url 'filter_inv_det_send' invoice.id %}">Send</a>
                 </div>
                 
-                <a class="btn btn-outline-primary mr-1" href="{% url 'add_prod' %}"><i class="fa fa-plus"></i></a>
+                <a class="btn btn-outline mr-1" style="color: #ccc;background-color: rgb(210, 132, 30);" href="{% url 'add_prod' %}"><i class="fa fa-plus"></i></a>
             </div>
             <hr>
             <table class="text-white" style="width: 100%; ">
@@ -228,19 +228,19 @@
 
                 <div class="bar pt-3">
                     <div class="left">
-                        {% for loan in loans %}
-                        <a class="btn mx-1 fa fa-file-word" href="{% url 'employee_loan_template' payroll_id=loan.payroll.id %}">Template</a>
+                       
+                        <a class="btn mx-1 fa fa-file-word" href="{% url 'detailedview' id=invoice.id %}"></a>
 
 
                     
-                        <a class="btn mx-1, fa fa-eye"  href="#home">Overview</a>
+                        <a class="btn mx-1, fa fa-eye"  href="#home"></a>
                     </div>
-                    {% endfor %}
+                   
                     <div class="right">
-                        {% for loan in loans %}
-                        <a class="btn ml-1" href="{% url 'edit_loan' loan_id=loan.id %}" data-toggle="tooltip" title="Edit"><i
+                        
+                        <a class="btn ml-1" href="{% url 'edited_prod' id=invoice.id %}" data-toggle="tooltip" title="Edit"><i
                                 class="fas fa-edit"></i></a>
-                                {% endfor %}
+                               
                         <a class="btn btn_print ml-1" href="" id="convertToPDFButton" data-toggle="tooltip"
                             title="Pdf"><i class="mdi mdi-file-pdf"></i></a>
                         <!-- onclick="generatePDF()" -->
@@ -482,11 +482,24 @@
 
                                    
                                 </table>
+                                <div class="row mt-3">
+                                    <div class="col-sm-6" style="text-align: justify;">
+                                        <p class="m-0 font-weight-bold" style="color:black">Customer Note : {{invoice.cxnote}}</p>
+                                        
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-sm-6" style="text-align: justify;">
+                                        <p class="m-0 font-weight-bold" style="color:black">Terms & Conditions : {{invoice.terms_condition}}</p>
+                                        <p style="color:black"></p>
+                                    </div>
+                                </div>
                     
                             
                             
                 <!-- </div> -->
             </div>
+            
         </div>
 
     </div>
@@ -587,30 +600,28 @@
         });
     });
 
-    function searchFunction() {
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("search");
-        filter = input.value.toLowerCase();
-        table = document.getElementById("mytable");
-        tr = table.getElementsByTagName("tr");
-        // input.style.borderColor = "green";
-        for (i = 0; i < tr.length; i++) {
-            let rowVisible = false;
-            td = tr[i].getElementsByTagName("td");
-            for (j = 0; j < td.length; j++) {
-                if (td[j]) {
-                    txtValue = td[j].textContent || td[j].innerText;
-                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                        rowVisible = true;
-                        break;
-                    }
-                }
-            }
+        
+    
+    
+  
+    
+        var $rows = $('#table tr');
+        $('#search').keyup(function() {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+            
+            $rows.hide().filter(function() {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return ~text.indexOf(val);
+            }).show();
+        });
+      
+     
+   
+    
+    
+    
 
-            // Show/hide the row based on the search results
-            tr[i].style.display = rowVisible ? "" : "none";
-        }
-    }
+        
 </script>
 <script>
     function sortTable(columnIndex) {
