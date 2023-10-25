@@ -14295,16 +14295,17 @@ def delivery_challan_view(request, id):
     all_estimates = DeliveryChellan.objects.filter(user=user)
     estimate = DeliveryChellan.objects.get(id=id)
     items = ChallanItems.objects.filter(chellan=estimate)
-    chellan_comments=delivery_chellan_comments.objects.filter(chellan=estimate.id,user=user)
+    chellan_comments = delivery_chellan_comments.objects.filter(chellan=estimate.id, user=user)
     print(items)
     context = {
         'company': company,
-        'all_estimates':all_estimates,
+        'all_estimates': all_estimates,
         'estimate': estimate,
         'items': items,
-        'comments':chellan_comments,
+        'comments': chellan_comments,
     }
     return render(request, 'delivery_challan_view.html', context)
+
 
 
 # delivery_challan_edit.html
@@ -14948,10 +14949,12 @@ def invoice_overview(request,id):
     user=request.user
     inv_dat=invoice.objects.filter(user=user)
     inv_master=invoice.objects.get(id=id)
+    customers= customer.objects.filter(user=user,invoice=id)
     invoiceitem=invoice_item.objects.filter(inv_id=id)
     company=company_details.objects.get(user_id=request.user.id)
     inv_comments=invoice_comments.objects.filter(user=user,invoice=id)
-    
+    payment=InvoicePayment.objects.filter(invoice=id)
+    bank= Bankcreation.objects.filter(user=user)
     
     context={
         'inv_dat':inv_dat,
@@ -14959,6 +14962,9 @@ def invoice_overview(request,id):
         'company':company,
         'invoice':inv_master,
         'inv_comments':inv_comments,
+        'customers':customers,
+        'payment':payment,
+        'bank':bank,
     }
     return render(request,'invoice_overview.html',context)
 
@@ -15228,3 +15234,32 @@ def detailedview(request,id):
         'inv_comments':inv_comments,
     }
     return render(request,'invoice_det.html',context)
+
+
+
+
+def change_status(request, id):
+    chellan = DeliveryChellan.objects.get(id=id)
+    chellan.status = 'Send'
+    chellan.save()
+    return redirect('delivery_challan_view', id=id)
+
+
+
+
+def delivery_challan_overview(request, id):
+    user = request.user
+    company = company_details.objects.get(user=user)
+    all_estimates = DeliveryChellan.objects.filter(user=user)
+    estimate = DeliveryChellan.objects.get(id=id)
+    items = ChallanItems.objects.filter(chellan=estimate)
+    chellan_comments = delivery_chellan_comments.objects.filter(chellan=estimate.id, user=user)
+    print(items)
+    context = {
+        'company': company,
+        'all_estimates': all_estimates,
+        'estimate': estimate,
+        'items': items,
+        'comments': chellan_comments,
+    }
+    return render(request, 'delivery_challan_overview.html', context)

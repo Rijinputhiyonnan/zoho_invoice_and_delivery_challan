@@ -734,6 +734,11 @@ urlpatterns = [
     #path('fetch_payment_terms/', views.fetch_payment_terms, name='fetch_payment_terms'),
     path('get_customer_details/', views.get_customer_details, name='get_customer_details'),
     path('invoice/overview/<int:id>', views.invoice_overview, name='invoice_overview'),
+    path('change_status/<int:id>/', views.change_status, name='change_status'),
+    path('delivery/challan/overview/<int:id>',views.delivery_challan_overview,name='delivery_challan_overview'),
+    
+    
+
 
 
     

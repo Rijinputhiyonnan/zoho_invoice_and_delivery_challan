@@ -1,207 +1,369 @@
-<!-- edit-Rijin-->
-
-
 {% extends 'base.html' %}
-{% load static %}
 {% block content %}
+{% load static %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
 
 <style>
+    * {
 
-.modal{
-      z-index: 9999;
-      overflow: scroll;
+        font-family: "Gill Sans", sans-serif;
+        color: white;
     }
 
-    /* width */
-    ::-webkit-scrollbar {
-        width: 10px;
+    .list {
+        background-color: rgb(29, 29, 29);
     }
 
-    /* Track */
-    ::-webkit-scrollbar-track {
-        background: rgb(252, 236, 217);
-
+    .overview {
+        background-color: black;
     }
 
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-        background: #888;
+    .searchbar,
+    .overview .bar {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        /* margin: 0 1rem; */
     }
 
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-        background: #555;
+    .searchbar .btn {
+        width: 5vw;
+        background-color: rgb(28, 117, 233);
+        font-size: 1vw;
+        color: rgb(255, 255, 255);
     }
-    #selected-area{
-        font-size: 20px;
+
+    .table .bold {
+        font-size: 1rem;
+        font-weight: 600;
     }
-    #tr_data:hover{
-    background-color: #757575;
-  }
-  .dropdown-item:hover{
-    color: rgb(226, 149, 5);
+
+    .table tr:hover {
+        background-color: #d3f3f2;
+    }
+
+    .overview .bar .btn {
+        background-color: rgb(238, 164, 27);
+        color: #ffff;
+        padding: .3rem .3rem;
+        align-items: center;
+    }
+
+    .overview .bar .btn:hover,
+    .overview .bar .btn i:hover {
+        background-color: rgb(182, 180, 178);
+        color: #000000;
+    }
+
+    .p-name {
+        height: 2.5vw;
+    }
+
+    #div-to-pdf .p-info label,
+    #div-to-pdf .bank-div label {
+        color: #ffffff;
+        font-size: .8rem;
+    }
+
+    #div-to-pdf .gen-info label {
+        color: #000000;
+        font-size: .8rem;
+    }
+
+    #div-to-pdf .gen-info .bold {
+        color: #000000;
+        font-size: 1rem;
+    }
+
+    .div-to-pdf div {
+        color: #000000;
+    }
+
+
+    #div-to-pdf .p-info .bold,
+    #div-to-pdf .bank-div .bold {
+        font-size: 1rem;
+        color: #ffffff;
+        /* font-weight: bold; */
+    }
+
+    .modal {
+        z-index: 9999;
+        overflow: scroll;
+    }
+
+    .right .dropdown-menu {
+        width: 30vw;
+    }
+
+    .modal-backdrop {
+        background-color: rgb(0, 0, 0);
+    }
+
+    .modal .table th {
+        color: #ffffff;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+        width: 50vw;
+        height: auto !important;
+        margin: auto;
+    }
+
+
+    
+.table-container {
+    display: inline-block;
+    overflow-x: auto; 
+    max-width: 100%; 
 }
 
-    
+
+.truncate-text {
+    max-width: 350px; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
+#mytable tr {
+    display: table-row;
+}
+
+
+.actoinacto .dropdown-item:hover {
+    background-color: #0baef4;
+}
 </style>
-
-
-
-<script>
-    function printForm() {
-        var selectedArea = document.getElementById("selected-area");
-
-        var printWindow = window.open('', 'PrintWindow', 'height=800,width=800');
-
-        // Check if selectedArea exists
-        if (selectedArea) {
-            printWindow.document.write('<html><head><title>Print Selected Area</title></head><body>' + selectedArea.innerHTML + '</body></html>');
-            printWindow.print();
-            printWindow.close();
-        } else {
-            alert("No content to print!");
-        }
-    }
-    
-
-</script>
-
-
-<div class="row">
-    <div class="col-sm-4">
-       
-        <div class="row">
-            <div class="col-md-6 col-lg-6 col-sm-12">
-                <h3 style="font-size:large;">All <br> Delivery Challan</h3>
+<section>
+    <div class="row p-3 ">
+        <div class="list col-4 col-lg-4 col-md-3  col-sm-2 py-3">
+            <div class="header">
+                <h5>ALL INVOICE LIST</h5>
             </div>
-
-            <div class="col-md-2 col-lg-2 col-sm-6"></div>
-
-            <div class="col-md-2 col-lg-2 col-sm-6">
-                <!-- <a href="{% url 'add_invoice' %}"><button class="btn btn-success" style="height: 35px;width: 100px;">+ New</button></a> -->
-            
-        </div>
-        <div class="row align-items-center">
-            <div class="col-7">
-                <input type="text" id="search" class="form-control text-dark mb-2 mt-2" placeholder="Search...">
-            </div>
-            <div class="col-2">
-                <a style="color: white; background-color: rgb(210, 132, 30);" class="btn" href="{% url 'create_delivery_chellan' %}">New</a>
-            </div>
-            <div class="col-2">
-                <div class="dropdown ms-1">
-                    <a class="dropdown-toggle btn btn-secondary text-dark" href="" data-toggle="dropdown">
-                        <i style="color: chocolate;" class="fa fa-filter"></i>
-                    </a>
-                    <div class="dropdown-menu m-1">
-                        <a class="dropdown-item" href="{% url 'delivery_challan_view' estimate.id %}">All</a>
-                        <a class="dropdown-item" href="{% url 'filter_by_draft_chellan_view' estimate.id %}">Draft</a>
-                        <a class="dropdown-item" href="{% url 'filter_by_sent_chellan_view' estimate.id %}">Sent</a>
-                    </div>
+            <div class="searchbar">
+                
+                <input class="form-control" type="text" placeholder="Search by Name" name="search" id="search"
+                    
+                    style="color: rgb(255, 255, 255);background: transparent;margin-right: 5px;">
+                <a class="btn btn-outline mx-1" style="color: #ccc;background-color: rgb(210, 132, 30);"  href="" data-bs-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false" role="button">
+                    <i class="fa fa-filter"></i>
+                </a>
+               
+                <div class="dropdown-menu m-1">
+                    <a class="dropdown-item" href="{% url 'delivery_challan_view' estimate.id %}">All</a>
+                    <a class="dropdown-item" href="{% url 'filter_by_draft_chellan_view' estimate.id %}">Draft</a>
+                    <a class="dropdown-item" href="{% url 'filter_by_sent_chellan_view' estimate.id %}">Sent</a>
                 </div>
+                
+                <a class="btn btn-outline mr-1" style="color: #ccc;background-color: rgb(210, 132, 30);" href="{% url 'add_prod' %}"><i class="fa fa-plus"></i></a>
             </div>
-        </div>
-        
-    </div>
-        <div class="row">
-            <div class="col-sm-12 col-lg-12 col-md-12">
-                <div class="pt-3 ps-2 " style="height: 600px; overflow-y: scroll;overflow-x: hidden;">
-                    <table class="text-white" style="width: 100%; ">
-                        {% for estimate in all_estimates %}
-                        <tbody id="table">
-                        <tr id="tr_data" class="clickable-row border-bottom" style="cursor: pointer;" data-href="{% url 'delivery_challan_view' estimate.id %}">
-                            <td>
+            <hr>
+            <table class="text-white" style="width: 100%;">
+                {% for v in inv_dat %}
+                <tbody id="table">
+                    <tr id="tr_data" class="border-bottom clickable-row" style="cursor: pointer;">
+                        <td>
+                            <a href="{% url 'invoice_overview' v.id %}" style="text-decoration: none; color: black;">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <h5 style="color: rgb(218, 143, 5);">{{estimate.customer_name}}</h5>
+                                        <h5 style="color: rgb(218, 143, 5);">{{ v.customer.customerName }}</h5>
                                     </div>
-                                    <div class="col-md-6 text-right" style="color: rgb(218, 143, 5);">&#x20B9;{{estimate.total}}.00</div>
+                                    <div class="col-md-6 text-right"  style="color: rgb(218, 143, 5);">&#x20B9;{{ v.grandtotal }}</div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <p>{{estimate.chellan_no}}</p>
+                                        <p>{{ v.invoice_no }}</p>
                                     </div>
-                                    <div class="col-md-3 text-left">
-                                    </div>
+                                    <div class="col-md-3 text-left"></div>
                                     <div class="col-md-6 text-right">
-                                        <p>{{estimate.status}}</p>
+                                        <p>{{ v.status }}</p>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
-    
+            
                                 </div>
-                            </td>
-                        </tr>
-                       
-                    </tbody>
-    
-                        {% endfor %}
-                    </table>
-                   
-                </div>
-            </div>
-       
-        </div>
-
-    </div>
-    <div class="col-sm-8">
-        <div class="row  mx-1 py-3" style="background-color: rgba(136, 136, 135, 0.5)">
-            <div class="col-sm-5 text-light" style="font-size: 2.5rem;">
-                {{estimate.chellan_no }}</div>
-            <div class="col-sm-7 text-white text-right my-auto" style="text-align: end;">
-                <div class="btn-group" role="group" aria-label="Basic example">
-                    <a href="{% url 'delivery_challan_edit' estimate.id %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;"  class="btn btn-sm m-1 text-white"
-                         data-toggle="tooltip" title="Edit">
-                        <i class="mdi mdi-pencil"></i></a>
-                    <a href="{% url 'render_challan_pdf' estimate.id %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white " 
-                        data-toggle="tooltip" title="PDF" id="pdf">
-                        <i class="mdi mdi-file-pdf-box"></i></a>
-                    <a href="" onclick="printForm()" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white btn_print" 
-                        data-toggle="tooltip" title="Print">
-                        <i class="mdi mdi-printer"></i></a>
-                    <a href="{% url 'emailattachment' %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
-                         data-toggle="tooltip" title="Email">
-                        <i class="mdi mdi-email"></i></a>
-                        
-                        {% if estimate.status == 'Draft'%}
-                        <a href="{% url 'change_status' id=estimate.id  %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
-                        data-toggle="tooltip" title="Change Status">
-                       <i class="fas fa-exchange-alt"></i></a>
-                       
-                        {% endif %}
-                           
-                        <div class="dropdown m-0 p-0 ms-1 mt-1" title="comments" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;">
-                            <a href=" " class=" fas fa-comment-dots dropdown-toggle  btn-sm text-white ms-1"  
-                                data-bs-toggle="dropdown" id="attachmentDropdown" aria-haspopup="true" aria-expanded="false"> 
                             </a>
-        
-                            <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-                                <a class="dropdown-item" style="cursor: pointer;" data-toggle="modal"
-                                 data-target="#cmnts"><i class="fa-solid fa fa-plus"></i>Add</a>
-                                <a class="dropdown-item" style="cursor: pointer;" data-toggle="modal"
-                                data-target="#cmt_list"><i class="fas fa-list"></i>&nbsp;View List</a>
-                                        
-                            </div>
-                        </div>
-                    
-                       
-                    
-                    {% if estimate.attachment != ""%}
-                    <a href="{{estimate.attachment.url}}"  style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn  m-1 text-white"
-                        data-toggle="tooltip" title="Download Attached File">
-                        <span class="mdi mdi-download"></span></a>
-                    {%endif%}
-                    
-                </div>
-               
-        
-                <a href="{% url 'deletechallan' estimate.id %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm text-white"  
-                onclick="return confirm('Do you want to Delete this Estimate?');"><i class="mdi mdi-delete"></i></a>
-            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+            
+
+
+            
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterLinks = document.querySelectorAll(".filter-link");
+        const tableRows = document.querySelectorAll(".clickable-row");
+
+        filterLinks.forEach(function (link) {
+            link.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                const status = link.getAttribute("data-status");
+
+                tableRows.forEach(function (row) {
+                    if (status === "all" || (status === "active" && row.getAttribute("data-status") === "True") || (status === "inactive" && row.getAttribute("data-status") === "False")) {
+                        row.style.display = "table-row";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+        });
+    });
+</script>
+            
         </div>
+        <div class="overview col-8 col-lg-8 col-md-9  col-sm-10 py-3">
+            <div id="overview">
+                <div class="p-name">
+                    <h3 class="px-2 pb-2" id="id1"> {{invoice.invoice_no}}</h3>
+                </div>
 
-<!-- .................................................................................. -->
+                <div class="bar pt-3">
+                    <div class="left">
+                       
+                        <a class="btn mx-1 fa fa-file-word" href="{% url 'delivery_challan_view' id=estimate.id %}"></a>
 
+
+                    
+                        <a class="btn mx-1, fa fa-eye"  href="#home"></a>
+                    </div>
+                   
+                    <div class="right">
+                        
+                        <a class="btn ml-1" href="{% url 'delivery_challan_edit' estimate.id %}" data-toggle="tooltip" title="Edit"><i
+                                class="fas fa-edit"></i></a>
+                               
+                        <a class="btn btn_print ml-1" href="" id="convertToPDFButton" data-toggle="tooltip"
+                            title="Pdf"><i class="mdi mdi-file-pdf"></i></a>
+                        <!-- onclick="generatePDF()" -->
+                        
+                        <script type="text/javascript">
+                            $(document).ready(function ($) {
+                                console.log('print');
+
+                                $(document).on('click', '.btn_print', function (event) {
+                                    console.log('print1');
+                                    event.preventDefault();
+                                    var customerName = "{{invoice.invoice_no }}";
+                                    var element = document.getElementById('div-to-pdf');
+                                    var opt =
+                                    {
+                                        margin: 1,
+                                        filename: 'invoice_'+ customerName + '.pdf',
+                                        image: { type: 'jpeg', quality: 0.98 },
+                                        html2canvas: { scale: 2 },
+                                        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                                    };
+                                    html2pdf().set(opt).from(element).save();
+
+                                });
+
+                            });
+                        </script>
+                        
+                        <a class="btn ml-1" href="" id="dd1" data-bs-toggle="dropdown" aria-haspopup="true"
+                            data-toggle="tooltip" title="Download Attachments" aria-expanded="false" role="button">
+                            <i class="fas fa-download"></i>
+                        </a>
+                        
+                        <div class="dropdown-menu">
+                            {% if attach %}
+                            <div class="table-container">
+                            <table class="table table-borderless">
+                                {% for a in attach %}
+                                {% for loan in loans %}
+                                <tr>
+                                    <td>{{forloop.counter}}.</td>
+                                    <td>
+                                        
+                                        <a href="{% url 'download_loan_attach' payroll_id=loan.payroll.id attachment_id=a.id %}">
+                                            <div class="truncate-text">{{ a.attach.name }}</div>
+                                        </a>
+                                    </td>
+                                    <td><a href="{% url 'delete_loan_attach' a.id %}"><i class="fas fa-trash"></i></a></td>
+                                </tr>
+                                {% endfor %}
+                                {% endfor %}
+                            </table>
+                        </div>
+                            {% else %}
+                            <div class="text-center">No Attachment found</div>
+                            {% endif %}
+                        </div>
+                        {% for loan in loans %}
+                        <a class="btn ml-1" href="{% url 'delete_loan' loan.id %}" data-toggle="tooltip" data-placement="top" title="Delete Loan"
+
+                            title="Delete" onclick="return confirm('Do you want to Delete this Employee loan details?');"><i class="fa fa-trash"></i></a>
+                            
+                        <a class="btn ml-1" href="" data-toggle="modal" data-target="#commentModal"
+                            data-toggle="tooltip" title="comment"><i class="far fa-comment"></i></a>
+                            <form  class="btn ml-1" method="post" action="{% url 'add_loan_attach' payroll_id=loan.payroll.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <label for="file-input"  data-toggle="tooltip" title="Upload Attachments">
+                                    <i class="fas fa-paperclip"></i>
+                                </label>
+                                <input id="file-input" type="file" name="file" style="display: none;" onchange="uploadFile()">
+                                <input type="hidden" id="payroll-id" value="{{ loan.payroll.id }}">
+                            </form>
+                            {% endfor %}
+                            
+
+                    <script>    
+                        function uploadFile() {
+                            const fileInput = document.getElementById("file-input");
+                            const file = fileInput.files[0];
+                            const csrfToken = getCookie('csrftoken');
+                            const payrollId = document.getElementById("payroll-id").value;
+                            
+                            const formData = new FormData();
+                            formData.append("file", file);
+                            
+                            fetch(`/add_loan_attach/${payrollId}/`, {
+                                method: "POST",
+                                headers: { 'X-CSRFToken': csrfToken },
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                // Handle the response from the server (if needed)
+                                const messageDiv = document.getElementById("upload-message");
+        if (data.message) {
+            // Display the success message
+            messageDiv.textContent = data.message;
+            messageDiv.style.color = "green";
+        }
+        messageDiv.style.display = "block";
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+                        
+                    </script>                    
+{%for loan in loans%}
+{% if loan.active %}
+                    <a class="btn ml-1" href="{% url 'loan_deactive' loan.id %}" id="sts">Active</a>
+                    {%else%}
+                    <a class="btn ml-1" href="{% url 'loan_active' loan.id %}" id="sts">Deactive</a>
+                    {%endif%}
+                    {%endfor%}
+                        
+                    </div>
+                </div>
+                <div id="upload-message" style="display:none;"></div>
+                <hr>
+                
+
+              
 <div id="div_estimate" class="mx-2 my-4 p-4 "
 style="background-color: rgba(124, 124, 123, 0.507); height: 800px;">
 <div id="selected-area">

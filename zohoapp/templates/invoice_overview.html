@@ -164,38 +164,40 @@
                 <a class="btn btn-outline mr-1" style="color: #ccc;background-color: rgb(210, 132, 30);" href="{% url 'add_prod' %}"><i class="fa fa-plus"></i></a>
             </div>
             <hr>
-            <table class="text-white" style="width: 100%; ">
+            <table class="text-white" style="width: 100%;">
                 {% for v in inv_dat %}
                 <tbody id="table">
-                <tr id="tr_data" class="border-bottom clickable-row" style="cursor: pointer;" >
-                    <td>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <!-- <h5 style="color: rgb(218, 143, 5);">{{v.customer.customerName}}</h5> -->
-                                <h5><a href="{% url 'detailedview' v.id %}" style="color: rgb(218, 143, 5);cursor: pointer;">{{v.customer.customerName}}</a></h5>
-                            </div>
-                            <div class="col-md-6 text-right" style="color: rgb(218, 143, 5);">&#x20B9;{{v.grandtotal}}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <p>{{v.invoice_no}}</p>
-                            </div>
-                            <div class="col-md-3 text-left">
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <p>{{v.status}}</p>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-      
-                        </div>
-                    </td>
-                </tr>
-               
-            </tbody>
-      
+                    <tr id="tr_data" class="border-bottom clickable-row" style="cursor: pointer;">
+                        <td>
+                            <a href="{% url 'invoice_overview' v.id %}" style="text-decoration: none; color: black;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5 style="color: rgb(218, 143, 5);">{{ v.customer.customerName }}</h5>
+                                    </div>
+                                    <div class="col-md-6 text-right"  style="color: rgb(218, 143, 5);">&#x20B9;{{ v.grandtotal }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <p>{{ v.invoice_no }}</p>
+                                    </div>
+                                    <div class="col-md-3 text-left"></div>
+                                    <div class="col-md-6 text-right">
+                                        <p>{{ v.status }}</p>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+            
+                                </div>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
                 {% endfor %}
             </table>
+            
+
+
+            
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const filterLinks = document.querySelectorAll(".filter-link");
@@ -223,7 +225,7 @@
         <div class="overview col-8 col-lg-8 col-md-9  col-sm-10 py-3">
             <div id="overview">
                 <div class="p-name">
-                    <h3 class="px-2 pb-2" id="id1">{{p.first_name}} {{p.last_name}}</h3>
+                    <h3 class="px-2 pb-2" id="id1"> {{invoice.invoice_no}}</h3>
                 </div>
 
                 <div class="bar pt-3">
@@ -252,14 +254,15 @@
                                 $(document).on('click', '.btn_print', function (event) {
                                     console.log('print1');
                                     event.preventDefault();
+                                    var customerName = "{{invoice.invoice_no }}";
                                     var element = document.getElementById('div-to-pdf');
                                     var opt =
                                     {
                                         margin: 1,
-                                        filename: 'employee loan' + '.pdf',
+                                        filename: 'invoice_'+ customerName + '.pdf',
                                         image: { type: 'jpeg', quality: 0.98 },
                                         html2canvas: { scale: 2 },
-                                        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                                        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
                                     };
                                     html2pdf().set(opt).from(element).save();
 
@@ -272,6 +275,7 @@
                             data-toggle="tooltip" title="Download Attachments" aria-expanded="false" role="button">
                             <i class="fas fa-download"></i>
                         </a>
+                        
                         <div class="dropdown-menu">
                             {% if attach %}
                             <div class="table-container">
@@ -360,7 +364,7 @@
                 <hr>
                 
 
-                <div class="div-to-pdf row" id="div-to-pdf" style="height: 100%;background-color: burlywood">
+                <div class="div-to-pdf row" id="div-to-pdf" style="height: auto;background-color: burlywood">
                     <div class="bar pt-2 pb-4">
                         <div class="left" style="font-size: 1rem;font-weight: 600;"> {{p.designation}}
                             <h6 class="text-dark">Client :</h6>
@@ -377,8 +381,8 @@
                     </div>
                     <hr>
                     
-                       
-                        <table class="table mt-2 " style="border-color: black;">
+                   
+                        <table class="table  " style="border-color: black;">
                             <thead >
                                 <tr>
                                     <th style="color: black;font-weight: bold;">#</th>
@@ -412,8 +416,8 @@
                                 
                             </tbody>
                         </table>
-                            
-                                <table class="table  mt-2  ">
+                        <div class="gen-info col-6 " style="padding-left: 3rem;">
+                                <table class="table ">
                                     <tr>
                                         <td class="text-dark" style="font-weight: bold;">Sub-Total:</td>
                                         <td class="text-right" style="color: black;font-weight: bold; text-align: end;" style="">{{ invoice.subtotal|floatformat:1 }}</td>
@@ -482,22 +486,112 @@
 
                                    
                                 </table>
-                                <div class="row mt-3">
-                                    <div class="col-sm-6" style="text-align: justify;">
-                                        <p class="m-0 font-weight-bold" style="color:black">Customer Note : {{invoice.cxnote}}</p>
-                                        
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="m-0 font-weight-bold" style="color:black">Customer Note:</p>
+                                        <div class="col-6">
+                                        <p class="m-0 font-weight-bold" style="color:black "> {{invoice.cxnote}}</p>
+                                    </div>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
-                                    <div class="col-sm-6" style="text-align: justify;">
-                                        <p class="m-0 font-weight-bold" style="color:black">Terms & Conditions : {{invoice.terms_condition}}</p>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="m-0 font-weight-bold" style="color:black">Terms & Conditions: {{invoice.terms_condition}}</p>
                                         <p style="color:black"></p>
                                     </div>
                                 </div>
                     
-                            
-                            
-                <!-- </div> -->
+                            </div>    <div class="p-info col-6 my-2" style="height: auto;">
+                                <div class="card" style="background-color: rgb(110, 61, 46); padding:0.9rem;">       
+                                    {% for customer in customers %}
+                                    <div class="row">
+                                        
+                                        <div class="col-4"><label for="">Place of Supply:</label></div>
+                                        <div class="col-8">
+                                            <p>{{ customer.placeofsupply }}</p>
+                                            {% endfor%}
+                                    </div>
+                                    <hr>
+
+                                    <div class="row my-2"><h4>Invoice Details</h4></div>
+                                    
+                                    <div class="row">
+                                        
+                                        <div class="col-6"><label for="">Invoice Date:</label></div>
+                                        <div class="col-6">
+                                            <p>{{ invoice.inv_date|date:"d/m/Y" }}</p>
+                                    </div>
+
+
+                                    <div class="row">
+                                        
+                                        <div class="col-6"><label for="">Due Date:</label></div>
+                                        <div class="col-6">
+                                            <p>{{ invoice.due_date|date:"d/m/Y" }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row my-2"><h4>Payment Details</h4></div>
+                                    
+                                    <div class="row">
+                                        
+                                        <div class="col-6"><label for="">Payment Method:</label></div>
+
+                                        <div class="col-6 text-uppercase" >
+                                            {% for payment in payment %}
+                                            <p7>{{ payment.payment_method }}</p7>
+                                           
+                                    </div>
+                                   
+{% if payment.payment_method|lower == 'cash' %}
+<div></div>
+{% elif payment.payment_method|lower == 'upi' %}
+                                    <div class="row">
+                                        
+                                        <div class="col-6"><label for="">UPI ID:</label></div>
+                                        <div class="col-6 " >
+                                            <p >{{ payment.upi_id }}</p>
+
+                                        </div>
+                                    </div>
+
+                                    {% elif payment.payment_method|lower == 'cheque' %}
+                                    
+                                    <div class="row">
+                                        
+                                        <div class="col-3"><label for="">Cheque No:</label></div>
+                                        <div class="col-9">
+                                            <p>{{ payment.cheque_number }}</p>
+                                        </div>
+                                    </div>
+
+                                    
+                                    {% elif payment.payment_method|lower == 'bank' %}
+                                    
+                                    <div class="row">
+                                        
+                                        <div class="col-3"><label for="">Bank Name:</label></div>
+                                        <div class="col-9">
+                                            {% for bank in bank %}
+                                            <p>{{ bank.name }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor%}
+                                    <hr>
+                                
+                                           
+
+                                </div>     
+                            </div>
+                        </div>     
+                                </div>
+                    
+                            </div>  
+                           
+                </div>
+
+                
             </div>
             
         </div>
