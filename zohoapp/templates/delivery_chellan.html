@@ -133,12 +133,12 @@
                 <tbody>
                     {% for v in view %}
                     <tr class="clickable-row" style="cursor: pointer;">
-                        <td class="text-light"><a href="{% url 'delivery_challan_view' v.id %}">{{v.chellan_date | date:'d-m-Y'}}</a></td>
-                        <td class="text-light"><a href="{% url 'delivery_challan_view' v.id %}" style="color: rgb(230, 152, 8);">{{v.chellan_no}}</a></td>
-                        <td class="text-light"><a href="{% url 'delivery_challan_view' v.id %}">{{v.customer_name}}</a></td>
-                        <td class="text-light"><a href="{% url 'delivery_challan_view' v.id %}">{{v.customer_mailid}}</a></td>
-                        <td class="text-light"><a href="{% url 'delivery_challan_view' v.id %}">{{v.total}}</a></td>
-                        <td class="text-light"><a href="{% url 'delivery_challan_view' v.id %}">{{v.status}}</a></td>
+                        <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.chellan_date | date:'d-m-Y'}}</a></td>
+                        <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}" style="color: rgb(230, 152, 8);">{{v.chellan_no}}</a></td>
+                        <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.customer_name}}</a></td>
+                        <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.customer_mailid}}</a></td>
+                        <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.total}}</a></td>
+                        <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.status}}</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

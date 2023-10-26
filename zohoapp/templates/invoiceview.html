@@ -49,34 +49,41 @@
          
         </div> -->
       </div> 
-      <div class="row mt-2">
+      <div class="row pt-3 pb-5">
         <div class="col-sm-12 col-md-5 col-lg-5">
-          <input type="text" id="search" class="form-control bg-light text-dark" placeholder="Search.." autocomplete="off">
+            <input type="text" id="search" class="form-control bg-light text-dark" placeholder="Search.." autocomplete="off">
         </div>
-        <div class="col-sm-6 col-md-4 col-lg-4"></div>
-        <div class="col-sm-1 col-md-1 col-lg-1">
-          <div class="col-md-1 ">
-            <div class="dropdown " >
-              <a class="dropdown-toggle btn btn-secondary text-dark pt-2 pb-2" href="" data-toggle="dropdown">
-                <i style="color: chocolate;" class="fa fa-filter"></i>
-              </a>
-              <div class="dropdown-menu m-1">
-                <a class="dropdown-item" href="{% url 'invoiceview' %}">All</a>
-  
-                <a class="dropdown-item" href="{% url 'filter_invoice_draft' %}">Draft</a>
-                <a class="dropdown-item" href="{% url 'filter_invoice_sent' %}">Send</a>
-              </div>
+        <div class="col-sm-3 col-md-2 col-lg-2 ">
+            <button class="fa fa-sort btn  dropdown-toggle-split mr-1 pt-2" data-toggle="dropdown" style="color: white; background-color: rgb(210, 132, 30); height: 35px;"></button>
+            <div class="dropdown-menu m-1">
+                <a class="dropdown-item" href="#" id="sort-challan">
+                    <i class="fa fa-sort"></i> Sort by Challan Number
+                </a>
+                <a class="dropdown-item" href="#" id="sort-customer">
+                    <i class="fa fa-sort"></i> Sort by Customer Name
+                </a>
             </div>
-  
-            
-          </a>
-          </div>
         </div>
-        <div class="col-sm-5 col-md-2 col-lg-2">
-          <a  style="color: white; background-color: rgb(210, 132, 30);height:35px;" class="btn mr-1 pt-2" href="{% url 'add_prod' %}"><i
-            class="fa-solid fa fa-plus " ></i>New</a>
+        <div class="col-sm-3 col-md-3 col-lg-3 ml-auto">
+            <div class="dropdown d-inline-block">
+                <a class="btn btn-secondary text-dark pt-2 pb-2" href="#" data-toggle="dropdown">
+                    <i style="color: chocolate;" class="fa fa-filter"></i>
+                </a>
+                <div class="dropdown-menu m-1">
+                    <a class="dropdown-item" href="{% url 'invoiceview' %}">All</a>
+                    <a class="dropdown-item" href="{% url 'filter_invoice_draft' %}">Draft</a>
+                    <a class="dropdown-item" href="{% url 'filter_invoice_sent' %}">Send</a>
+                </div>
+            </div>
+            <div class="btn-group d-inline-block" style="color: white; background-color: rgb(210, 132, 30); height: 35px;">
+                <a class="btn mr-1 pt-2" href="{% url 'add_prod' %}">
+                    <i class="fa-solid fa fa-plus"></i> 
+                </a>
+            </div>
         </div>
-      </div>  
+    </div>  
+    
+      
 <div class="row">
 
 <div class="col-sm-12 col-md-12 col-lg-12 mt-5">
@@ -96,7 +103,7 @@
     <tbody id="table">
       {% for v in invoice %}
 
-      <tr id="tr_data" style="cursor: pointer;" class="clickable-row" data-href="{% url 'detailedview' v.id %}">
+      <tr id="tr_data" style="cursor: pointer;" class="clickable-row" data-href="{% url 'invoice_overview' v.id %}">
         <!-- onclick="location.href ='{% url 'detailedview' v.id %}' " -->
         <td style="color: rgb(226, 150, 9);">{{v.invoice_no}}</td>
          <td > {{v.inv_date}}</td>
