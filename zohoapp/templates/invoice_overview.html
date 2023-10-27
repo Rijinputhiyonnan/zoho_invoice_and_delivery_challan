@@ -488,9 +488,9 @@
                                 </table>
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="m-0 font-weight-bold" style="color:black">Customer Note:</p>
+                                        <p class="m-0 font-weight-bold" style="color:black">Customer Note: {{invoice.cxnote}}</p>
                                         <div class="col-6">
-                                        <p class="m-0 font-weight-bold" style="color:black "> {{invoice.cxnote}}</p>
+                                        <label> <p class="m-0 font-weight-bold" style="color:black "> </p></label>
                                     </div>
                                     </div>
                                 </div>
@@ -519,7 +519,7 @@
                                         
                                         <div class="col-6"><label for="">Invoice Date:</label></div>
                                         <div class="col-6">
-                                            <p>{{ invoice.inv_date|date:"d/m/Y" }}</p>
+                                        <label>  <p>{{ invoice.inv_date|date:"d/m/Y" }}</p><label>
                                     </div>
 
 
@@ -527,10 +527,10 @@
                                         
                                         <div class="col-6"><label for="">Due Date:</label></div>
                                         <div class="col-6">
-                                            <p>{{ invoice.due_date|date:"d/m/Y" }}</p>
+                                        <label>  <p>{{ invoice.due_date|date:"d/m/Y" }}</p></label>
                                         </div>
                                     </div>
-                                    <div class="row my-2"><h4>Payment Details</h4></div>
+                                    <div class="row my-2"><label><h4>Payment Details</h4></label></div>
                                     
                                     <div class="row">
                                         
@@ -538,7 +538,7 @@
 
                                         <div class="col-6 text-uppercase" >
                                             {% for payment in payment %}
-                                            <p7>{{ payment.payment_method }}</p7>
+                                        <label>  <p>{{ payment.payment_method }}</p></label>
                                            
                                     </div>
                                    
@@ -549,7 +549,7 @@
                                         
                                         <div class="col-6"><label for="">UPI ID:</label></div>
                                         <div class="col-6 " >
-                                            <p >{{ payment.upi_id }}</p>
+                                        <label>  <p >{{ payment.upi_id }}</p></label>
 
                                         </div>
                                     </div>
@@ -560,7 +560,7 @@
                                         
                                         <div class="col-3"><label for="">Cheque No:</label></div>
                                         <div class="col-9">
-                                            <p>{{ payment.cheque_number }}</p>
+                                        <label>  <p>{{ payment.cheque_number }}</p></label>
                                         </div>
                                     </div>
 
@@ -569,16 +569,16 @@
                                     
                                     <div class="row">
                                         
-                                        <div class="col-3"><label for="">Bank Name:</label></div>
-                                        <div class="col-9">
-                                            {% for bank in bank %}
-                                            <p>{{ bank.name }}</p>
-                                            {% endfor %}
+                                        <div class="col-6"><label for="">Bank Name:</label></div>
+                                        <div class="col-6">
+                                           
+                                            <label for="">  <p>{{ payment.bank.name }}</p></label>
+                                           
                                         </div>
                                     </div>
                                     {% endif %}
                                     {% endfor%}
-                                    <hr>
+                                  
                                 
                                            
 

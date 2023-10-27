@@ -34,56 +34,76 @@
   a{
     color: rgb(240, 239, 238);
   }
+
+  
+  .btn{
+    color: rgb(218, 164, 48);
+    outline-color: azure;
+    border: 2px solid rgb(25, 91, 145);
+}
+.btn:hover{
+    color: darkslategray;
+    background-color: lightblue;
+    outline: none;
+}
 </style>
 
-  <div class="row">
-    <div class="col-sm-12 " >
-      <h1>
-        Delivery Challan
-      </h1>
 
-    </div>
-  </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-  <div class="row pt-3 pb-5">
-    <div class="col-sm-12 col-md-5 col-lg-5">
-      <input type="text" id="search" class="form-control bg-light text-dark" placeholder="Search.." autocomplete="off">
-    </div>
-    <div class="col-sm-3 col-md-2 col-lg-2 ">
-      <button class="fa fa-sort btn dropdown-toggle dropdown-toggle-split mr-1 pt-2" data-toggle="dropdown" style="color: white; background-color: rgb(210, 132, 30); height: 35px;"></button>
-      <div class="dropdown-menu m-1">
-        <a class="dropdown-item" href="#" id="sort-challan">
-          <i class="fa fa-sort"></i> Sort by Challan Number
-        </a>
-        <a class="dropdown-item" href="#" id="sort-customer">
-          <i class="fa fa-sort"></i> Sort by Customer Name
-        </a>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-2 col-lg-2 ">
-      <div class="dropdown">
-        <a class="dropdown-toggle btn btn-secondary text-dark pt-2 pb-2" href="#" data-toggle="dropdown">
-          <i style="color: chocolate;" class="fa fa-filter"></i>
-        </a>
-        <div class="dropdown-menu m-1">
-          <a class="dropdown-item" href="{% url 'delivery_chellan_home' %}">All</a>
-          <a class "dropdown-item" href="{% url 'filter_delivery_draft' %}">Draft</a>
-          <a class="dropdown-item" href="{% url 'filter_delivery_sent' %}">Sent</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-3 col-md-2 col-lg-2">
-      <div class="btn-group" style="color: white; background-color: rgb(210, 132, 30); height: 35px;">
-        <a class="btn mr-1 pt-2" href="{% url 'create_delivery_chellan' %}">
-          <i class="fa-solid fa fa-plus"></i> New
-        </a>
-      </div>
-    </div>
-  </div>
+  <section >
+    <div class="row ">
+      <div class="col-md-12 " style="width: 100%;">
+          <div class="row mx-2">
+              <div class="col-md-6"><a class="text-white" style="font-size: 2rem;">All Delivery Challan</a></div>
+          </div> 
+      </div> 
+      <div class="card radius-15 mb-5">
+        <div class="card-body">
+            <div class="row">
+                <div class=" col-md-3">
+                    <input type="text" id="search" placeholder="Search..." class="form-control text-light bg-dark px-3 py-2" autocomplete="off">
+                </div>
+                <div class="col-md-3">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-warning  px-3 py-2" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sort-amount-up"></i>
+                        Sort
+                        </button>
+                        <div class="dropdown-menu ">
+                          <a class="dropdown-item" href="#" id="sort-challan">
+                            <i class="fa fa-sort"></i> Sort by Challan Number
+                        </a>
+                        <a class="dropdown-item" href="#" id="sort-customer">
+                            <i class="fa fa-sort"></i> Sort by Customer Name
+                        </a>
+            
+            
+                        </div>
+                    </div>
+                </div>
+                    
+                    
   
+                <div class="col-md-3"></div>
+                <div class="col-md-3">
+                    
+                    <a class="btn text-center px-3 py-2  btn-outline-warning " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                    role="button"><i class="fa fa-filter mx-3"></i>
+                    </a>
+                    <div class="dropdown-menu ">
+                      <a class="dropdown-item" href="{% url 'delivery_chellan_home' %}">All</a>
+          <a class="dropdown-item" href="{% url 'filter_delivery_draft' %}">Draft</a>
+          <a class="dropdown-item" href="{% url 'filter_delivery_sent' %}">Sent</a>
+              
+                    </div>
+                    <a href="{% url   'create_delivery_chellan' %}" class="btn fa fa-plus text-right px-3 py-2  btn-outline-warning" role="button">
+                        <span class="mt-2">&nbsp;&nbsp; NEW</span>
+                    </a>
+                </div>
+            </div>
+            <hr>
 
   
   <!-- <div class="row mt-4">
