@@ -738,6 +738,14 @@ urlpatterns = [
     path('delivery/challan/overview/<int:id>',views.delivery_challan_overview,name='delivery_challan_overview'),
     
     
+    path('filter_invoice_overview_draft/<int:id>',views.filter_invoice_overview_draft,name='filter_invoice_overview_draft'),
+    path('filter_invoice_overview_send/<int:id>',views.filter_invoice_overview_send,name='filter_invoice_overview_send'),
+    
+    path('invoice/slip/<int:id>',views.invoice_slip,name='invoice_slip'),
+    
+    path('change_status_invoice/<int:id>/', views.change_status_invoice, name='change_status_invoice'),
+    
+    
 
 
 

@@ -155,10 +155,10 @@
                 </a>
                
                 <div class="dropdown-menu actoinacto" >
-                    <a class="dropdown-item" href="{% url 'detailedview' invoice.id %}">All</a>
+                    <a class="dropdown-item" href="{% url 'invoice_overview' invoice.id %}">All</a>
   
-                    <a class="dropdown-item" href="{% url 'filter_inv_det_draft' invoice.id %}">Draft</a>
-                    <a class="dropdown-item" href="{% url 'filter_inv_det_send' invoice.id %}">Send</a>
+                    <a class="dropdown-item" href="{% url 'filter_invoice_overview_draft' invoice.id %}">Draft</a>
+                    <a class="dropdown-item" href="{% url 'filter_invoice_overview_send' invoice.id %}">Send</a>
                 </div>
                 
                 <a class="btn btn-outline mr-1" style="color: #ccc;background-color: rgb(210, 132, 30);" href="{% url 'add_prod' %}"><i class="fa fa-plus"></i></a>
@@ -220,6 +220,26 @@
         });
     });
 </script>
+
+
+<script>
+    function printForm() {
+        var selectedArea = document.getElementById("selected-area");
+
+        var printWindow = window.open('', 'PrintWindow', 'height=800,width=800');
+
+        // Check if selectedArea exists
+        if (selectedArea) {
+            printWindow.document.write('<html><head><title>Print Selected Area</title></head><body>' + selectedArea.innerHTML + '</body></html>');
+            printWindow.print();
+            printWindow.close();
+        } else {
+            alert("No content to print!");
+        }
+    }
+    
+
+</script>
             
         </div>
         <div class="overview col-8 col-lg-8 col-md-9  col-sm-10 py-3">
@@ -236,12 +256,45 @@
 
                     
                         <a class="btn mx-1, fa fa-eye"  href="#home"></a>
+                        <a class="btn mx-1, fas fa-file-invoice"  href="{% url 'invoice_slip' id=invoice.id %}"></a>
                     </div>
                    
                     <div class="right">
                         
                         <a class="btn ml-1" href="{% url 'edited_prod' id=invoice.id %}" data-toggle="tooltip" title="Edit"><i
                                 class="fas fa-edit"></i></a>
+
+                                <a href="" onclick="printForm()" style="border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white btn_print" 
+                                data-toggle="tooltip" title="Print">
+                                <i class="mdi mdi-printer"></i></a>
+        
+                                        {% if invoice.status == 'Draft'%}
+                                        <a href="{% url 'change_status_invoice' id=invoice.id  %}" style="border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
+                                        data-toggle="tooltip" title="Change Status">
+                                       <i class="fas fa-exchange-alt"></i></a>
+                                       
+                                        {% endif %}
+                                        
+                                   
+                                    <a href="{% url 'emailattachment' %}" class="btn btn-sm text-white ms-1"
+                                    style="border-radius: 5px;height: 1.7rem;" data-toggle="tooltip" title="Email">
+                                        <i class="fas fa-envelope"></i></a>
+                                  
+                                        
+                                          
+                                        <div class="dropdown btn ml-1 " title="comments" style="height: 1.7rem;">
+                                            <a href=" " class=" fas fa-comment-dots  btn-sm text-white ms-1"  
+                                                data-bs-toggle="dropdown" id="attachmentDropdown" aria-haspopup="true" aria-expanded="false"> 
+                                            </a>
+                          
+                                            <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
+                                                <a class="dropdown-item" style="cursor: pointer;" data-toggle="modal"
+                                                 data-target="#cmnts"><i class="fa-solid fa fa-plus"></i>Add</a>
+                                                <a class="dropdown-item" style="cursor: pointer;" data-toggle="modal"
+                                                data-target="#cmt_list"><i class="fas fa-list"></i>&nbsp;View List</a>
+                                                        
+                                            </div>
+                                        </div>
                                
                         <a class="btn btn_print ml-1" href="" id="convertToPDFButton" data-toggle="tooltip"
                             title="Pdf"><i class="mdi mdi-file-pdf"></i></a>
@@ -271,10 +324,13 @@
                             });
                         </script>
                         
-                        <a class="btn ml-1" href="" id="dd1" data-bs-toggle="dropdown" aria-haspopup="true"
-                            data-toggle="tooltip" title="Download Attachments" aria-expanded="false" role="button">
-                            <i class="fas fa-download"></i>
-                        </a>
+                        {% if invoice.file != "" %}
+                    <a href="{{invoice.file.url}}"  style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn ms-1 text-white"
+                        data-toggle="tooltip" title="Download Attached File">
+                        <span class="mdi mdi-download"></span></a>
+                    {% endif %}
+                        <a href="{% url 'dele' invoice.id %}" class="btn btn-sm text-white" title="Delete" style="border-radius: 5px;height: 1.7rem;" 
+          onclick="return confirm('Do you want to Delete this Invoice?');"><i class="fas fa-trash-alt"></i></a>
                         
                         <div class="dropdown-menu">
                             {% if attach %}
@@ -363,7 +419,7 @@
                 <div id="upload-message" style="display:none;"></div>
                 <hr>
                 
-
+                <div id="selected-area">
                 <div class="div-to-pdf row" id="div-to-pdf" style="height: auto;background-color: burlywood">
                     <div class="bar pt-2 pb-4">
                         <div class="left" style="font-size: 1rem;font-weight: 600;"> {{p.designation}}

@@ -75,6 +75,62 @@ crossorigin="anonymous"></script>
     }
 </style>
 
+<script>
+  window.onload=function(){        
+        var ste="{{ comp }}";
+        var plc="{{ cust }}";
+        var x=ste.toLowerCase(); 
+
+        var inputstring=plc;
+        const parts = inputstring.split("-");   
+        var extractedWord = parts[1];  
+        var extractedWord1= extractedWord.trim();
+        var y=extractedWord1.toLowerCase();  
+        document.getElementById("cus_place").value=y;
+        document.getElementById("state").value=x;
+        document.getElementById("cx_mail").value="{{cust_email}}";
+        document.getElementById("customer_id").value="{{ custo_id }}";
+        var ig="{{ i.igst }}";
+        var cg="{{ i.cgst }}";
+        var sg="{{ i.sgst }}";
+
+      if ( x == y )
+                              {
+                                 document.getElementById("item_table").style.display="block"
+                                 document.getElementById("item_tablee").style.display="none"
+                                 
+                                 document.getElementById("add-row").style.display="block"
+                                 document.getElementById("add-roww").style.display="none"
+                                  
+                      
+                              }
+                              else
+                              {
+                                 document.getElementById("item_table").style.display="none"
+                                 document.getElementById("item_tablee").style.display="block"
+                                 
+                                 document.getElementById("add-row").style.display="none"
+                                 document.getElementById("add-roww").style.display="block"
+                              }
+                  
+      if ( ig != 0 ){
+        document.getElementById("tr_igst").style.display = "table-row";
+            document.getElementById("tr_sgst").style.display = "none";
+            document.getElementById("tr_cgst").style.display = "none";
+
+      }
+      else{
+
+        document.getElementById("tr_cgst").style.display = "table-row";
+            document.getElementById("tr_sgst").style.display = "table-row";
+            document.getElementById("tr_igst").style.display = "none";
+      }
+                  
+  }
+</script>
+
+
+
 <section >
     <div >
      
@@ -92,10 +148,9 @@ crossorigin="anonymous"></script>
     <form method="post" action="{% url 'edited_prod' i.id %}" enctype="multipart/form-data" class="">
         {% csrf_token %}
         <input class="hidden"  id="state1" name="hidden_state1" value="{{ company.state }}">
-                <input class="hidden"  id="state" name="hidden_state" value="">
-
-                <input class="hidden" type="text" name="samp" id="samp" >
-                <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
+    <input class="hidden"  id="state" name="hidden_state" value="">
+    <input class="hidden" type="text" name="samp" id="samp" >
+    <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
         <div class="row mb-4 border-top pt-5">
             <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
             <div class="col-sm-6">
@@ -112,8 +167,7 @@ crossorigin="anonymous"></script>
             
             </div>
             <div class="col-sm-4">
-              <a  href="" data-toggle="modal" data-target="#newcustomer"><i class="fa-solid  fa fa-plus p-2 rounded"
-                  style="color: white; background-color: rgb(210, 132, 30);height: 37px;"></i></a>
+             
           </div>
         </div>
      
@@ -276,11 +330,9 @@ crossorigin="anonymous"></script>
   <div class="col-sm-6">
     
       <select class="form-control text-black" name="payment_method" id="payment_method" >
-        {% for invp in invp %}
-        <option value="{{invp.payment_method}}">{{ invp.payment_method|upper }}
-        </option>
-        {% endfor %}
-        
+       
+        <option value="">Select
+        </option> 
           <option value="cash">Cash</option>
           <option value="cheque">Cheque</option>
           <option value="upi">UPI</option>
@@ -301,7 +353,7 @@ crossorigin="anonymous"></script>
   <label for="cheque_number" class="col-sm-2 " >Cheque Number</label>
   <div class="col-sm-6">
    
-    <input style="color: black;" type="text" class="form-control text-dark" name="cheque_number" id="cheque_number"  {% for invp in invp %} value="{{invp.cheque_number}}"   {% endfor %}>
+    <input style="color: black;" type="text" class="form-control text-dark" name="cheque_number" id="cheque_number"  value="{{invp.cheque_number}}"   >
    
   </div>
 </div>
@@ -311,7 +363,7 @@ crossorigin="anonymous"></script>
   <label for="upi_id" class="col-sm-2 col-form-label" >UPI ID</label>
   <div class="col-sm-6">
    
-    <input style="color: black;" type="text" class="form-control text-dark" name="upi_id" id="upi_id" {% for invp in invp %} value="{{invp.upi_id}}"  {% endfor %}>
+    <input style="color: black;" type="text" class="form-control text-dark" name="upi_id" id="upi_id"  value="{{invp.upi_id}}"  >
     
   </div>
 </div>
@@ -322,7 +374,7 @@ crossorigin="anonymous"></script>
   <div class="col-sm-6">
     <select class="form-control text-dark" name="bank_name" id="bank_name">
       {% for bank in banks %}
-      <option style="color: black;" value="{{ bank.id }}"> {% for invp in invp %}{{ invp.bank.name }}  {% endfor %}</option>
+      <option style="color: black;" value="{{ bank.id }}">{{ invp.bank.name }} </option>
      
         <option style="color: black;" value="{{ bank.id }}">{{ bank.name }}</option>
       {% endfor %}
@@ -493,7 +545,7 @@ crossorigin="anonymous"></script>
       </td>
 
       <td class='text-right'><input type='number' id='discount{{forloop.counter}}'
-        class='form-control bg-transparent border-0 text-light text-right discount' name='discount[]'
+        class='form-control bg-transparent border-0 text-light text-right discount' name='desc[]'
         value="{{k.discount}}">
       </td>
 
@@ -637,7 +689,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
                           value="{{k.rate}}" >
                   </td>
                   <td class='text-right'><input type='number' id='discountt{{forloop.counter}}'
-                    class='form-control bg-transparent border-0 text-light text-right discountt' name='discountt[]'
+                    class='form-control bg-transparent border-0 text-light text-right discountt' name='descc[]'
                     value="{{k.discount}}" >
             </td>
                   <td class='text-right'> <select name="taxx[]" id='taxx{{forloop.counter}}' class='form-control bg-transparent border-0 text-light text-right taxx'  >
@@ -2699,7 +2751,7 @@ modalEl.addEventListener('click', (event) => {
                         class='form-control border-0 bg-transparent  text-white text-right rate' name="rate[]" value='0.00'
                         ></td>
                   <td class='text-right'><input type='number' id='discount${RowCount}'
-                        class='form_control bg-transparent border-0 text-light text-right discount' name="discount[]" value='0.00' style="width:85%">
+                        class='form_control bg-transparent border-0 text-light text-right discount' name="desc[]" value='0.00' style="width:85%">
                 </td>
                 <td class='text-right'> <select name="tax[]" id='tax${RowCount}'
                         class="form-control  bg-transparent  text-white text-right border-0 tax">
@@ -2779,7 +2831,7 @@ modalEl.addEventListener('click', (event) => {
                      class='form-control border-0 bg-transparent  text-white text-right ratee' name='ratee[]' value='0.00'>
                 </td>
                 <td class='text-right'><input type='number' id='discountt${RowCountt}'
-                        class='form_control bg-transparent border-0 text-light text-right discountt' name='discountt[]' value='0.00' style="width:85%">
+                        class='form_control bg-transparent border-0 text-light text-right discountt' name='descc[]' value='0.00' style="width:85%">
                 </td>
              <td class='text-right'> <select name='taxx[]' id='taxx${RowCountt}'
                      class="form-control  bg-transparent  text-white text-right border-0 taxx">

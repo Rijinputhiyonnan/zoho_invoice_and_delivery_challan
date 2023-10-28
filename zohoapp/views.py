@@ -4516,78 +4516,9 @@ def customer_me(request):
             return redirect("create_recur")
         return redirect("/")
         
+
         
-@login_required(login_url='login')
-def recurbills_customer(request):
-    
-    company = company_details.objects.get(user = request.user)
 
-    if request.method=='POST':
-
-        # title=request.POST.get('title')
-        # first_name=request.POST.get('firstname')
-        # last_name=request.POST.get('lastname')
-        # comp=request.POST.get('company_name')
-        cust_type = request.POST.get('customer_type')
-        name = request.POST.get('display_name')
-        comp_name = request.POST.get('company_name')
-        email=request.POST.get('email')
-        website=request.POST.get('website')
-        w_mobile=request.POST.get('work_mobile')
-        p_mobile=request.POST.get('pers_mobile')
-        fb = request.POST.get('facebook')
-        twitter = request.POST.get('twitter')
-        skype = request.POST.get('skype')
-        desg = request.POST.get('desg')
-        dpt = request.POST.get('dpt')
-        gsttype=request.POST.get('gsttype')
-        # gstin=request.POST.get('gstin')
-        # panno=request.POST.get('panno')
-        supply=request.POST.get('placeofsupply')
-        tax = request.POST.get('tax_preference')
-        currency=request.POST.get('currency')
-        balance=request.POST.get('openingbalance')
-        payment=request.POST.get('paymentterms')
-        street1=request.POST.get('street1')
-        street2=request.POST.get('street2')
-        city=request.POST.get('city')
-        state=request.POST.get('state')
-        pincode=request.POST.get('pincode')
-        country=request.POST.get('country')
-        fax=request.POST.get('fax')
-        phone=request.POST.get('phone')
-        # shipstreet1=request.POST.get('shipstreet1')
-        # shipstreet2=request.POST.get('shipstreet2')
-        # shipcity=request.POST.get('shipcity')
-        # shipstate=request.POST.get('shipstate')
-        # shippincode=request.POST.get('shippincode')
-        # shipcountry=request.POST.get('shipcountry')
-        # shipfax=request.POST.get('shipfax')
-        # shipphone=request.POST.get('shipphone')
-
-        u = User.objects.get(id = request.user.id)
-
-        cust = customer(customerName = name,customerType = cust_type, companyName= comp_name, GSTTreatment=gsttype, 
-                        customerWorkPhone = w_mobile,customerMobile = p_mobile, customerEmail=email,skype = skype,Facebook = fb, 
-                        Twitter = twitter,placeofsupply=supply,Taxpreference = tax,currency=currency, website=website, 
-                        designation = desg, department = dpt,OpeningBalance=balance,Address1=street1,Address2=street2, city=city, 
-                        state=state, PaymentTerms=payment,zipcode=pincode,country=country,  fax = fax,  phone1 = phone,user = u)
-        cust.save()
-
-        return HttpResponse({"message": "success"})
-        
-        
-@login_required(login_url='login')
-def customer_dropdown(request):
-    user = User.objects.get(id=request.user.id)
-    options = {}
-    option_objects = customer.objects.filter(user=user)
-    for option in option_objects:
-        display_name = option.customerName
-        # options[option.id] = [option.id , option.customerName]
-        options[option.id] = [display_name, f"{display_name}"]
-    return JsonResponse(options)
-    
     
 def entr_custmrA(request):
     if request.user.is_authenticated:
@@ -14657,6 +14588,23 @@ def filter_chellan_type(request):
 
 
 
+@login_required(login_url='login')
+
+def edited(request,id):
+    c=customer.objects.all()
+    p=AddItem.objects.all()
+    invoiceitem=invoice_item.objects.filter(inv_id=id)
+    inv=invoice.objects.get(id=id)
+    context={
+        'c':c,
+        'p':p,
+        'inv':invoiceitem,
+        'inv':inv,
+        
+    }
+    
+    return render(request,'editinvoice.html')
+
 
 
 
@@ -14686,14 +14634,7 @@ def itemdata_challan(request):
 
     
 
-    item = AddItem.objects.get(Name=id, user=user)
-    name=item.Name
-    rate = item.p_price
-    place = company.state
-
-    return JsonResponse({"status": " not", 'place': place, 'rate': rate})
-    return redirect('/')
-
+  
 from django.http import JsonResponse
 
 def save_payment_term(request):
@@ -14855,6 +14796,8 @@ def add_prod(request):     #updation
             user = request.user
             x = request.POST["hidden_state"]
             y = request.POST["hidden_cus_place"]
+            print("Value of x:", x)
+            print("Value of y:", y)
             c = request.POST['cx_name']
             print(c)
             cus = customer.objects.get(id=c)
@@ -14980,6 +14923,16 @@ def add_prod(request):     #updation
             
                
             if x == y:
+                print("Length of invoiceitem.item: ", len(item))
+                print("Length of invoiceitem.hsn: ", len(hsn))
+                print("Length of invoiceitem.quantity: ", len(quantity))
+                print("Length of invoiceitem.desc: ", len(discount))
+                print("Length of invoiceitem.tax: ", len(tax))
+                print("Length of invoiceitem.amount: ", len(amount))
+                print("Length of invoiceitem.rate: ", len(rate))
+                print("Value of x: ", x)
+                print("Value of y: ", y)
+                
                 inv_id = invoice.objects.get(id=inv.id)
                 if len(item) == len(hsn) == len(quantity) == len(discount) == len(tax) == len(amount) == len(rate):
                     mapped = list(zip(item, hsn, quantity, discount, tax, amount, rate))
@@ -15041,185 +14994,163 @@ def add_prod(request):     #updation
 
 
 @login_required(login_url='login')
-
-def edited_prod(request,id):
+def edited_prod(request, id):
     print(id)
-    user=request.user
+    user = request.user
     c = customer.objects.all()
     p = AddItem.objects.all()
     invoiceitem = invoice_item.objects.filter(inv_id=id)
     invoic = invoice.objects.get(id=id)
-    cust=invoic.customer.placeofsupply
-    cust_id=invoic.customer.id
-    pay=payment_terms.objects.all()
-    sales=Sales.objects.all()
-    purchase=Purchase.objects.all()
-    invpay=InvoicePayment.objects.all()
-    
-    invp = InvoicePayment.objects.filter(invoice_id=id)
-    banks = Bankcreation.objects.all()
-    unit=Unit.objects.all()
-    company=company_details.objects.get(user=user)
-    comp=company.state
-  
-    if request.method == 'POST':
-        x=request.POST["hidden_state"]
-        y=request.POST["hidden_cus_place"]
-        u=request.user.id
-        u2=User.objects.get(id=u)
-        c=request.POST['cx_name']
-        cus=customer.objects.get(id=c) 
-        
-        
-        # term=request.POST['term']
-        # invoic.terms = payment_terms.objects.get(id=term)
-        invoic.customer=cus
-        invoic.user=u2        
-        invoic.terms=request.POST['term']
-        invoic.inv_date = request.POST['inv_date']
-        invoic.due_date = request.POST['due_date']
-        invoic.cxnote = request.POST['customer_note']
-        invoic.subtotal = request.POST['subtotal']
-        invoic.igst = request.POST['igst']
-        invoic.cgst = request.POST['cgst']
-        invoic.sgst = request.POST['sgst']
-        invoic.t_tax = request.POST['totaltax']
-        invoic.grandtotal = request.POST['t_total']
-        
-        invoic.paid_amount = request.POST['paid_amount']
-        invoic.balance = request.POST['balance']
-        
-        
-        
+    cust = invoic.customer.placeofsupply
+    cust_id = invoic.customer.id
+    pay = payment_terms.objects.all()
+    sales = Sales.objects.all()
+    purchase = Purchase.objects.all()
+    invpay = InvoicePayment.objects.filter(invoice_id=id)
 
-        # if request.FILES.get('file') is not None:
-        #      invoic.file = request.FILES.get('file')
-        # else:
-        #     invoic.file = "/static/images/alt.jpg"
-        old=invoic.file
-        new=request.FILES.get('file')
-        if old != None and new == None:
+    invp = invpay[0] if invpay else None
+    banks = Bankcreation.objects.all()
+    unit = Unit.objects.all()
+    
+    company = company_details.objects.get(user=request.user.id)
+    comp = company.state
+    
+
+    if request.method == 'POST':
+        x = request.POST["hidden_state"]
+        y = request.POST["hidden_cus_place"]
+        print("Value of x:", x)
+        print("Value of y:", y)
+        u = request.user.id
+        u2 = User.objects.get(id=u)
+        c = request.POST['cx_name']
+        cus = customer.objects.get(id=c)
+
+        invoic.customer = cus
+        invoic.user = u2
+        invoic.terms = request.POST.get('term', "")
+        invoic.inv_date = request.POST.get('inv_date', "")
+        invoic.due_date = request.POST.get('due_date', "")
+        invoic.cxnote = request.POST.get('customer_note', "")
+        invoic.subtotal = request.POST.get('subtotal', "")
+        invoic.igst = request.POST.get('igst', "")
+        invoic.cgst = request.POST.get('cgst', "")
+        invoic.sgst = request.POST.get('sgst', "")
+        invoic.t_tax = request.POST.get('totaltax', "")
+        invoic.grandtotal = request.POST.get('t_total', "")
+        invoic.paid_amount = request.POST.get('paid_amount', "")
+        invoic.balance = request.POST.get('balance', "")
+
+        old = invoic.file
+        new = request.FILES.get('file')
+        if old and not new:
             invoic.file = old
         else:
             invoic.file = new
 
-
         invoic.terms_condition = request.POST.get('ter_cond')
-        
-        status=request.POST['sd']
-        if status=='draft':
-            invoic.status=status      
+
+        status = request.POST['sd']
+        if status == 'draft':
+            invoic.status = status
         else:
-            invoic.status=status   
-         
+            invoic.status = status
+
         invoic.save()
-        invp = InvoicePayment.objects.filter(invoice=invoic).first()
-        if invp.payment_method == 'cash':
-            # Handle cash related operations here
-            pass
-        elif invp.payment_method == 'cheque':
-            invp.cheque_number = request.POST.get('cheque_number', '')
-            # Handle cheque related operations here
-        elif invp.payment_method == 'upi':
-            invp.upi_id = request.POST.get('upi_id', '')
-            # Handle UPI related operations here
-        elif invp.payment_method == 'bank':
-            invp.bank_id = request.POST.get('bank_name')
-            if invp.bank_id:
-                bank_instance = Bankcreation.objects.get(id=invp.bank_id)
-                invp.bank = bank_instance
-        else:
-            pass
-
-        invp.save()
-
-
-
         
+        if invp:
+            invp.payment_method = request.POST.get('payment_method', "")
+            if invp.payment_method == 'cash':
+                pass
+            elif invp.payment_method == 'cheque':
+                invp.cheque_number = request.POST.get('cheque_number', '')
+            elif invp.payment_method == 'upi':
+                invp.upi_id = request.POST.get('upi_id', '')
+            elif invp.payment_method == 'bank':
+                invp.bank_id = request.POST.get('bank_name', "")
+
+            invp.save()
+
         print("/////////////////////////////////////////////////////////")
-        if x==y:
-            item=request.POST.getlist('item[]')
-            hsn=request.POST.getlist('hsn[]')
-            quantity=request.POST.getlist('quantity[]')
-            rate=request.POST.getlist('rate[]')
-            desc=request.POST.getlist('desc[]')
-            tax=request.POST.getlist('tax[]')
-            amount=request.POST.getlist('amount[]')
-            obj_dele=invoice_item.objects.filter(inv_id=invoic.id)
-            obj_dele.delete()
+        if x == y:
+            invoiceitem.item = request.POST.getlist('item[]')
+            invoiceitem.hsn = request.POST.getlist('hsn[]')
+            invoiceitem.quantity = request.POST.getlist('quantity[]')
+            invoiceitem.rate = request.POST.getlist('rate[]')
+            invoiceitem.desc = request.POST.getlist('desc[]')
+            invoiceitem.tax = request.POST.getlist('tax[]')
+            invoiceitem.amount = request.POST.getlist('amount[]')
+            
+            print("hai")
+            
         else:
-            itemm=request.POST.getlist('itemm[]')
-            hsnn=request.POST.getlist('hsnn[]')
-            quantityy=request.POST.getlist('quantityy[]')
-            ratee=request.POST.getlist('ratee[]')
-            descc=request.POST.getlist('descc[]')
-            taxx=request.POST.getlist('taxx[]')
-            amountt=request.POST.getlist('amountt[]')
-            obj_dele=invoice_item.objects.filter(inv_id=invoic.id)
-            obj_dele.delete()
-       
-        if x==y:
-            if len(item)==len(hsn)==len(quantity)==len(desc)==len(tax)==len(amount)==len(rate):
-
-                mapped = zip(item,hsn,quantity,desc,tax,amount,rate)
+            invoiceitem.itemm = request.POST.getlist('itemm[]')
+            invoiceitem.hsnn = request.POST.getlist('hsnn[]')
+            invoiceitem.quantityy = request.POST.getlist('quantityy[]')
+            invoiceitem.ratee = request.POST.getlist('ratee[]')
+            invoiceitem.descc = request.POST.getlist('descc[]')
+            invoiceitem.taxx = request.POST.getlist('taxx[]')
+            invoiceitem.amountt = request.POST.getlist('amountt[]')
+            
+            
+        if x == y:
+            print("manage")
+            print("Length of invoiceitem.item: ", len(invoiceitem.item))
+            print("Length of invoiceitem.hsn: ", len(invoiceitem.hsn))
+            print("Length of invoiceitem.quantity: ", len(invoiceitem.quantity))
+            print("Length of invoiceitem.desc: ", len(invoiceitem.desc))
+            print("Length of invoiceitem.tax: ", len(invoiceitem.tax))
+            print("Length of invoiceitem.amount: ", len(invoiceitem.amount))
+            print("Length of invoiceitem.rate: ", len(invoiceitem.rate))
+            print("Value of x: ", x)
+            print("Value of y: ", y)
+            if len(invoiceitem.item) == len(invoiceitem.hsn) == len(invoiceitem.quantity) == len(invoiceitem.desc) == len(invoiceitem.tax) == len(invoiceitem.amount) == len(invoiceitem.rate):
+                print("11")
+                mapped = zip(invoiceitem.item, invoiceitem.hsn, invoiceitem.quantity, invoiceitem.desc, invoiceitem.tax, invoiceitem.amount, invoiceitem.rate)
                 mapped = list(mapped)
                 for element in mapped:
-                    created = invoice_item.objects.get_or_create(inv=invoic,product=element[0],hsn=element[1],
-                                        quantity=element[2],desc=element[3],tax=element[4],total=element[5],rate=element[6])
-                    
-                return redirect('detailedview',id)
-        
-        else:
-            if len(itemm)==len(hsnn)==len(quantityy)==len(descc)==len(taxx)==len(amountt)==len(ratee):
+                    created = invoice_item.objects.get_or_create(inv=invoic, product=element[0], hsn=element[1],
+                                                                 quantity=element[2], discount=element[3], tax=element[4],
+                                                                 total=element[5], rate=element[6])
+                    print("moveon")
 
-                mapped = zip(itemm,hsnn,quantityy,descc,taxx,amountt,ratee)
+                return redirect('invoice_overview', id)
+
+        else:
+            if len(invoiceitem.itemm) == len(invoiceitem.hsnn) == len(invoiceitem.quantityy) == len(invoiceitem.descc) == len(invoiceitem.taxx) == len(invoiceitem.amountt) == len(invoiceitem.ratee):
+                mapped = zip(invoiceitem.itemm, invoiceitem.hsnn, invoiceitem.quantityy, invoiceitem.descc, invoiceitem.taxx, invoiceitem.amountt, invoiceitem.ratee)
                 mapped = list(mapped)
                 for element in mapped:
-                    created = invoice_item.objects.get_or_create(inv=invoic,product=element[0],hsn=element[1],
-                                        quantity=element[2],desc=element[3],tax=element[4],total=element[5],rate=element[6])
-                    
-                return redirect('detailedview',id)
-                    
+                    created = invoice_item.objects.get_or_create(inv=invoic, product=element[0], hsn=element[1],
+                                                                 quantity=element[2], discount=element[3], tax=element[4],
+                                                                 total=element[5], rate=element[6])
+
+                return redirect('invoice_overview', id)
+
     context = {
-            'c': c,
-            'p': p,
-            'inv': invoiceitem,
-            'i': invoic,
-            'pay':pay,
-            'sales':sales,
-            'purchase':purchase,
-            'units':unit,
-            'company':company,
-            'cust':cust,
-            'comp':comp,
-            'custo_id':cust_id,
-            'invpay':invpay,
-            'banks':banks,
-            'invp':invp,
-        }             
-        
+        'user': user,
+        'c': c,
+        'p': p,
+        'inv': invoiceitem,
+        'i': invoic,
+        'pay': pay,
+        'sales': sales,
+        'purchase': purchase,
+        'units': unit,
+        'company': company,
+        'cust': cust,
+        'comp': comp,
+        'custo_id': cust_id,
+        'invpay': invpay,
+        'banks': banks,
+        'invp':invp,
+    }
+
     return render(request, 'invoiceedit.html', context)
 
 
 
 
-
-@login_required(login_url='login')
-
-def edited(request,id):
-    c=customer.objects.all()
-    p=AddItem.objects.all()
-    invoiceitem=invoice_item.objects.filter(inv_id=id)
-    inv=invoice.objects.get(id=id)
-    context={
-        'c':c,
-        'p':p,
-        'inv':invoiceitem,
-        'inv':inv,
-        
-    }
-    
-    return render(request,'editinvoice.html')
 
 
 
@@ -15301,3 +15232,206 @@ def delivery_challan_overview(request, id):
         'comments': chellan_comments,
     }
     return render(request, 'delivery_challan_overview.html', context)
+
+
+
+def filter_invoice_overview_send(request,id):
+    user=request.user
+    inv_dat=invoice.objects.filter(user=user,status="send")
+    inv_master=invoice.objects.get(id=id)
+    invoiceitem=invoice_item.objects.filter(inv_id=id)
+    company=company_details.objects.get(user_id=request.user.id)
+    
+    
+    customers= customer.objects.filter(user=user,invoice=id)
+    invoiceitem=invoice_item.objects.filter(inv_id=id)
+    company=company_details.objects.get(user_id=request.user.id)
+    inv_comments=invoice_comments.objects.filter(user=user,invoice=id)
+    payment=InvoicePayment.objects.filter(invoice=id)
+    bank= Bankcreation.objects.filter(user=user)
+    
+    
+    
+    context={
+        'inv_dat':inv_dat,
+        'invoiceitem':invoiceitem,
+        'comp':company,
+        'invoice':inv_master,
+        'inv_dat':inv_dat,
+        'invoiceitem':invoiceitem,
+        'company':company,
+        'invoice':inv_master,
+        'inv_comments':inv_comments,
+        'customers':customers,
+        'payment':payment,
+        'bank':bank,
+    }
+    return render(request,'invoice_overview.html',context)
+    
+def filter_invoice_overview_draft(request,id):
+    user=request.user
+    inv_dat=invoice.objects.filter(user=user,status="draft")
+    inv_master=invoice.objects.get(id=id)
+    invoiceitem=invoice_item.objects.filter(inv_id=id)
+    company=company_details.objects.get(user_id=request.user.id)
+    
+    customers= customer.objects.filter(user=user,invoice=id)
+    invoiceitem=invoice_item.objects.filter(inv_id=id)
+    company=company_details.objects.get(user_id=request.user.id)
+    inv_comments=invoice_comments.objects.filter(user=user,invoice=id)
+    payment=InvoicePayment.objects.filter(invoice=id)
+    bank= Bankcreation.objects.filter(user=user)
+    
+    
+    
+    
+    context={
+        'inv_dat':inv_dat,
+        'invoiceitem':invoiceitem,
+        'comp':company,
+        'invoice':inv_master,
+        'company':company,
+        'invoice':inv_master,
+        'inv_comments':inv_comments,
+        'customers':customers,
+        'payment':payment,
+        'bank':bank,
+    }
+    return render(request,'invoice_overview.html',context)
+
+
+        
+@login_required(login_url='login')
+def recurbills_customer(request):
+    
+    company = company_details.objects.get(user = request.user)
+
+    if request.method=='POST':
+
+        # title=request.POST.get('title')
+        # first_name=request.POST.get('firstname')
+        # last_name=request.POST.get('lastname')
+        # comp=request.POST.get('company_name')
+        cust_type = request.POST.get('customer_type')
+        name = request.POST.get('display_name')
+        comp_name = request.POST.get('company_name')
+        email=request.POST.get('email')
+        website=request.POST.get('website')
+        w_mobile=request.POST.get('work_mobile')
+        p_mobile=request.POST.get('pers_mobile')
+        fb = request.POST.get('facebook')
+        twitter = request.POST.get('twitter')
+        skype = request.POST.get('skype')
+        desg = request.POST.get('desg')
+        dpt = request.POST.get('dpt')
+        
+        gsttype=request.POST.get('gsttype')
+        gst_num = request.POST.get('gst_num')
+        pan_number = request.POST.get('pan_number')
+        # gstin=request.POST.get('gstin')
+        # panno=request.POST.get('panno')
+        supply=request.POST.get('placeofsupply')
+        tax = request.POST.get('tax_preference')
+        currency=request.POST.get('currency')
+        balance=request.POST.get('openingbalance')
+        payment=request.POST.get('paymentterms')
+        street1=request.POST.get('street1')
+        street2=request.POST.get('street2')
+        city=request.POST.get('city')
+        state=request.POST.get('state')
+        pincode=request.POST.get('pincode')
+        country=request.POST.get('country')
+        fax=request.POST.get('fax')
+        phone=request.POST.get('phone')
+        # shipstreet1=request.POST.get('shipstreet1')
+        # shipstreet2=request.POST.get('shipstreet2')
+        # shipcity=request.POST.get('shipcity')
+        # shipstate=request.POST.get('shipstate')
+        # shippincode=request.POST.get('shippincode')
+        # shipcountry=request.POST.get('shipcountry')
+        # shipfax=request.POST.get('shipfax')
+        # shipphone=request.POST.get('shipphone')
+
+        u = User.objects.get(id = request.user.id)
+
+        cust = customer(customerName = name,customerType = cust_type, companyName= comp_name, GSTTreatment=gsttype, GSTIN=gst_num, pan_no=pan_number,
+                        customerWorkPhone = w_mobile,customerMobile = p_mobile, customerEmail=email,skype = skype,Facebook = fb, 
+                        Twitter = twitter,placeofsupply=supply,Taxpreference = tax,currency=currency, website=website, 
+                        designation = desg, department = dpt,OpeningBalance=balance,Address1=street1,Address2=street2, city=city, 
+                        state=state, PaymentTerms=payment,zipcode=pincode,country=country,  fax = fax,  phone1 = phone,user = u)
+        cust.save()
+
+        return HttpResponse({"message": "success"})
+        
+        
+        
+@login_required(login_url='login')
+def customer_dropdown(request):
+    user = User.objects.get(id=request.user.id)
+    options = {}
+    option_objects = customer.objects.all()
+    for option in option_objects:
+        options[option.id] = {
+            'customerName': option.customerName,
+            'customerEmail': option.customerEmail,
+            'GSTTreatment': option.GSTTreatment,
+            'GSTIN': option.GSTIN,
+            'placeofsupply': option.placeofsupply,
+        }
+    return JsonResponse(options)
+
+def loan_dropdown(request):
+    options = {}
+    option_objects = Payroll.objects.all()  
+    for option in option_objects:
+        options[option.id] = {
+            'employee_name': option.first_name + ' ' + option.last_name,
+            'email': option.email,
+            'salary': option.salary,
+            'employee': option.emp_number,
+            'join_date': option.joindate.strftime('%Y-%m-%d'),  
+        }
+    return JsonResponse(options)
+def loan_dropwithoutreload(request, employee_id):
+    
+    employee = get_object_or_404(Payroll, id=employee_id)
+
+    
+    employee_details = {
+        'email': employee.email,
+        'emp_number': employee.emp_number,
+        'salary': employee.salary,
+        'joindate': employee.joindate.strftime('%Y-%m-%d'),
+        
+    }
+
+    return JsonResponse(employee_details)
+    
+    
+def invoice_slip(request,id):
+    user=request.user
+    inv_dat=invoice.objects.filter(user=user)
+    inv_master=invoice.objects.get(id=id)
+    invoiceitem=invoice_item.objects.filter(inv_id=id)
+    company=company_details.objects.get(user_id=request.user.id)
+    inv_comments=invoice_comments.objects.filter(user=user,invoice=id)
+    
+    
+    context={
+        'inv_dat':inv_dat,
+        'invoiceitem':invoiceitem,
+        'company':company,
+        'invoice':inv_master,
+        'inv_comments':inv_comments,
+    }
+    return render(request,'invoice_slip.html',context)
+
+
+
+
+
+def change_status_invoice(request, id):
+    invoic = invoice.objects.get(id=id)
+    invoic.status = 'Send'
+    invoic.save()
+    return redirect('invoice_overview', id=id)

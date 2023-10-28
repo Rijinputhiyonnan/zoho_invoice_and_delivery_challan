@@ -137,6 +137,41 @@
 .actoinacto .dropdown-item:hover {
     background-color: #0baef4;
 }
+
+
+
+.dropdown-item:hover{
+    color: rgb(226, 149, 5);
+}
+
+
+
+    .modal{
+      z-index: 9999;
+      overflow: scroll;
+    }
+
+    /* width */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: rgb(252, 236, 217);
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    #tr_data:hover{
+    background-color: #757575;
+    }
 </style>
 <section>
     <div class="row p-3 ">
@@ -165,7 +200,7 @@
             </div>
             <hr>
             {% for v in inv_dat %}
-            <a href="{% url 'detailedview' v.id %}" style="color: rgb(218, 143, 5);cursor: pointer;"> 
+            <a href="{% url 'invoice_slip' v.id %}" style="color: rgb(218, 143, 5);cursor: pointer;"> 
                  <table class="text-white" style="width: 100%; ">
                 
                  <tbody id="table">
@@ -223,6 +258,7 @@
     });
 </script>
 
+
 <script>
     function printForm() {
         var selectedArea = document.getElementById("selected-area");
@@ -253,49 +289,48 @@
                     <div class="left">
                        
                         <a class="btn mx-1 fa fa-file-word" href="{% url 'detailedview' id=invoice.id %}"></a>
+
+
+                    
                         <a class="btn mx-1, fa fa-eye"  href="{% url 'invoice_overview' id=invoice.id %}"></a>
-                        <a class="btn mx-1, fas fa-file-invoice"  href="{% url 'invoice_slip' id=invoice.id %}"></a>
-
-
+                        <a class="btn mx-1, fas fa-file-invoice"  href="#home"></a>
                     </div>
                    
                     <div class="right">
                         
                         <a class="btn ml-1" href="{% url 'edited_prod' id=invoice.id %}" data-toggle="tooltip" title="Edit"><i
                                 class="fas fa-edit"></i></a>
-
-
                                 <a href="" onclick="printForm()" style="border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white btn_print" 
-                                data-toggle="tooltip" title="Print">
-                                <i class="mdi mdi-printer"></i></a>
-        
-                                        {% if invoice.status == 'Draft'%}
-                                        <a href="{% url 'change_status_invoice' id=invoice.id  %}" style="border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
-                                        data-toggle="tooltip" title="Change Status">
-                                       <i class="fas fa-exchange-alt"></i></a>
-                                       
-                                        {% endif %}
-                                        
-                                   
-                                    <a href="{% url 'emailattachment' %}" class="btn btn-sm text-white ms-1"
-                                    style="border-radius: 5px;height: 1.7rem;" data-toggle="tooltip" title="Email">
-                                        <i class="fas fa-envelope"></i></a>
-                                  
-                                    
-                                          
-                                        <div class="dropdown btn ml-1 " title="comments" style="height: 1.7rem;">
-                                            <a href=" " class=" fas fa-comment-dots  btn-sm text-white ms-1"  
-                                                data-bs-toggle="dropdown" id="attachmentDropdown" aria-haspopup="true" aria-expanded="false"> 
-                                            </a>
+                        data-toggle="tooltip" title="Print">
+                        <i class="mdi mdi-printer"></i></a>
+
+                                {% if invoice.status == 'Draft'%}
+                                <a href="{% url 'change_status_invoice' id=invoice.id  %}" style="border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
+                                data-toggle="tooltip" title="Change Status">
+                               <i class="fas fa-exchange-alt"></i></a>
+                               
+                                {% endif %}
+                                
+                           
+                            <a href="{% url 'emailattachment' %}" class="btn btn-sm text-white ms-1"
+                            style="border-radius: 5px;height: 1.7rem;" data-toggle="tooltip" title="Email">
+                                <i class="fas fa-envelope"></i></a>
                           
-                                            <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-                                                <a class="dropdown-item" style="cursor: pointer;" data-toggle="modal"
-                                                 data-target="#cmnts"><i class="fa-solid fa fa-plus"></i>Add</a>
-                                                <a class="dropdown-item" style="cursor: pointer;" data-toggle="modal"
-                                                data-target="#cmt_list"><i class="fas fa-list"></i>&nbsp;View List</a>
-                                                        
-                                            </div>
-                                        </div>
+                               
+                                  
+                                <div class="dropdown btn ml-1 " title="comments" style="height: 1.7rem;">
+                                    <a href=" " class=" fas fa-comment-dots  btn-sm text-white ms-1"  
+                                        data-bs-toggle="dropdown" id="attachmentDropdown" aria-haspopup="true" aria-expanded="false"> 
+                                    </a>
+                  
+                                    <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
+                                        <a class="dropdown-item" style="cursor: pointer;" data-toggle="modal"
+                                         data-target="#cmnts"><i class="fa-solid fa fa-plus"></i>Add</a>
+                                        <a class="dropdown-item" style="cursor: pointer;" data-toggle="modal"
+                                        data-target="#cmt_list"><i class="fas fa-list"></i>&nbsp;View List</a>
+                                                
+                                    </div>
+                                </div>
                                
                         <a class="btn btn_print ml-1" href="" id="convertToPDFButton" data-toggle="tooltip"
                             title="Pdf"><i class="mdi mdi-file-pdf"></i></a>
@@ -312,7 +347,7 @@
                                     var opt =
                                     {
                                         margin: 1,
-                                        filename: 'Invoice' + '.pdf',
+                                        filename: 'Invoice_slip' + '.pdf',
                                         image: { type: 'jpeg', quality: 0.98 },
                                         html2canvas: { scale: 2 },
                                         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -329,9 +364,9 @@
                             <span class="mdi mdi-download"></span></a>
                         {% endif %}
 
-
                         <a href="{% url 'dele' invoice.id %}" class="btn btn-sm text-white" title="Delete" style="border-radius: 5px;height: 1.7rem;" 
           onclick="return confirm('Do you want to Delete this Invoice?');"><i class="fas fa-trash-alt"></i></a>
+                        
                         
                         <div class="dropdown-menu">
                             {% if attach %}
@@ -420,148 +455,138 @@
                 <div id="upload-message" style="display:none;"></div>
                 <hr>
                 
+                <div id="div_estimate"  class="mx-2 my-4 p-4 "
+                style="background-color: rgba(124, 124, 123, 0.507);">
+                <div class="slip p-5 convert_to_pdf bg-light" id="selected-area"
+                    style="box-shadow: 5px 5px 10px rgb(45, 45, 45);">
+                    <div class="row">
+                        <div class="col-sm-2 col-lg-2 col-md-2">
+                            <!-- <div style="height: 40px;background-color: rgb(192, 128, 8);" > -->
+                                <h4 class="pt-2" style="color: rgb(192, 128, 8);">{{ invoice.status }}</h4>
+                     <!-- </div> -->
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-12 ">
+                            <h3 class="text-dark" style="text-transform: uppercase;">{{ company.company_name }}</h3>
+                            <p class="text-dark" style="font-size: .71rem;font-weight: bold;">{{ company.address }}</p>
+                            <p class="text-dark" style="font-size: .71rem;font-weight: bold;">{{ company.city }},{{ company.state }}</p>
+                            <h1 class="text-dark" style="font-size: 3rem; margin-left: 20rem;margin-top: -15%;">INVOICE</h1>
+                            <h6 class="text-dark" style="margin-left: 20rem;margin-top: -1%;">invoice Number : {{invoice.invoice_no }}</h6>
+                        </div>
+                        <!-- <div class="col-md-6 text-right">
+                            <h1 class="text-dark" style="font-size: 3rem; margin-left: 2rem;">ESTIMATE</h1>
+                            <h6 class="text-dark">Estimate Number : {{estimate.estimate_no }}</h6>
+                        </div> -->
+                    </div>
+                    <hr>
+                    <div class="row ">
+                        <div class="col-md-12 mt-auto">
+                            <h6 class="text-dark">Bill To</h6>
+                            <h6 style="color: rgb(218, 142, 3);">{{ invoice.customer.customerName }} <br><span class="text-dark">{{ invoice.customer.customerEmail }}</span> </h6>
+                            {% if estimate.customer.GSTIN %}
+                            <h6 class="text-dark ">GSTIN : {{ estimate.customer.GSTIN }}</h6>
+                            {% endif %}
+                            <h6 class="text-dark " style="margin-left: 20rem;margin-top: -4%;">Order Date : {{ invoice.inv_date }}</h6>
+                            
 
-                    
-                       
-                          
-<div id="selected-areaa" class="mx-2 my-4 p-4 "
-style="background-color: rgba(124, 124, 123, 0.507);">
-<div class="slip p-5 convert_to_pdf bg-light" id="selected-area"
-    style="box-shadow: 5px 5px 10px rgb(45, 45, 45);">
-    <div class="row ">
-        <div class="col-md-6 ">
-            <h2 class="text-dark" style="text-transform: uppercase;font-weight: bold;">{{ comp.company_name }}</h2>
-            <h6 class="text-dark" style="font-weight: bold">{{ comp.address }}</h6>
-            <h6 class="text-dark" style="font-weight: bold">{{ comp.city }},{{ comp.state }} <br>
-               {{comp.contact_number}} <br>
-              {{comp.company_email}}
-                        </h6>
-        </div>
-        <div class="col-md-6 text-right">
-            <h1 class="text-dark" style="font-size: 3rem; ">INVOICE</h1>
-            <h6 class="text-dark" style="font-weight: bold;">Invoice Number : {{invoice.invoice_no}}</h6>
-        </div>
-    </div>
-    <hr>
-    <div class="row ">
-        <div class="col-md-6 mt-auto">
-            <h6 class="text-dark">Client :</h6>
-            <h6 style="color: rgb(218, 142, 3);font-weight: bold">{{ invoice.customer.customerName }} <br><span class="text-dark">{{ invoice.customer.customerEmail }}</span> </h6>
-        </div>
-        <div class="col-md-6 text-right mt-auto">
-            <h6 class="text-dark" style="font-weight: bold;">Order No &nbsp;&nbsp;&nbsp;&nbsp; : {{ invoice.order_no }} <br>
-              Invoice Date&nbsp;: {{invoice.inv_date}}            
-            </h6>
-        </div>
-    </div>
+                        </div>
+                        <!-- <div class="col-md-6 text-right mt-auto">
+                            <h6 class="text-dark ">Order Date : {{ estimate.estimate_date }}</h6>
+                        </div> -->
+                    </div>
+                    <table class="table mt-2 " style="border-color: black;border-collapse: collapse;background-color: rgb(237, 237, 240);">
+                        <thead >
+                            <tr style="border-bottom: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;border-top: 1px solid black;"> 
+                                <th style="color: black;">#</th>
+                                <th  style="width: 30rem;color: black;">Item</th>
+                                <th  style="width: 30rem;color: black;">Hsn</th>
+                                <th  style="color: black;width: 20rem;">Quantity</th>
+                                <th  style="color: black;width: 20rem;">Rate</th>
+                                <th  style="color: black;width: 20rem;">Discount</th>
+                                <th  style="color: black;width: 20rem;">Tax</th>
+                                <th  style="color: black;width: 20rem;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody style="border-left: 1px solid black;border-right: 1px solid black" class="text-right text-dark">
+                            {% for item in invoiceitem %}
+                            <tr style="border-bottom: 1px solid black;">
+                                <td class="text-right text-dark">{{ forloop.counter }}</td>
+                                <td class="text-right text-dark" style="text-align: center;">{{ item.product }}</td>
+                                <td class="text-right text-dark" style="text-align: center;">{{ item.hsn }}</td>
+                                <td class="text-right text-dark" style="text-align: center;">{{ item.quantity }}</td>
+                                <td class="text-right text-dark" style="text-align: center;">{{ item.rate|floatformat:1 }}</td>
+                                <td class="text-right text-dark" style="text-align: center;">{{ item.discount|floatformat:1 }}</td>
+                                <td class="text-right text-dark" style="text-align: center;">{{ item.tax }}</td>
+                                <td class="text-right text-dark" style="text-align: center;">{{ item.total|floatformat:1 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <!-- <div class="col-sm-6 col-md-6 col-lg-6"></div> -->
 
-    
+                        <div class="col-sm-11 col-md-11 col-lg-11">
+                            <table class="mt-2" style="margin-left: 70%;margin-top: 3%;">
+                                <tr>
+                                    <td class=" text-dark" style="font-weight: bold;">Sub-Total:</td>
+                                    
+                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.subtotal|floatformat:1}}</td>
+                                </tr>
+                                {% if estimate.cgst != 0 %}
+                                <tr>
+                                    <td class="text-right text-dark">CGST:</td>
+                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.cgst|floatformat:1}}</td>
+                                </tr>
+                                {% endif %}
+                                {% if estimate.sgst != 0 %}
+                                <tr>
+                                    <td class="text-right text-dark">SGST:</td>
+                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.sgst|floatformat:1}}</td>
+                                </tr>
+                                {% endif %}
+                                {% if estimate.igst != 0 %}
+                                <tr>
+                                    <td class="text-right text-dark">IGST:</td>
+                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.igst|floatformat:1}}</td>
+                                </tr>
+                                {% endif %}
+                                {% if estimate.shipping_charge != 0 %}
+                                <tr>
+                                    <td class="text-right text-dark">Shipping Charge:</td>
+                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.shipping_charge|floatformat:1}}</td>
+                                </tr>
+                                {% endif %}
+                                {% if estimate.adjustment != 0 %}
+                                <tr>
+                                    <td class="text-right text-dark">Adjustment:</td>
+                                    <td class="text-end text-dark" style="text-align: end;">{{ invoice.adjustment|floatformat:1}}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+        
+                                    <td class="text-right text-warning" style="font-weight: bold;">Total:</td>
+                                    <!-- <td class="text-right text-dark "></td>
+                                    <td class="text-right text-dark"></td>
+                                    <td class="text-right text-dark"></td> -->
+                                    <td class="text-right " style="font-weight: bold;text-align: end;color: rgb(233, 153, 3);">{{ invoice.grandtotal|floatformat:1}}</td>
+                                </tr>
+        
+                            </table>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
+
+                    </div>
 
 
-    <table class="table mt-2 " style="border-color: black;">
-        <thead >
-            <tr>
-                <th style="color: black;font-weight: bold;">#</th>
-                <th style="width: 30rem;color: black;font-weight: bold;">Product</th>
-                <!-- <th class="text-right;" style="color: black;font-weight: bold;">Hsn</th> -->
-                <!-- <th class="text-right;" style="color: black;font-weight: bold;">Description</th> -->
-                <th class="text-right;" style="color: black;font-weight: bold;">Quantity</th>
-                <th class="text-right;" style="color: black;font-weight: bold;">Price</th>
-                <th class="text-right;" style="color: black;font-weight: bold;">Discount</th>
+                </div>
+                <!-- <button id="generate-pdf">Generate PDF</button> -->
 
-                <th class="text-right;" style="color: black;font-weight: bold;">Tax%</th>
-                <th class="text-right;" style="color: black;font-weight: bold;">Total</th>
-            </tr>
-            
-        </thead>
-        <tbody class="text-dark">
-            {% for item in invoiceitem %}
-            <tr  class="text-dark">
-                <td  class="text-dark">{{ forloop.counter }}</td>
-                <td  class="text-dark">{{ item.product }}</td>
-                <!-- <td class="text-right">{{ item.hsn }}</td> -->
-                <!-- <td class="text-right">{{ item.desc }}</td> -->
-                <td class="text-right text-dark">{{ item.quantity }}</td>
-                <td class="text-right text-dark">{{ item.rate|floatformat:1 }}</td>
-                <td class="text-right text-dark">{{ item.discount|floatformat:1 }}</td>
-
-                <td class="text-right  text-dark">{{ item.tax }}</td>
-                <td class="text-right text-dark">{{ item.total|floatformat:1 }}</td>
-            </tr>
-            {% endfor %}
-            
-        </tbody>
-    </table>
-    <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            <table class="table  mt-2 text-dark">
-                <tr>
-                    <td class="text-dark" style="font-weight: bold;">Sub-Total:</td>
-                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.subtotal|floatformat:1 }}</td>
-                </tr>
-                {% if invoice.cgst|floatformat:1 != 0|floatformat:1 %}
-                <tr>
-                    <td class="text-right text-dark">CGST:</td>
-                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.cgst|floatformat:1 }}</td>
-                </tr>
-                {% endif %}
-
-                {% if invoice.sgst|floatformat:1 != 0|floatformat:1 %}
-                <tr>
-                    <td class="text-right text-dark">SGST:</td>
-                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.sgst|floatformat:1 }}</td>
-                </tr>
-                {% endif %}
-
-                {% if invoice.igst|floatformat:1 != 0|floatformat:1 %}
-                <tr>
-                    <td class="text-right text-dark">IGST:</td>
-                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.igst|floatformat:1 }}</td>
-                </tr>
-                {% endif %}
-                <tr>
-                  <td class="text-right text-dark">TAX:</td>
-                  <td class="text-right text-dark" style="text-align: end;">{{ invoice.t_tax}}</td>
-              </tr>
-              {% if invoice.shipping_charge != 0 %}
-                <tr>
-                    <td class="text-right text-dark">Shipping Charge:</td>
-                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.shipping_charge }}</td>
-                </tr>
-                {% endif %}
-                {% if invoice.adjustment != 0 %}
-                <tr>
-                    <td class="text-right text-dark">Adjustment Charge:</td>
-                    <td class="text-right text-dark"style="text-align: end;">{{ invoice.adjustment|floatformat:1}}</td>
-                </tr>
-                {% endif %}
                 
-                
-                <tr>
+            </div>
 
-                    <td class="text-right text-warning" style="font-weight: bold;">Total:</td>
-                    
-                    <td class="text-right  text-dark" style="font-weight: bold;text-align: end;">{{ invoice.grandtotal|floatformat:1}}</td>
-                </tr>
-
-            </table>
-        </div>
-    </div>
-
-
-</div>
-<!-- <button id="generate-pdf">Generate PDF</button> -->
-
-<!-- <h4 class="text-light pt-5">More Information</h4>
-<h6 class="text-light">Sales Person: Xyz</h6> -->
-</div>
-
-
-
-  </div>
-
-</div>
-
+           
+            
  <!-- comment modal -->
 
  <div class="modal fade " id="cmnts"
