@@ -1355,6 +1355,7 @@ class DeliveryChellan(models.Model):
 
 class ChallanItems(models.Model):
     chellan = models.ForeignKey(DeliveryChellan,on_delete=models.CASCADE,null=True,blank=True)
+    hsn = models.TextField(max_length=255)
     item_name = models.CharField(max_length=100,null=True,blank=True)
     quantity = models.IntegerField(null=True,blank=True)
     rate = models.FloatField(null=True,blank=True)

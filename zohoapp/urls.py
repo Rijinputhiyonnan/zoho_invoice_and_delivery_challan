@@ -746,6 +746,9 @@ urlpatterns = [
     path('change_status_invoice/<int:id>/', views.change_status_invoice, name='change_status_invoice'),
     
     
+    #new
+    path('delivery/challan/slip/<int:id>',views.delivery_challan_slip,name='delivery_challan_slip'),
+    
 
 
 
