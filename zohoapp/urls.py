@@ -749,6 +749,11 @@ urlpatterns = [
     #new
     path('delivery/challan/slip/<int:id>',views.delivery_challan_slip,name='delivery_challan_slip'),
     
+    
+    path('chellan/overview/<int:pk>',views.filter_by_draft_chellan_overview,name='filter_by_draft_chellan_overview'),
+    path('chellan/overview/<int:pk>',views.filter_by_sent_chellan_overview,name='filter_by_sent_chellan_overview'),
+    
+    path('convert_challan_to_invoice/<int:id>/', views.convert_challan_to_invoice, name='convert_challan_to_invoice'),
 
 
 

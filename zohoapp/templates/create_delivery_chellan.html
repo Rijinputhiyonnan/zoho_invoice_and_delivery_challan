@@ -348,7 +348,9 @@ transition: transform 0.4s ,top 0.4s;
       var intra=document.getElementsByName('intra')[0].value
       
       var name=document.getElementsByName('name')[0].value
+
       var hsn=document.getElementsByName('hsn')[0].value
+      
       var unit=document.getElementsByName('unit')[0].value
       var sel_price=document.getElementsByName('sel_price')[0].value
       var sel_acc=document.getElementsByName('sel_acc')[0].value
@@ -368,7 +370,7 @@ transition: transform 0.4s ,top 0.4s;
                 intras:intra,
                 types:type,
                 names:name,
-                hsn=hsn
+                hsn=hsn,
                 units:unit,
                 sel_prices:sel_price,
                 sel_accs:sel_acc,
@@ -590,14 +592,15 @@ transition: transform 0.4s ,top 0.4s;
 </div>
 
 <!-- GST Number -->
-<div class="row mb-4">
-  <div class="col-sm-2">
+<div class="row mb-4" id="gst_number_row">
+  <div class="col-sm-2" id="gst_number_label">
     <label for="gst_number">GST Number</label>
   </div>
   <div class="col-sm-6 col-md-6 col-lg-6">
     <input type="text" id="gst_number" name="gst_number" class="form-control text-dark" readonly>
   </div>
 </div>
+
 
 <!-- Place of Supply -->
 <div class="row mb-4">
@@ -609,37 +612,43 @@ transition: transform 0.4s ,top 0.4s;
   </div>
 </div>
 
-<script>
 
-  
+<script>
   $(document).ready(function () {
     $('#customer_sel').change(function () {
-        var selectedCustomerId = $(this).find(":selected").data("customer-id"); // Get the customer ID
-        $.ajax({
-            url: '/get_customer_details/',
-            data: {
-                customer_id: selectedCustomerId // Send the customer ID
-            },
-            dataType: 'json',
-            success: function (data) {
-                // Update form fields with customer details
-                $('#customer_mail').val(data.email);
-                $('#gst_treatment').val(data.gst_treatment);
-                $('#gst_number').val(data.gst_number);
-                $('#place_of_supply').val(data.place_of_supply);
-            },
-            error: function () {
-                // Handle error if customer details cannot be fetched
-                alert('Failed to fetch customer details.');
-            }
-        });
+      var selectedCustomerId = $(this).find(":selected").data("customer-id"); // Get the customer ID
+      $.ajax({
+        url: '/get_customer_details/',
+        data: {
+          customer_id: selectedCustomerId // Send the customer ID
+        },
+        dataType: 'json',
+        success: function (data) {
+          // Update form fields with customer details
+          $('#customer_mail').val(data.email);
+          $('#place_of_supply').val(data.place_of_supply);
+
+          // Check the GST treatment and hide/show the GST number field and label accordingly
+          if (data.gst_treatment === 'Unregistered Business-not Registered under GST') {
+            $('#gst_number_row').hide(); // Hide the entire row containing the GST number field and label
+          } else {
+            $('#gst_number_row').show();
+          }
+
+          // Update GST treatment field
+          $('#gst_treatment').val(data.gst_treatment);
+
+          // Update GST number field
+          $('#gst_number').val(data.gst_number);
+        },
+        error: function () {
+          // Handle error if customer details cannot be fetched
+          alert('Failed to fetch customer details.');
+        }
+      });
     });
-});
-
-
-
+  });
 </script>
-
 
 
 
@@ -814,6 +823,9 @@ transition: transform 0.4s ,top 0.4s;
             <th style="font-weight: bold;color: rgb(245, 154, 36);" class="">Item Details <a href="" data-toggle="modal" data-target="#create_item"
               style="text-decoration: none;"><i class="mdi mdi-plus p-2 rounded"
                         style="color: white; background-color: rgb(210, 132, 30);"></i></a></th>
+
+
+                        <th style="font-weight: bold;color: rgb(245, 154, 36);" class="text-right">HSN</th>
             <th style="font-weight: bold;color: rgb(245, 154, 36);" class="text-right">Quantity</th>
             <th style="font-weight: bold;color: rgb(245, 154, 36);" class="text-right">Rate</th>
             <th style="font-weight: bold;color: rgb(245, 154, 36);" class="text-right">Discount</th>
@@ -835,6 +847,37 @@ transition: transform 0.4s ,top 0.4s;
                         <option class='text-dark' id="items_nms"></option>
                     </select></div>
             </td>
+
+            <td class='text-right'><input type='text' id='hsnn1'
+              class='form-control bg-transparent border-0 text-light text-right hsn'  placeholder="6 Digit No" pattern="[0-9]{6}" name='hsnn[]'
+              value='' readonly >
+            </td>
+
+
+            <script>
+              // Create a JavaScript object to map product names to HSN numbers
+              var productHSNMap = {
+                {% for i in p %}
+                  "{{ i.Name }}": "{{ i.hsn }}",
+                {% endfor %}
+              };
+            
+              // Function to update the HSN input field when a product is selected
+              function updateHSN() {
+                var selectedProduct = document.getElementById('itemm1').value;
+                var hsnInput = document.getElementById('hsnn1');
+            
+                // Check if the selected product exists in the map
+                if (productHSNMap[selectedProduct]) {
+                  hsnInput.value = productHSNMap[selectedProduct];
+                } else {
+                  hsnInput.value = ''; // Clear the HSN input if product not found
+                }
+              }
+            
+              // Add an event listener to the product dropdown
+              document.getElementById('itemm1').addEventListener('change', updateHSN);
+            </script>
             <td class='text-right'><input type='number' id='qtyy1'
                     class='bg-transparent form-control border-0 text-light text-right qtyy' name='quantityy[]'
                     value='0'>

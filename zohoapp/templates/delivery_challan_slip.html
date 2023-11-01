@@ -188,12 +188,27 @@
                          data-toggle="tooltip" title="Email">
                         <i class="mdi mdi-email"></i></a>
                         
-                        {% if estimate.status == 'Draft'%}
+                        <div class="dropdown m-0 p-0 ms-1 mt-1" title="convert" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;">
+                            <a href=" " class=" fas fa-exchange-alt dropdown-toggle  btn-sm text-white ms-1"  
+                                data-bs-toggle="dropdown" id="attachmentDropdown" aria-haspopup="true" aria-expanded="false"> 
+                            </a>
+        
+                            <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
+                                {% if estimate.status == 'Draft'%}
                         <a href="{% url 'change_status' id=estimate.id  %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
-                        data-toggle="tooltip" title="Change Status">
-                       <i class="fas fa-exchange-alt"></i></a>
+                        data-toggle="tooltip" title="Change Status"><i class="fas fa-exchange-alt"> Change status</i>
+                       </a>
                        
                         {% endif %}
+                                                      
+<form action="{% url 'convert_challan_to_invoice' estimate.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit"  style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"><i class="fas fa-exchange-alt">Convert to Invoice</i></button>
+</form>
+                                        
+                            </div>
+                        </div>
+
                            
                         <div class="dropdown m-0 p-0 ms-1 mt-1" title="comments" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;">
                             <a href=" " class=" fas fa-comment-dots dropdown-toggle  btn-sm text-white ms-1"  
