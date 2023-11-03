@@ -4183,56 +4183,6 @@ def unit_dropdown(request):
 
     return JsonResponse(options)
 
-@login_required(login_url='login')
-def recurbills_item(request):    #updation
-
-    company = company_details.objects.get(user = request.user)
-
-    if request.method=='POST':
-        
-        type=request.POST.get('type')
-        name=request.POST.get('name')
-        ut=request.POST.get('unit')
-        inter=request.POST.get('inter')
-        intra=request.POST.get('intra')
-        sell_price=request.POST.get('sell_price')
-        sell_acc=request.POST.get('sell_acc')
-        sell_desc=request.POST.get('sell_desc')
-        cost_price=request.POST.get('cost_price')
-        cost_acc=request.POST.get('cost_acc')      
-        cost_desc=request.POST.get('cost_desc')
-        hsn_number = request.POST.get('hsn_number')
-        
-        
-        units=Unit.objects.get(id=ut)
-        sel=Sales.objects.get(id=sell_acc)
-        cost=Purchase.objects.get(id=cost_acc)
-
-        history="Created by " + str(request.user)
-
-        u  = User.objects.get(id = request.user.id)
-
-        item=AddItem(type=type,Name=name,p_desc=cost_desc,s_desc=sell_desc,s_price=sell_price,p_price=cost_price,
-                     user=u ,creat=history,interstate=inter,intrastate=intra,unit = units,sales = sel, purchase = cost, hsn=hsn_number)
-
-        item.save()
-
-        return HttpResponse({"message": "success"})
-    
-    return HttpResponse("Invalid request method.")
-
-        
-@login_required(login_url='login')
-def item_dropdown(request):
-    user = User.objects.get(id=request.user.id)
-    options = {}
-    option_objects = AddItem.objects.filter(user = request.user)
-    for option in option_objects:
-      display_name = option.Name        
-    #   options[option.id] = [option.Name,option.id]
-      options[option.id] = [display_name, f"{display_name}"]
-
-    return JsonResponse(options)
 
 
 @login_required(login_url='login')
@@ -15582,3 +15532,56 @@ def delivery_challan_overview(request, id):
         
     }
     return render(request, 'delivery_challan_overview.html', context)
+
+
+
+@login_required(login_url='login')
+def recurbills_item(request):    #updation
+
+    company = company_details.objects.get(user = request.user)
+
+    if request.method=='POST':
+        
+        type=request.POST.get('type')
+        name=request.POST.get('name')
+       
+        ut=request.POST.get('unit')
+        inter=request.POST.get('inter')
+        intra=request.POST.get('intra')
+        sell_price=request.POST.get('sell_price')
+        sell_acc=request.POST.get('sell_acc')
+        sell_desc=request.POST.get('sell_desc')
+        cost_price=request.POST.get('cost_price')
+        cost_acc=request.POST.get('cost_acc')      
+        cost_desc=request.POST.get('cost_desc')
+        hsn_number = request.POST.get('hsn_number')
+        
+        
+        units=Unit.objects.get(id=ut)
+        sel=Sales.objects.get(id=sell_acc)
+        cost=Purchase.objects.get(id=cost_acc)
+
+        history="Created by " + str(request.user)
+
+        u  = User.objects.get(id = request.user.id)
+
+        item=AddItem(type=type,Name=name,p_desc=cost_desc,s_desc=sell_desc,s_price=sell_price,p_price=cost_price,
+                     user=u ,creat=history,interstate=inter,intrastate=intra,unit = units,sales = sel, purchase = cost, hsn=hsn_number)
+
+        item.save()
+
+        return HttpResponse({"message": "success"})
+    
+    return HttpResponse("Invalid request method.")
+
+        
+@login_required(login_url='login')
+def item_dropdown(request):
+    user = User.objects.get(id=request.user.id)
+    options = {}
+    option_objects = AddItem.objects.filter(user=request.user)
+    for option in option_objects:
+        display_name = option.Name
+        options[option.id] = [display_name, option.hsn, f"{display_name} - {option.hsn}"]
+
+    return JsonResponse(options)

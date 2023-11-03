@@ -207,37 +207,25 @@ crossorigin="anonymous"></script>
 
               
       </div>
+
+      <script src="path/to/your/script.js"></script>
       <script>
  
-  
-  function calculateDueDate() {
-    const invoiceDate = new Date(document.getElementById('input-1').value);
-    const paymentTerm = document.getElementById('inv_term').value;
-    const dueDateField = document.getElementById('input-2');
-  
-    if (paymentTerm === "recpt") {
-      // Due on receipt, no additional days
-      dueDateField.value = document.getElementById('input-1').value;
-    } else {
-      // Get the number of days from the selected payment term
-      const days = parseInt(paymentTerm);
-      const dueDate = new Date(invoiceDate);
-      dueDate.setDate(invoiceDate.getDate() + days);
-      const formattedDueDate = dueDate.toISOString().slice(0, 10);
-      dueDateField.value = formattedDueDate;
-    }
-  }
-  
-  // Add event listeners to the invoice date and payment term dropdown
-  document.getElementById('input-1').addEventListener('change', calculateDueDate);
-  document.getElementById('inv_term').addEventListener('change', calculateDueDate);
+       
+        
+
+      
   
 </script>
 
             <div class="row mb-4 border-bottom pb-5">
               <div class="col-sm-2">
                 <label for="input-2">Terms</label>
+              
               </div>
+
+
+              
               <div class="col-sm-6 ">
                 <select class="my-select form-control text-dark" name="term" id="inv_term">
                   <!-- {% for p in pay %}
@@ -250,18 +238,67 @@ crossorigin="anonymous"></script>
                         <option value="90">NET 90</option>
                         <option value="Due end of the month">Due end of the month</option>
                         <option value="recpt">Due on receipt</option>
+
                    
 
                         {% for p in payments%}
                 <option value="{{p.Days}}">{{ p.Terms }}</option>
                 {% endfor%}
                   </select> 
+                 
                 </div>
+                
                 <div class="col-sm-4">
                     <a href="#" data-target="#newpayment" data-toggle="modal">
                         <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
                     </a>
                 </div>
+                <div class="col-sm-8">
+                  <p id="alertMessage" style="color: red; font-style: italic;"></p> <!-- Element to display the alert -->
+                </div>
+                
+                <script>
+                  function calculateDueDate() {
+                    const invoiceDate = new Date(document.getElementById('input-1').value);
+                    const paymentTerm = document.getElementById('inv_term').value;
+                    const dueDateField = document.getElementById('input-2');
+                    const alertElement = document.getElementById('alertMessage');
+                
+                    if (paymentTerm === "recpt") {
+                      // Due on receipt, no additional days
+                      dueDateField.value = document.getElementById('input-1').value;
+                      alertElement.textContent = ''; // Clear the alert message
+                    } else if (paymentTerm === "Due end of the month") {
+                      let dueDate;
+                      const nextMonth = new Date(invoiceDate.getFullYear(), invoiceDate.getMonth() + 1, 1);
+                      dueDate = new Date(nextMonth - 1);
+                      const formattedDueDate = dueDate.toISOString().slice(0, 10);
+                      dueDateField.value = formattedDueDate;
+                      alertElement.textContent = ''; // Clear the alert message
+                    } else {
+                      // Get the number of days from the selected payment term
+                      const days = parseInt(paymentTerm);
+                      const dueDate = new Date(invoiceDate);
+                      dueDate.setDate(invoiceDate.getDate() + days);
+                      const formattedDueDate = dueDate.toISOString().slice(0, 10);
+                      dueDateField.value = formattedDueDate;
+                      alertElement.textContent = ''; // Clear the alert message
+                    }
+                  }
+                
+                  document.getElementById('input-1').addEventListener('change', function() {
+                    calculateDueDate();
+                  });
+                
+                  document.getElementById('inv_term').addEventListener('change', function() {
+                    calculateDueDate(); // Update the due date
+                    const alertElement = document.getElementById('alertMessage');
+                    alertElement.textContent = "Please re-enter the invoice date to calculate the due date."; // Set the alert message
+                  });
+                
+                  calculateDueDate(); // Calculate the initial due date
+                </script>
+                
             </div>
 
 
@@ -432,26 +469,29 @@ crossorigin="anonymous"></script>
           var clonedRow = row.clone(); // Clone the current row
           var newRowId = 'row' + rowCount; // Generate a new ID for the cloned row
           clonedRow.attr('id', newRowId); // Set the new ID for the cloned row
-      
+        
           var currentItem = row.find('.item_select').val();
           var currentTax = row.find('.tax').val();
-      
+        
           clonedRow.find('.item_select').val(currentItem);
           clonedRow.find('.tax').val(currentTax);
-      
+        
           rowCount++; // Increment row counter
-      
+        
           $('#item_table tbody').append(clonedRow);
-          var row = $(this).closest('tr');
           calc();
           calc_total();
-      
+        
           var newSelectElementId = newRowId + ' .item_select';
           var newHsnElementId = newRowId + ' .hsn';
           $(newSelectElementId).on('change', function () {
             updateHSN(newSelectElementId, newHsnElementId);
           });
+        
+          // Update the HSN for the newly formed item
+          updateHSN(newSelectElementId, newHsnElementId);
         });
+        
       
       </script>
       
@@ -770,7 +810,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
       
                 <label for="">Customer Notes</label>
                 <textarea class="form-control text-dark" style="height: 50%;" name="customer_note" id="" cols="8" rows="8"
-                    placeholder=" Customer information for future Buisness" required></textarea>
+                    placeholder=" Customer information for future Buisness" ></textarea>
             </div>
             <div class="col-sm-6">
                 <table class="rounded table table-bordered" id="table_tot" style="background-color: #b6b3b36b;" >
@@ -919,7 +959,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
             <div class="col-md-6 d-flex flex-column w-60 m text-black">
                 <label for="" class="text-light">Terms & Conditions</label>
                 <textarea name="ter_cond" id="" cols="20" class="form-control text-dark" style="height: 100%;" rows="6"
-                    placeholder=" Enter the terms & conditions..." required></textarea>
+                    placeholder=" Enter the terms & conditions..." ></textarea>
             </div>
             <!-- <div class="col-md-6 col-lg-6 col-sm-12 py-5 text-center rounded mt-4">
                 <div style="width: 100%;background-color: rgba(153, 152, 152, 0.507);height: 120px;">
@@ -1808,6 +1848,40 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
                 </div>
               </div>
             </div>
+            <div class="row mt-2">
+              <div class="col-md-3">
+                <label for="name" style="color: rgb(190, 88, 88);">HSN Code</label>
+              </div>
+              <div class="col-md-6">
+                <input type="text" class="form-control text-dark bg-light" id="myInputField" name="hsn_number" oninput="validateInput()" required>
+                <div id="validationResult"></div>
+              </div>
+            </div>
+
+           
+            <script>
+              function validateSixDigits(field) {
+                // Define the regular expression pattern for exactly six digits
+                var pattern = /^\d{6}$/;
+              
+                // Check if the field matches the pattern
+                return pattern.test(field);
+              }
+              
+              function validateInput() {
+                var inputField = document.getElementById("myInputField");
+                var inputValue = inputField.value;
+              
+                var validationResultDiv = document.getElementById("validationResult");
+              
+                if (validateSixDigits(inputValue)) {
+                  validationResultDiv.textContent = "Valid: The field contains exactly six digits.";
+                } else {
+                  validationResultDiv.textContent = "Invalid: The field does not contain exactly six digits.";
+                }
+              }
+            
+            </script>
 
             <div class="row mt-2">
               <div class="col-md-4 ">
@@ -2346,6 +2420,7 @@ $.ajax({
       type : itemtype,
       name : $("#item_name").val(),
       unit : $("#item_units").val(),
+      hsn_number : $("#myInputField").val(),
       inter : inter_st,
       intra : intra_st,
       sell_price : $("#sell_price").val(),
@@ -2380,6 +2455,7 @@ function reloadItem() {
     success: function(data) {
       var dropdown = $('.itm');
       var dropdown1 = $('.itmm');
+      
       dropdown.empty();
       dropdown1.empty();
       $.each(data, function(key, value) {

@@ -331,7 +331,7 @@ crossorigin="anonymous"></script>
     
       <select class="form-control text-black" name="payment_method" id="payment_method" >
        
-        <option value="">Select
+        <option value="{{invpay.payment_method}}">Select
         </option> 
           <option value="cash">Cash</option>
           <option value="cheque">Cheque</option>
@@ -840,7 +840,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
       
                 <label for="">Customer Notes</label>
                 <textarea class="form-control text-dark" style="height: 50%;" name="customer_note" id="" cols="8" rows="8"
-                    placeholder=" Customer information for future Buisness" required> {{i.cxnote}}</textarea>
+                    placeholder=" Customer information for future Buisness" > {{i.cxnote}}</textarea>
             </div>
             <div class="col-sm-6">
                 <table class="rounded table table-bordered" id="table_tot" style="background-color: #b6b3b36b;" >
@@ -993,7 +993,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
             <div class="col-md-6 d-flex flex-column w-60 m text-black">
                 <label for="" class="text-light">Terms & Conditions</label>
                 <textarea name="ter_cond" id="" cols="20" class="form-control text-dark" style="height: 100%;" rows="6"
-                    placeholder=" Enter the terms & conditions..." required>{{i.terms_condition}}</textarea>
+                    placeholder=" Enter the terms & conditions..." >{{i.terms_condition}}</textarea>
             </div>
             <!-- <div class="col-md-6 col-lg-6 col-sm-12 py-5 text-center rounded mt-4">
                 <div style="width: 100%;background-color: rgba(153, 152, 152, 0.507);height: 120px;">

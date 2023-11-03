@@ -246,15 +246,16 @@
         <div class="overview col-8 col-lg-8 col-md-9  col-sm-10 py-3">
             <div id="overview">
                 <div class="p-name">
-                    <h3 class="px-2 pb-2" id="id1"> {{invoice.invoice_no}}</h3>
+                    <h3 class="px-2 pb-2" id="id1"> {{invoice.invoice_no}}</h3>  
+                 
                 </div>
 
                 <div class="bar pt-3">
                     <div class="left">
                        
-                        <a class="btn mx-1 fa fa-file-word" href="{% url 'detailedview' id=invoice.id %}"></a>
-                        <a class="btn mx-1, fa fa-eye"  href="{% url 'invoice_overview' id=invoice.id %}"></a>
-                        <a class="btn mx-1, fas fa-file-invoice"  href="{% url 'invoice_slip' id=invoice.id %}"></a>
+                        <a class="btn mx-1 fa fa-file-word" href="{% url 'detailedview' id=invoice.id %}">Template</a>
+                        <a class="btn mx-1, fa fa-eye"  href="{% url 'invoice_overview' id=invoice.id %}">Overview</a>
+                        <a class="btn mx-1, fas fa-file-invoice"  href="{% url 'invoice_slip' id=invoice.id %}">Slip</a>
 
 
                     </div>
@@ -465,6 +466,7 @@ style="background-color: rgba(124, 124, 123, 0.507);">
                 <th style="width: 30rem;color: black;font-weight: bold;">Product</th>
                 <!-- <th class="text-right;" style="color: black;font-weight: bold;">Hsn</th> -->
                 <!-- <th class="text-right;" style="color: black;font-weight: bold;">Description</th> -->
+                <th class="text-right;" style="color: black;font-weight: bold;">HSN</th>
                 <th class="text-right;" style="color: black;font-weight: bold;">Quantity</th>
                 <th class="text-right;" style="color: black;font-weight: bold;">Price</th>
                 <th class="text-right;" style="color: black;font-weight: bold;">Discount</th>
@@ -481,6 +483,8 @@ style="background-color: rgba(124, 124, 123, 0.507);">
                 <td  class="text-dark">{{ item.product }}</td>
                 <!-- <td class="text-right">{{ item.hsn }}</td> -->
                 <!-- <td class="text-right">{{ item.desc }}</td> -->
+
+                <td class="text-right text-dark">{{ item.hsn }}</td>
                 <td class="text-right text-dark">{{ item.quantity }}</td>
                 <td class="text-right text-dark">{{ item.rate|floatformat:1 }}</td>
                 <td class="text-right text-dark">{{ item.discount|floatformat:1 }}</td>
