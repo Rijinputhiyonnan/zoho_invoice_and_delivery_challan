@@ -74,6 +74,10 @@
                       Sort
                       </button>
                       <div class="dropdown-menu ">
+                        <a class="dropdown-item" href="#" id="all-challan">
+                          <i class="fa fa-sort"></i>All
+                      </a>
+
                         <a class="dropdown-item" href="#" id="sort-challan">
                           <i class="fa fa-sort"></i>Invoice Number
                       </a>
@@ -100,8 +104,8 @@
                     <a class="dropdown-item" href="{% url 'filter_invoice_sent' %}">Send</a>
             
                   </div>
-                  <a class="btn text-center btn-outline-warning px-3 py-2 "  href="{% url  'add_prod' %}" class="btn fa fa-plus text-right px-3 py-2" role="button">
-                      <span class="mt-2">&nbsp;&nbsp; NEW</span>
+                  <a class="btn fa fa-plus text-center btn-outline-warning px-3 py-2 "  href="{% url  'add_prod' %}" class="btn fa fa-plus text-right px-3 py-2" role="button">
+                      <span class="mt-2 ">&nbsp;&nbsp; NEW</span>
                   </a>
               </div>
           </div>
@@ -131,7 +135,7 @@
             <tr id="tr_data" style="cursor: pointer;" class="clickable-row" data-href="{% url 'invoice_overview' v.id %}">
                 <!-- onclick="location.href ='{% url 'detailedview' v.id %}' " -->
                 <td > {{v.inv_date}}</td>
-                <td style="color: rgb(226, 150, 9);">{{v.invoice_no}}</td>
+                <td >{{v.invoice_no}}</td>
                 
                
                 <td>{{v.customer.customerName}}</td>
@@ -186,33 +190,40 @@
   
 <script>
   $(document).ready(function () {
-      var $rows = $('#table-id tbody tr');
+    var $rows = $('#table-id tbody tr');
+    var originalOrder = $rows.toArray(); // Keep a reference to the original order of rows
 
-      $('#search').keyup(function () {
-          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-          $rows.hide().filter(function () {
-              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-              return ~text.indexOf(val);
-          }).show();
-      });
+    $('#search').keyup(function () {
+        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        $rows.hide().filter(function () {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+            return ~text.indexOf(val);
+        }).show();
+    });
 
-      $('#sort-challan').on('click', function () {
-          sortTable(1); // Sort by Challan Number (2nd column)
-      });
+    $('#sort-challan').on('click', function () {
+        sortTable(1); // Sort by Challan Number (2nd column)
+    });
 
-      $('#sort-customer').on('click', function () {
-          sortTable(2); // Sort by Customer Name (3rd column)
-      });
+    $('#sort-customer').on('click', function () {
+        sortTable(2); // Sort by Customer Name (3rd column)
+    });
 
-      function sortTable(column) {
-          $rows.sort(function (a, b) {
-              var aVal = $(a).find('td').eq(column).text();
-              var bVal = $(b).find('td').eq(column).text();
-              return aVal.localeCompare(bVal);
-          });
-          $('#table-id tbody').html($rows);
-      }
-  });
+    $('#all-challan').on('click', function () {
+        // Reset to the original order of rows
+        $('#table-id tbody').empty().append(originalOrder);
+    });
+
+    function sortTable(column) {
+        $rows.sort(function (a, b) {
+            var aVal = $(a).find('td').eq(column).text();
+            var bVal = $(b).find('td').eq(column).text();
+            return aVal.localeCompare(bVal);
+        });
+        $('#table-id tbody').html($rows);
+    }
+});
+
 </script>
 
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

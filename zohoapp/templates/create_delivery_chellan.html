@@ -551,7 +551,7 @@ transition: transform 0.4s ,top 0.4s;
     <label for="customer_name">Customer Name*</label>
   </div>
   <div class="col-sm-6 col-md-6 col-lg-6">
-    <select class="form-control text-dark" id="customer_sel" name="customer_name" onchange="getCustInfo()">
+    <select class="form-control text-dark" id="customer_sel" name="customer_name" >
       <!-- Add a hidden input field to store the selected customer's ID -->
 
       <option>Select Customer</option>
@@ -1267,6 +1267,77 @@ transition: transform 0.4s ,top 0.4s;
                             </div>
                     </div>
                 </section>
+
+
+                
+            <div class="row" >
+              <div class="col-md-10">
+                {% comment %} <label><input type="checkbox" value="trackstate" name="trackstate" onclick="toggleForm()" style="display: none;">
+               Track Inventory for this item</label> {% endcomment %}
+                {% comment %} <input type="hidden" name="trackState" id="trackState" value="" unchecked> {% endcomment %}
+                <label>
+                  <input type="checkbox" name="trackstate" value="trackstate" class=" bg-dark"  onclick="toggleFormFields()">
+                  Track Inventory for this item
+                </label>
+                <div id="formFields" style="display: none;"> 
+                  <div class="form-group row" >
+                    <label class="col-sm-2 col-form-label">Inventory Account *</label>
+                    <div class="col-sm-10 col-md-7 col-9" style="margin-left: -1rem;">
+                      <select class="form-select form-select-sm mt-3" name="invacc">
+                        <option>Choose..</option>
+                        <option value="inventory assets">Inventory Asset</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group row ">
+                    <label class="col-sm-2 col-form-label">Opening Stock</label>
+                    <div class=" col-md-5">
+                      <input  type="number" class="form-control  bg-dark"  name="openstock" value="0">
+                    </div>
+                    <div class="col-md-5  ">
+                      <div class="row align-items-center">
+                        <label class="col-sm-6 col-form-label">Opening Stock Rate per Unit</label>
+                        <div class="col-sm-6">
+                          <input type="number" class="form-control bg-dark" name="inventoryaccntperunit"  value="0">
+                        </div>
+
+                      </div>
+                    </div>
+                    <fieldset class="form-group">
+                      <div class="row">
+                        <label class="col-form-label col-sm-2 pt-2">Activation tag<i class="fa fa-question-circle"></i></label>
+                        <div class="col-sm-10 form-inline">
+                          <div class="form-check ">
+                            <input  class="form-check-input" type="radio" name="satus" id="gridRadios1" value="Active"  style="margin-left:5px;" >
+                            <label class="form-check-label" for="gridRadios1">Activate</label>
+                          </div>
+                          <div class="form-check ml-5">
+                            <input  class="form-check-input" type="radio" name="satus" id="gridRadios2" value="Inactive"  style="margin-left:50px;">
+                            <label class="form-check-label" for="gridRadios2">Non-Activate</label>
+                          </div>
+                                      
+                        </div>
+                      </div>
+                    </fieldset>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <script>
+              function toggleFormFields() {
+                var formFields = document.getElementById("formFields");
+                var checkbox = document.querySelector("input[name=trackstate]");
+          
+                if (checkbox.checked) {
+                  formFields.style.display = "block";
+                } else {
+                  formFields.style.display = "none";
+                }
+              }
+            </script>
+            <br><br> <br>
+
                
               <div class="form-inline">
           <input type="submit"  class="mr-3 btn btn-success" data-dismiss="modal" onclick="create_item()" value="Save">
@@ -1518,27 +1589,7 @@ transition: transform 0.4s ,top 0.4s;
                 Remarks</div>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span>
-          
-            <fieldset2 class="other details"
-              style="display:none;color: azure ; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
-              <div class="col-sm-10 form-inline">
-                <label for="name"
-                  style="color: rgb(214, 75, 75) ; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
-                  GST Treatment* </label>
-                &nbsp;&nbsp;&nbsp;
-          
-                <select name="gstt" id="GSTT">
-                  <option value="value" selected>Select a Gst Treatment</option>
-                  <option value="Registered Business-Regular Business that is registered under GST">Registered Business-Regular Business that is registered under GST</option>
-                              <option value="Registered Business-Composition Business that is registered under the Composition scheme
-                              in GST">Registered Business-Composition Business that is registered under the Composition scheme
-                                in GST</option>
-                              <option value="Unregistered Business-not Registered under GST">Unregistered Business-not Registered under GST</option>
-                              <option value="Consumer- A customer who is a regular Consumer">Consumer- A customer who is a regular Consumer</option>
-                              <option value="Overseas- Persons with who you do import or exports of supplies outside india">Overseas- Persons with who you do import or exports of supplies outside india</option>
-                              <option value="Special Economic Zone">Special Economic Zone</option>
-                </select><br>
-              </div><br>
+       
               <div class="col-sm-10 form-inline">
                 <label for="name"
                   style="color: rgb(214, 75, 75) ; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
@@ -2028,32 +2079,171 @@ transition: transform 0.4s ,top 0.4s;
                   <input type="text" class="form-control text-dark bg-light" id="c_desg" name="c_desg">
                 </div>       
               </div>
+              <fieldset2 class="other details" style="display: block;">
+                <div class="form-group row mt-2">
+                  <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" style="color:rgb(214, 75, 75) ;"> GST Treatment*</label>
+                   
+                  <div class=" col-md-6 mt-2">
+                      <select name="c_gsttype" id="c_gsttype" class="form-control bg-light text-dark" onclick="gstPan_function()">
+                          <option value="Select a Gst Treatment" selected>Select a Gst Treatment</option>
+                          <option value="Registered Business-Regular Business that is registered under GST">Registered Business-Regular Business that is registered under GST</option>
+                          <option value="Registered Business-Composition Business that is registered under the Composition scheme in GST">
+                              Registered Business-Composition Business that is registered under the Composition schemen in GST
+                          </option>
+                          <option value="Unregistered Business-not Registered under GST">Unregistered Business-not Registered under GST</option>
+                          <option value="Overseas- Persons with who you do import or exports of supplies outside india">Overseas- Persons with who you do import or exports of supplies outside india</option>
+                          <option value="Special Economic Zone">Special Economic Zone</option>
+                      </select><br>
+                  </div>
 
-              <div class="row mt-2">
-                <div class="col-md-3 mt-2">
-                  <label for="c_dpt">Department</label>
-                </div>
-                <div class="col-md-6 mt-2">
-                  <input type="text" class="form-control text-dark bg-light" id="c_dpt" name="c_dpt">
-                </div>       
-              </div>
 
-              <div class="row mt-2">
-                <div class="col-md-3 mt-2">
-                  <label for="c_gsttype" style="color:rgb(190, 88, 88);">GST Treatment *</label>
-                </div>
-                <div class="col-md-6 mt-2">
-                  <select class="form-control text-dark bg-light" id="c_gsttype" name="c_gsttype" required>
-                    <option value="value" selected>Select a Gst Treatment</option>
-                    <option value="Registered Business-Regular Business that is registered under GST">Registered Business-Regular Business that is registered under GST</option>
-                    <option value="Registered Business-Composition Business that is registered under the Composition scheme in GST">Registered Business-Composition Business that is registered under the Composition scheme in GST</option>
-                    <option value="Unregistered Business-not Registered under GST">Unregistered Business-not Registered under GST</option>
-                    <option value="Consumer- A customer who is a regular Consumer">Consumer- A customer who is a regular Consumer</option>
-                    <option value="Overseas- Persons with who you do import or exports of supplies outside india">Overseas- Persons with who you do import or exports of supplies outside india</option>
-                    <option value="Special Economic Zone">Special Economic Zone</option>
-                  </select>
-                </div>       
               </div>
+              <fieldset3 id="gst" style="display: none;">
+                  <div class="row mt-4">
+                      <label class="col-sm-12 col-md-3 col-lg-3 col-form-label"  style="color:rgb(214, 75, 75) ;"> GSTIN/UIN*</label>
+                       
+                      <div class=" col-md-6 mt-2">
+                          <input type="text" class="form-control bg-light text-dark" name="gst_num" placeholder="29APPCK7465F1Z1" id="gst_num" onmouseout="gst_check()"> 
+                          <label id="gst_label"></label>     
+  
+                      </div></div>
+
+              </fieldset3>
+
+              <fieldset4 id="pan" style="display: none;">
+                  <div class=" row mt-4">
+                      <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > PAN</label>
+                       
+                      <div class=" col-md-6 mt-2">
+                          <input type="text" class="form-control bg-light text-dark" id="pan_number" placeholder="ABCDE1234F" onmouseout="pan_check()" name="pan_number">  
+                          <label id="pan_label"></label>     
+
+  
+                      </div>
+   
+   
+                  </div>
+
+              </fieldset4>
+
+
+              <script>
+
+                function gstPan_function(){
+                  var x=document.getElementById('c_gsttype').value
+                  if(x=="Unregistered Business-not Registered under GST")
+                  {
+                      document.getElementById("pan").style.display="block";
+                      document.getElementById("gst").style.display="none";
+          
+                      
+                  }
+                  else if((x=="Registered Business-Regular Business that is registered under GST") || (x=="Registered Business-Composition Business that is registered under the Composition scheme in GST") || (x=="Overseas- Persons with who you do import or exports of supplies outside india") || (x=="Special Economic Zone"))
+                  {
+                      document.getElementById("gst").style.display="block";
+                      document.getElementById("pan").style.display="block";
+          
+          
+                  }
+              
+              }
+
+              function gst_check(){
+                var x=document.getElementById("gst_num").value;
+                var gst_label=document.getElementById("gst_label")
+                // var expr=/^[0-9]{15}$/;
+                var expr=/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+        
+                // "[0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9A-Za-z]{1}[Z]{1}[0-9a-zA-Z]{1}"
+                // /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/
+                if (!expr.test(x)) {
+                    gst_label.style.color="red";
+                    gst_label.innerHTML = "Invalid GST Number.";
+                }
+                else{
+                    gst_label.style.color="green";
+        
+                    gst_label.innerHTML = "valid GST Number.";
+        
+                }
+            }
+
+            function pan_check(){
+              var x=document.getElementById("pan_number").value;
+              var gst_label=document.getElementById("pan_label")
+              var expr=    /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
+              if (!expr.test(x)) {
+                  pan_label.style.color="red";
+                  pan_label.innerHTML = "Invalid PAN Number.";
+              }
+              else{
+                  pan_label.style.color="green";
+      
+                  pan_label.innerHTML = "valid PAN Number.";
+      
+              }
+          }
+          $(document).ready(function () {
+              $(".toggle1").click(function (e) {
+                e.preventDefault();
+                $("fieldset1").toggle();
+              })
+            })
+      
+      
+          $(document).ready(function () {
+              $(".toggle").click(function (e) {
+                e.preventDefault();
+                $("fieldset19").toggle();
+              })
+            })
+            $(document).ready(function () {
+              $(".toggle2").click(function (e) {
+                e.preventDefault();
+               
+                $("fieldset2").toggle(); 
+                $("fieldset5").hide();
+                $("fieldset6").hide();
+                $("fieldset7").hide();
+      
+      
+            
+              })
+            })
+      
+            $(document).ready(function () {
+              $(".toggle3").click(function (e) {
+                e.preventDefault();
+                $("fieldset5").toggle();
+                $("fieldset2").hide();
+                $("fieldset6").hide();
+                $("fieldset7").hide();
+      
+              })
+            })
+            $(document).ready(function () {
+              $(".toggle4").click(function (e) {
+                e.preventDefault();
+                $("fieldset6").toggle();
+                $("fieldset2").hide();
+                $("fieldset5").hide();
+                $("fieldset7").hide();
+                      
+              })
+            })
+            $(document).ready(function () {
+              $(".toggle7").click(function (e) {
+                e.preventDefault();
+                $("fieldset7").toggle();
+                $("fieldset2").hide();
+                $("fieldset6").hide();
+                $("fieldset5").hide();
+               
+      
+               
+              })
+            })
+              </script>
 
              
 
@@ -2636,6 +2826,11 @@ $.ajax({
       desg :$("#c_desg").val(),
       dpt :$("#c_dpt").val(),
       gsttype :$("#c_gsttype").val(),
+
+      gst_num :$("#gst_num").val(),
+      pan_number :$("#pan_number").val(),
+
+
       placeofsupply :$("#placesupply").val(),
       tax_preference :cust_tax,
       currency : $("#c_curn").val(),
@@ -2662,27 +2857,34 @@ $.ajax({
 
 function reloadCustomer() {
 
-$.ajax({ 
-  url: "{% url 'customer_dropdown' %}",
-  type: "GET",
-  dataType: "json",
-  data: $(this).serialize(),
-  csrfmiddlewaretoken: '{{ csrf_token }}',
-
-  success: function(data) {
-    var dropdown = $('#customer_sel');
-    dropdown.empty();
-    $.each(data, function(key, value) {
-        // dropdown.append($('<option></option>').attr('value', key).text(value[1]).val(value[0] + ' ' + value[1]));
-        dropdown.append($('<option></option>').attr('value', key).text(value[1]).val(key));
+  $.ajax({ 
+    url: "{% url 'customer_dropdown' %}",
+    type: "GET",
+    dataType: "json",
+    data: $(this).serialize(),
+    csrfmiddlewaretoken: '{{ csrf_token }}',
+  
+    success: function(data) {
+      var dropdown = $('#customer_sel');
+      dropdown.empty();
+      dropdown.append($('<option></option>').attr('value', '').text('Select'));
+      $.each(data, function(key, value) {
+        var option = $('<option></option>').attr('value', key).text(value['customerName']).val(key);
+  
+        option.data('email', value['customerEmail']);
+        option.data('gsttreatment', value['GSTTreatment']);
+        option.data('gstnumber', value['GSTIN']);  
+        option.data('placeofsupply', value['placeofsupply']);
+  
+        dropdown.append(option);
     });
   },
   error: function(xhr, status, error) {
-  console.error(xhr.responseText);
+    console.error(xhr.responseText);
   }
-});
-}
-
+  });
+  }
+  
 
 $(document).ready(function() {
     $('#customer_sel').change(function() {

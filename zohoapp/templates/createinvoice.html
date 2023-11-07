@@ -124,38 +124,58 @@ crossorigin="anonymous"></script>
       </div>
       
       <div class="row mb-4">
-          <div class="col-sm-2"><label for="gst_treatment">GST Treatment</label></div>
-          <div class="col-sm-6">
-              <input type="text" class="form-control text-black" id="gst_treatment" name="gst_treatment" readonly>
-          </div>
-      </div>
-      
-      <div class="row mb-4">
-          <div class="col-sm-2"><label for="gst_number">GST Number</label></div>
-          <div class="col-sm-6">
-              <input type="text" class="form-control text-black" id="gst_number" name="gst_number" readonly>
-          </div>
-      </div>
-      
-      <div class="row mb-4">
-          <div class="col-sm-2"><label for="place_of_supply">Place of Supply</label></div>
-          <div class="col-sm-6">
-              <input type="text" class="form-control text-black" id="place_of_supply" name="place_of_supply" readonly>
-          </div>
-      </div>
-      
-      <script>
-          // Add an event listener to the customer selection dropdown
-          document.getElementById('customer_sel').addEventListener('change', function () {
-              // Get the selected option
-              var selectedOption = this.options[this.selectedIndex];
-              
-              // Update the input fields with customer information
-              document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
-              document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
-              document.getElementById('gst_number').value = selectedOption.getAttribute('data-gstnumber');
-              document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
-          });
+        <div class="col-sm-2"><label for="gst_treatment">GST Treatment</label></div>
+        <div class="col-sm-6">
+            <input type="text" class="form-control text-black" id="gst_treatment" name="gst_treatment" readonly>
+        </div>
+    </div>
+    
+    <div class="row mb-4" id="gst_number_container">
+        <div class="col-sm-2"><label for="gst_number">GST Number</label></div>
+        <div class="col-sm-6">
+            <input type="text" class="form-control text-black" id="gst_number" name="gst_number" readonly>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-sm-2"><label for="place_of_supply">Place of Supply</label></div>
+        <div class="col-sm-6">
+            <input type="text" class="form-control text-black" id="place_of_supply" name="place_of_supply" readonly>
+        </div>
+    </div>
+    
+    <style>
+        #gst_number_container {
+            height: auto;
+            visibility: visible;
+        }
+    </style>
+    
+    <script>
+        // Add an event listener to the customer selection dropdown
+        document.getElementById('customer_sel').addEventListener('change', function () {
+            // Get the selected option
+            var selectedOption = this.options[this.selectedIndex];
+            
+            // Update the input fields with customer information
+            document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+            document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+            document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
+    
+            // Check the GST treatment to determine whether to show or hide the GST number
+            var gstTreatment = selectedOption.getAttribute('data-gsttreatment');
+            var gstNumberField = document.getElementById('gst_number');
+            var gstNumberContainer = document.getElementById('gst_number_container');
+            if (gstTreatment === "Unregistered Business-not Registered under GST") {
+                gstNumberField.value = ''; // Clear the value of the GST number field
+                gstNumberContainer.style.visibility = 'hidden'; // Hide the GST number field container
+            } else {
+                gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
+                gstNumberContainer.style.visibility = 'visible'; // Show the GST number field container
+            }
+        });
+    </script>
+    
       </script>
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -1159,7 +1179,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
                   <div class="form-group row mt-2">
                     <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" style="color:rgb(214, 75, 75) ;"> GST Treatment*</label>
                      
-                    <div class=" col-sm-12 col-md-3 col-lg-3">
+                    <div class=" col-md-6 mt-2">
                         <select name="c_gsttype" id="c_gsttype" class="form-control bg-light text-dark" onclick="gstPan_function()">
                             <option value="Select a Gst Treatment" selected>Select a Gst Treatment</option>
                             <option value="Registered Business-Regular Business that is registered under GST">Registered Business-Regular Business that is registered under GST</option>
@@ -1178,7 +1198,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
                     <div class="row mt-4">
                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label"  style="color:rgb(214, 75, 75) ;"> GSTIN/UIN*</label>
                          
-                        <div class=" col-sm-12 col-md-3 col-lg-3">
+                        <div class=" col-md-6 mt-2">
                             <input type="text" class="form-control bg-light text-dark" name="gst_num" placeholder="29APPCK7465F1Z1" id="gst_num" onmouseout="gst_check()"> 
                             <label id="gst_label"></label>     
     
@@ -1190,7 +1210,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
                     <div class=" row mt-4">
                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label" > PAN</label>
                          
-                        <div class=" col-sm-12 col-md-3 col-lg-3">
+                        <div class=" col-md-6 mt-2">
                             <input type="text" class="form-control bg-light text-dark" id="pan_number" placeholder="ABCDE1234F" onmouseout="pan_check()" name="pan_number">  
                             <label id="pan_label"></label>     
 
@@ -2021,6 +2041,75 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
               </div>
 
             </div>
+
+            <div class="row" >
+              <div class="col-md-10">
+                {% comment %} <label><input type="checkbox" value="trackstate" name="trackstate" onclick="toggleForm()" style="display: none;">
+               Track Inventory for this item</label> {% endcomment %}
+                {% comment %} <input type="hidden" name="trackState" id="trackState" value="" unchecked> {% endcomment %}
+                <label>
+                  <input type="checkbox" name="trackstate" value="trackstate" class=" bg-dark"  onclick="toggleFormFields()">
+                  Track Inventory for this item
+                </label>
+                <div id="formFields" style="display: none;"> 
+                  <div class="form-group row" >
+                    <label class="col-sm-2 col-form-label">Inventory Account *</label>
+                    <div class="col-sm-10 col-md-7 col-9" style="margin-left: -1rem;">
+                      <select class="form-select form-select-sm mt-3" name="invacc">
+                        <option>Choose..</option>
+                        <option value="inventory assets">Inventory Asset</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group row ">
+                    <label class="col-sm-2 col-form-label">Opening Stock</label>
+                    <div class=" col-md-5">
+                      <input  type="number" class="form-control  bg-dark"  name="openstock" value="0">
+                    </div>
+                    <div class="col-md-5  ">
+                      <div class="row align-items-center">
+                        <label class="col-sm-6 col-form-label">Opening Stock Rate per Unit</label>
+                        <div class="col-sm-6">
+                          <input type="number" class="form-control bg-dark" name="inventoryaccntperunit"  value="0">
+                        </div>
+
+                      </div>
+                    </div>
+                    <fieldset class="form-group">
+                      <div class="row">
+                        <label class="col-form-label col-sm-2 pt-2">Activation tag<i class="fa fa-question-circle"></i></label>
+                        <div class="col-sm-10 form-inline">
+                          <div class="form-check ">
+                            <input  class="form-check-input" type="radio" name="satus" id="gridRadios1" value="Active"  style="margin-left:5px;" >
+                            <label class="form-check-label" for="gridRadios1">Activate</label>
+                          </div>
+                          <div class="form-check ml-5">
+                            <input  class="form-check-input" type="radio" name="satus" id="gridRadios2" value="Inactive"  style="margin-left:50px;">
+                            <label class="form-check-label" for="gridRadios2">Non-Activate</label>
+                          </div>
+                                      
+                        </div>
+                      </div>
+                    </fieldset>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <script>
+              function toggleFormFields() {
+                var formFields = document.getElementById("formFields");
+                var checkbox = document.querySelector("input[name=trackstate]");
+          
+                if (checkbox.checked) {
+                  formFields.style.display = "block";
+                } else {
+                  formFields.style.display = "none";
+                }
+              }
+            </script>
+            <br><br> <br>
+
 
             <div class="row mt-3">
                 <div class="col-md-6">

@@ -72,6 +72,9 @@
                         Sort
                         </button>
                         <div class="dropdown-menu ">
+                          <a class="dropdown-item" href="#" id="all-challan">
+                            <i class="fa fa-sort"></i> All
+                        </a>
                           <a class="dropdown-item" href="#" id="sort-challan">
                             <i class="fa fa-sort"></i> Challan Number
                         </a>
@@ -154,7 +157,7 @@
                     {% for v in view %}
                     <tr class="clickable-row" style="cursor: pointer;">
                         <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.chellan_date | date:'d-m-Y'}}</a></td>
-                        <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}" style="color: rgb(230, 152, 8);">{{v.chellan_no}}</a></td>
+                        <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}" >{{v.chellan_no}}</a></td>
                         <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.customer_name}}</a></td>
                         <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.customer_mailid}}</a></td>
                         <td class="text-light"><a href="{% url 'delivery_challan_overview' v.id %}">{{v.total}}</a></td>
@@ -181,33 +184,40 @@
 
 <script>
   $(document).ready(function () {
-      var $rows = $('#table-id tbody tr');
+    var $rows = $('#table-id tbody tr');
+    var originalOrder = $rows.toArray(); // Keep a reference to the original order of rows
 
-      $('#search').keyup(function () {
-          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-          $rows.hide().filter(function () {
-              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-              return ~text.indexOf(val);
-          }).show();
-      });
+    $('#search').keyup(function () {
+        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        $rows.hide().filter(function () {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+            return ~text.indexOf(val);
+        }).show();
+    });
 
-      $('#sort-challan').on('click', function () {
-          sortTable(1); // Sort by Challan Number (2nd column)
-      });
+    $('#sort-challan').on('click', function () {
+        sortTable(1); // Sort by Challan Number (2nd column)
+    });
 
-      $('#sort-customer').on('click', function () {
-          sortTable(2); // Sort by Customer Name (3rd column)
-      });
+    $('#sort-customer').on('click', function () {
+        sortTable(2); // Sort by Customer Name (3rd column)
+    });
 
-      function sortTable(column) {
-          $rows.sort(function (a, b) {
-              var aVal = $(a).find('td').eq(column).text();
-              var bVal = $(b).find('td').eq(column).text();
-              return aVal.localeCompare(bVal);
-          });
-          $('#table-id tbody').html($rows);
-      }
-  });
+    $('#all-challan').on('click', function () {
+        // Reset to the original order of rows
+        $('#table-id tbody').empty().append(originalOrder);
+    });
+
+    function sortTable(column) {
+        $rows.sort(function (a, b) {
+            var aVal = $(a).find('td').eq(column).text();
+            var bVal = $(b).find('td').eq(column).text();
+            return aVal.localeCompare(bVal);
+        });
+        $('#table-id tbody').html($rows);
+    }
+});
+
 </script>
 
   <script>
