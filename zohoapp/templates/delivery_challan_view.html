@@ -286,14 +286,14 @@ style="background-color: rgba(124, 124, 123, 0.507); height: 800px;">
         <tbody>
             {% for item in items %}
             <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ item.item_name }}</td>
-                <td>{{ item.hsn }}</td>
-                <td class="text-right">{{ item.quantity }}</td>
-                <td class="text-right">{{ item.rate|floatformat:1 }}</td>
-                <td class="text-right">{{ item.discount|floatformat:1 }}</td>
-                <td class="text-right">{{ item.tax_percentage }}</td>
-                <td class="text-right">{{ item.amount|floatformat:1 }}</td>
+                <td  style="color: black;">{{ forloop.counter }}</td>
+                <td  style="color: black;">{{ item.item_name }}</td>
+                <td  style="color: black;">{{ item.hsn }}</td>
+                <td class="text-right"  style="color: black;">{{ item.quantity }}</td>
+                <td class="text-right"  style="color: black;">{{ item.rate|floatformat:1 }}</td>
+                <td class="text-right"  style="color: black;">{{ item.discount|floatformat:1 }}</td>
+                <td class="text-right"  style="color: black;">{{ item.tax_percentage }}</td>
+                <td class="text-right"  style="color: black;">{{ item.amount|floatformat:1 }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -304,43 +304,43 @@ style="background-color: rgba(124, 124, 123, 0.507); height: 800px;">
                 <tr>
                     <td class=" text-dark" style="font-weight: bold;">Sub-Total:</td>
                     
-                    <td class="text-right" style="text-align: end;">{{ estimate.sub_total|floatformat:1}}</td>
+                    <td class="text-right" style="text-align: end; color: black;" >{{ estimate.sub_total|floatformat:1}}</td>
                 </tr>
                 {% if estimate.cgst != 0 %}
                 <tr>
                     <td class="text-right text-dark">CGST:</td>
-                    <td class="text-right" style="text-align: end;">{{ estimate.cgst|floatformat:1}}</td>
+                    <td class="text-right" style="text-align: end; color: black;">{{ estimate.cgst|floatformat:1}}</td>
                 </tr>
                 {% endif %}
                 {% if estimate.sgst != 0 %}
                 <tr>
                     <td class="text-right text-dark">SGST:</td>
-                    <td class="text-right" style="text-align: end;">{{ estimate.sgst|floatformat:1}}</td>
+                    <td class="text-right" style="text-align: end; color: black;">{{ estimate.sgst|floatformat:1}}</td>
                 </tr>
                 {% endif %}
                 {% if estimate.igst != 0 %}
                 <tr>
                     <td class="text-right text-dark">IGST:</td>
-                    <td class="text-right" style="text-align: end;">{{ estimate.igst|floatformat:1}}</td>
+                    <td class="text-right" style="text-align: end; color: black;">{{ estimate.igst|floatformat:1}}</td>
                 </tr>
                 {% endif %}
                 {% if estimate.shipping_charge != 0 %}
                 <tr>
                     <td class="text-right text-dark">Shipping Charge:</td>
-                    <td class="text-right" style="text-align: end;">{{ estimate.shipping_charge|floatformat:1}}</td>
+                    <td class="text-right" style="text-align: end; color: black;">{{ estimate.shipping_charge|floatformat:1}}</td>
                 </tr>
                 {% endif %}
                 {% if estimate.adjustment != 0 %}
                 <tr>
                     <td class="text-right text-dark">Adjustment:</td>
-                    <td class="text-right" style="text-align: end;">{{ estimate.adjustment|floatformat:1}}</td>
+                    <td class="text-right" style="text-align: end; color: black;">{{ estimate.adjustment|floatformat:1}}</td>
                 </tr>
                 {% endif %}
                 <tr>
 
                     <td class="text-right text-warning" style="font-weight: bold;">Total:</td>
                     
-                    <td class="text-right " style="font-weight: bold;text-align: end;">{{ estimate.total|floatformat:1}}</td>
+                    <td class="text-right " style="font-weight: bold;text-align: end; color: black;">{{ estimate.total|floatformat:1}}</td>
                 </tr>
 
             </table>

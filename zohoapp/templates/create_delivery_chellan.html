@@ -546,108 +546,99 @@ transition: transform 0.4s ,top 0.4s;
                 <input type="hidden" name="customer_id" id="customer_id">
 
 <!-- Customer Name -->
-<div class="row mb-4">
-  <div class="col-sm-2">
-    <label for="customer_name">Customer Name*</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <select class="form-control text-dark" id="customer_sel" name="customer_name" >
-      <!-- Add a hidden input field to store the selected customer's ID -->
-
-      <option>Select Customer</option>
-      {% for cust in customers %}
-        <option value="{{ cust.id }}" data-customer-id="{{ cust.id }}" data-email="{{ cust.customerEmail }}" data-gst-treatment="{{ cust.GSTTreatment }}" data-gst-number="{{ cust.GSTIN }}" data-place-of-supply="{{ cust.placeofsupply }}">
-          {{ cust.customerName }}
-        </option>
-      {% endfor %}
-    </select>
+     <div class="row mb-4 border-top pt-5">
+            <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
+            <div class="col-sm-6">
+                <select  class="registration-type form-control text-dark" id="customer_sel" name="customer_name" >
+                    <option type="hidden" value="vendor">select</option>
     
+                    {% for cust in customers %}
+                    <option value="{{cust.id}}" data-email="{{ cust.customerEmail }}" data-gsttreatment="{{ cust.GSTTreatment }}" data-gstnumber="{{ cust.GSTIN }}" data-placeofsupply="{{ cust.placeofsupply }}"   >{{cust.customerName}}</option>
+                    {% endfor %}
+                    <!-- <option value="customer">Register as a customer</option> -->
     
-  </div>
-  <div class="col-sm-4">
-    <a href="" data-toggle="modal" data-target="#newcustomer">
-      <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
-    </a>
-  </div>
-</div>
-
-<!-- Customer Email -->
-<div class="row mb-4">
-  <div class="col-sm-2">
-    <label for="customer_mail">Customer Email</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <input type="email" id="customer_mail" name="customer_mail" class="form-control text-dark" readonly>
-  </div>
-</div>
-
-<!-- GST Treatment -->
-<div class="row mb-4">
-  <div class="col-sm-2">
-    <label for="gst_treatment">GST Treatment</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <input type="text" id="gst_treatment" name="gst_treatment" class="form-control text-dark" readonly>
-  </div>
-</div>
-
-<!-- GST Number -->
-<div class="row mb-4" id="gst_number_row">
-  <div class="col-sm-2" id="gst_number_label">
-    <label for="gst_number">GST Number</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <input type="text" id="gst_number" name="gst_number" class="form-control text-dark" readonly>
-  </div>
-</div>
-
-
-<!-- Place of Supply -->
-<div class="row mb-4">
-  <div class="col-sm-2">
-    <label for="place_of_supply">Place of Supply</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <input type="text" id="place_of_supply" name="place_of_supply" class="form-control text-dark" readonly>
-  </div>
-</div>
-
-
-<script>
-  $(document).ready(function () {
-    $('#customer_sel').change(function () {
-      var selectedCustomerId = $(this).find(":selected").data("customer-id"); // Get the customer ID
-      $.ajax({
-        url: '/get_customer_details/',
-        data: {
-          customer_id: selectedCustomerId // Send the customer ID
-        },
-        dataType: 'json',
-        success: function (data) {
-          // Update form fields with customer details
-          $('#customer_mail').val(data.email);
-          $('#place_of_supply').val(data.place_of_supply);
-
-          // Check the GST treatment and hide/show the GST number field and label accordingly
-          if (data.gst_treatment === 'Unregistered Business-not Registered under GST') {
-            $('#gst_number_row').hide(); // Hide the entire row containing the GST number field and label
-          } else {
-            $('#gst_number_row').show();
-          }
-
-          // Update GST treatment field
-          $('#gst_treatment').val(data.gst_treatment);
-
-          // Update GST number field
-          $('#gst_number').val(data.gst_number);
-        },
-        error: function () {
-          // Handle error if customer details cannot be fetched
-          alert('Failed to fetch customer details.');
+                </select>
+            
+            </div>
+            <div class="col-sm-4">
+              <a  href="" data-toggle="modal" data-target="#newcustomer"><i class="fa-solid  fa fa-plus p-2 rounded"
+                  style="color: white; background-color: rgb(210, 132, 30);height: 37px;"></i></a>
+          </div>
+        </div>
+     
+        <div class="row mb-4">
+          <div class="col-sm-2"><label for="customer_email">Customer Email</label></div>
+          <div class="col-sm-6">
+              <input type="text" class="form-control text-black" id="customer_email" name="customer_email" readonly>
+          </div>
+      </div>
+      
+      <div class="row mb-4">
+        <div class="col-sm-2"><label for="gst_treatment">GST Treatment</label></div>
+        <div class="col-sm-6">
+            <input type="text" class="form-control text-black" id="gst_treatment" name="gst_treatment" readonly>
+        </div>
+    </div>
+    
+    <div class="row mb-4" id="gst_number_container">
+        <div class="col-sm-2"><label for="gst_number">GST Number</label></div>
+        <div class="col-sm-6">
+            <input type="text" class="form-control text-black" id="gst_number" name="gst_number" readonly>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-sm-2"><label for="place_of_supply">Place of Supply</label></div>
+        <div class="col-sm-6">
+            <input type="text" class="form-control text-black" id="place_of_supply" name="place_of_supply" readonly>
+        </div>
+    </div>
+    
+    <style>
+        #gst_number_container {
+            height: auto;
+            visibility: visible;
         }
-      });
+    </style>
+    
+    <script>
+        // Add an event listener to the customer selection dropdown
+        document.getElementById('customer_sel').addEventListener('change', function () {
+            // Get the selected option
+            var selectedOption = this.options[this.selectedIndex];
+            
+            // Update the input fields with customer information
+            document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+            document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+            document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
+    
+            // Check the GST treatment to determine whether to show or hide the GST number
+            var gstTreatment = selectedOption.getAttribute('data-gsttreatment');
+            var gstNumberField = document.getElementById('gst_number');
+            var gstNumberContainer = document.getElementById('gst_number_container');
+            if (gstTreatment === "Unregistered Business-not Registered under GST") {
+                gstNumberField.value = ''; // Clear the value of the GST number field
+                gstNumberContainer.style.visibility = 'hidden'; // Hide the GST number field container
+            } else {
+                gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
+                gstNumberContainer.style.visibility = 'visible'; // Show the GST number field container
+            }
+        });
+    </script>
+    
+      </script>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#customer_sel').change(function () {
+            var selectedOption = $(this).find(':selected');
+            $('#customer_email').val(selectedOption.data('email'));
+            $('#gst_treatment').val(selectedOption.data('gsttreatment'));
+            $('#gst_number').val(selectedOption.data('gstnumber'));
+            $('#place_of_supply').val(selectedOption.data('placeofsupply'));
+        });
     });
-  });
 </script>
 
 

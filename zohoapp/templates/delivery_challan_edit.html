@@ -611,7 +611,7 @@ function calc_ship()
             Delivery Challan</a></div>
  </div>
 
-<form method="POST" action="{% url 'update_challan' estimate.id %}" class="p-5" enctype="multipart/form-data" novalidate
+<form method="POST" action="{% url 'update_challan' i.id %}" class="p-5" enctype="multipart/form-data" novalidate
     id="forms">
     {% csrf_token %}
     <input class="hidden"  id="state1" name="hidden_state1" value="{{ company.state }}">
@@ -619,119 +619,104 @@ function calc_ship()
         <input class="hidden" type="text" name="samp" id="samp" >
     <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
                 <input type="number" id="customer_id" name="customer_id" style="display: none;"  readonly>
-    
                 <div class="row mb-4 border-top pt-5">
-                  <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div> 
-                  <div class="col-sm-6 col-md-6 col-lg-6">
-                      <select class="form-control text-dark" id="customer_sel" name="customer_name" onchange="cust_mail()">
-                          <option value="{{ estimate.customer.id }} {{ estimate.customer_name }}" data-pos="{{ pls.placeofsupply }}" selected>{{ estimate.customer_name }}</option>
-                          {% for cust in customers %}
-                              <option value="{{ cust.id }} {{ cust.customerName }}" data-pos="{{ cust.placeofsupply }}" data-customer-id="{{ cust.id }}" data-email="{{ cust.customerEmail }}" data-gst-treatment="{{ cust.GSTTreatment }}" data-gst-number="{{ cust.GSTIN }}" data-place-of-supply="{{ cust.placeofsupply }}">
-                                  {{ cust.customerName }}
-                              </option>
-                          {% endfor %}
-                      </select>
-                      <!-- <a href="" data-toggle="modal" data-target="#create_customer"
-                        style="text-decoration: none;"><i class="mdi mdi-plus p-2 rounded"
-                              style="color: white; background-color: rgb(210, 132, 30);height: 35px;"></i></a> -->
+                  <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
+                  
+                  <div class="col-sm-6">
+                    <select class="registration-type form-control text-dark" id="customer_sel" name="customer_name">
+                      <option value="{{i.cu.id}}" data-email="{{ i.cu.customerEmail }}" data-gsttreatment="{{ i.cu.GSTTreatment }}" data-gstnumber="{{ i.cu.GSTIN }}" data-placeofsupply="{{ i.cu.placeofsupply }}" selected>{{i.customer_name}}</option>
+                      {% for cust in c %}
+                          {% if cust.customerName != i.customer_name %}
+                              <option value="{{cust.id}}" data-email="{{ cust.customerEmail }}" data-gsttreatment="{{ cust.GSTTreatment }}" data-gstnumber="{{ cust.GSTIN }}" data-placeofsupply="{{ cust.placeofsupply }}">{{cust.customerName}}</option>
+                          {% endif %}
+                      {% endfor %}
+                  </select>
+                  
+                  
+                  
                   </div>
-              
-              
-        <div class="col-sm-4">
-          <a  href="" data-toggle="modal" data-target="#newcustomer"><i class="fa-solid  fa fa-plus p-2 rounded"
-              style="color: white; background-color: rgb(210, 132, 30);height: 37px;"></i></a>
-      </div>
-    </div>
-   
-<!-- Customer Email -->
-<div class="row mb-4">
-  <div class="col-sm-2">
-    <label for="customer_mail">Customer Email</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <input type="email" id="customer_mail" name="customer_mail" class="form-control text-dark" value= "{{estimate.customer.customerEmail}}" readonly>
-  </div>
-</div>
-
-<!-- GST Treatment -->
-<div class="row mb-4">
-  <div class="col-sm-2">
-    <label for="gst_treatment">GST Treatment</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <input type="text" id="gst_treatment" name="gst_treatment" class="form-control text-dark" value="{{estimate.customer.GSTTreatment}}" readonly>
-  </div>
-</div>
-
-
-<!-- GST Number -->
-<div class="row mb-4" id="gst_number_row">
-  <div class="col-sm-2" id="gst_number_label">
-    <label for="gst_number">GST Number</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <input type="text" id="gst_number" name="gst_number" class="form-control text-dark" readonly>
-  </div>
-</div>
-
-
-<!-- Place of Supply -->
-<div class="row mb-4">
-  <div class="col-sm-2">
-    <label for="place_of_supply">Place of Supply</label>
-  </div>
-  <div class="col-sm-6 col-md-6 col-lg-6">
-    <input type="text" id="place_of_supply" name="place_of_supply" class="form-control text-dark" readonly>
-  </div>
-</div>
-
-
-<script>
-  $(document).ready(function () {
-    $('#customer_sel').change(function () {
-      var selectedCustomerId = $(this).find(":selected").data("customer-id"); // Get the customer ID
-      $.ajax({
-        url: '/get_customer_details/',
-        data: {
-          customer_id: selectedCustomerId // Send the customer ID
-        },
-        dataType: 'json',
-        success: function (data) {
-          // Update form fields with customer details
-          $('#customer_mail').val(data.email);
-          $('#place_of_supply').val(data.place_of_supply);
-
-          // Check the GST treatment and hide/show the GST number field and label accordingly
-          if (data.gst_treatment === 'Unregistered Business-not Registered under GST') {
-            $('#gst_number_row').hide(); // Hide the entire row containing the GST number field and label
-          } else {
-            $('#gst_number_row').show();
-          }
-
-          // Update GST treatment field
-          $('#gst_treatment').val(data.gst_treatment);
-
-          // Update GST number field
-          $('#gst_number').val(data.gst_number);
-        },
-        error: function () {
-          // Handle error if customer details cannot be fetched
-          alert('Failed to fetch customer details.');
-        }
-      });
-    });
-  });
-</script>
-
-
-
-</script>
+                  <div class="col-sm-4">
+                   
+                </div>
+              </div>
+           
+              <div class="row mb-4">
+                <div class="col-sm-2"><label for="customer_email">Customer Email</label></div>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control text-black" id="customer_email" name="customer_email" value="{{i.customer_mailid}}" readonly>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-sm-2"><label for="gst_treatment">GST Treatment</label></div>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control text-black" id="gst_treatment" name="gst_treatment" value="{{i.cu.GSTTreatment}}" readonly>
+                </div>
+            </div>
+            
+            <div class="row mb-4"  id="gst_number_container">
+                <div class="col-sm-2"><label for="gst_number">GST Number</label></div>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control text-black" id="gst_number" name="gst_number" value="{{i.cu.GSTIN}}" readonly>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-sm-2"><label for="place_of_supply">Place of Supply</label></div>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control text-black" id="place_of_supply" name="place_of_supply"   value="{{i.cu.placeofsupply}}" readonly>
+                </div>
+            </div>
+            
+            <script>
+              // Add an event listener to the customer selection dropdown
+              document.getElementById('customer_sel').addEventListener('change', function () {
+                  // Get the selected option
+                  var selectedOption = this.options[this.selectedIndex];
+                  
+                  // Update the input fields with customer information
+                  document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+                  document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+                  document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
+          
+                  // Check the GST treatment to determine whether to show or hide the GST number
+                  var gstTreatment = selectedOption.getAttribute('data-gsttreatment');
+                  var gstNumberField = document.getElementById('gst_number');
+                  var gstNumberContainer = document.getElementById('gst_number_container');
+                  if (gstTreatment === "Unregistered Business-not Registered under GST") {
+                      gstNumberField.value = ''; // Clear the value of the GST number field
+                      gstNumberContainer.style.visibility = 'hidden'; // Hide the GST number field container
+                  } else {
+                      gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
+                      gstNumberContainer.style.visibility = 'visible'; // Show the GST number field container
+                  }
+              });
+          </script>
+          
+            </script>
+      
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script>
+          $(document).ready(function () {
+              $('#customer_sel').change(function () {
+                  var selectedOption = $(this).find(':selected');
+                  $('#customer_email').val(selectedOption.data('email'));
+                  $('#gst_treatment').val(selectedOption.data('gsttreatment'));
+                  $('#gst_number').val(selectedOption.data('gstnumber'));
+                  $('#place_of_supply').val(selectedOption.data('placeofsupply'));
+              });
+          });
+      </script>
+            
+         
+      
+      
 
 
     <div class="row mb-4">
       <div class="col-sm-2"><label for="chellan_number">Delivery Challan#*</label></div>
       <div class="col-sm-6 col-md-6 col-lg-6"><input type="text" id="chellan_number" name="chellan_number" class="form-control text-dark"
-              value="{{estimate.chellan_no}}" >
+              value="{{i.chellan_no}}" >
         
       </div>
   </div>
@@ -740,12 +725,12 @@ function calc_ship()
     <div class="row mb-4">
         <div class="col-sm-2"><label for="reference">Reference#</label></div>
         <div class="col-sm-6 col-md-6 col-lg-6"> <input type="number" id="reference" name="reference" class="form-control text-dark"
-            value="{{estimate.reference}}" ></div>
+            value="{{i.reference}}" ></div>
     </div>
     <div class="row mb-4 ">
         <div class="col-sm-2"><label for="reference">Date*</label></div>
         <div class="col-sm-6 col-md-6 col-lg-6"> <input type="date" id="challan_date" name="challan_date" class="form-control text-dark"
-            value="{{estimate.chellan_date|date:'Y-m-d'}}" >
+            value="{{i.chellan_date|date:'Y-m-d'}}" >
         </div>
     </div>
 
@@ -753,7 +738,7 @@ function calc_ship()
         <div class="col-sm-2"><label for="chellan_type">Challan type</label></div>
         <div class="col-sm-6 col-md-6 col-lg-6">
             <select class="form-control text-dark" id="customer_sel" name="chellan_type" >
-                <option value="{{estimate.chellan_type}}" selected>{{estimate.chellan_type}}</option>
+                <option value="{{estimate.chellan_type}}" selected>{{i.chellan_type}}</option>
               
                 <option value="Supplay Of Liquid Gas">Supplay Of Liquid Gas</option>
                 <option value="Job Work">Job Work</option>
@@ -1016,7 +1001,7 @@ function calc_ship()
 
           <label for="">Customer Notes</label>
           <textarea name="customer_note" id="" class="form-control text-dark"
-          placeholder="Customer notes" style="height: 40%;">{{estimate.customer_notes}}</textarea>
+          placeholder="Customer notes" style="height: 40%;">{{i.customer_notes}}</textarea>
       </div>
 
 
@@ -1025,46 +1010,46 @@ function calc_ship()
                 <tr style="font-weight: bold;">
                     <td>Sub Total</td>
                     
-                    <td><input type="text" id="subtotal" name="subtotal" value="{{estimate.sub_total}}"
+                    <td><input type="text" id="subtotal" name="subtotal" value="{{i.sub_total}}"
                             class="bg-transparent border-0 text-right text-light form-control" step="any"></td>
                 </tr>
                 <tr style="font-weight: bold;" style="display: none;" id="tr_igst">
                     <td>IGST</td>
                     
-                    <td><input type="text" id='igst' name="igst" value="{{ estimate.igst }}" step="any"
+                    <td><input type="text" id='igst' name="igst" value="{{ i.igst }}" step="any"
                             class="bg-transparent border-0 text-right text-light form-control"></td>
                 </tr>
                 <tr style="font-weight: bold;" style="display: none;" id="tr_cgst">
                     <td>CGST</td>
                     
-                    <td><input type="text" id='cgst' name="cgst" value="{{ estimate.cgst }}" step="any"
+                    <td><input type="text" id='cgst' name="cgst" value="{{ i.cgst }}" step="any"
                             class="bg-transparent border-0 text-right text-light form-control"></td>
                 </tr>
                 <tr style="font-weight: bold;" style="display: none;" id="tr_sgst">
                     <td>SGST</td>
                     
-                    <td><input type="text" id='sgst' name="sgst" value="{{ estimate.sgst }}" step="any"
+                    <td><input type="text" id='sgst' name="sgst" value="{{ i.sgst }}" step="any"
                             class="bg-transparent border-0 text-right text-light form-control"></td>
                 </tr>
                 <tr style="font-weight: bold;">
                     <td>Tax Amount</td>
                     
-                    <td><input type="text" id="total_taxamount" name="total_taxamount" value="{{estimate.tax_amount}}"
+                    <td><input type="text" id="total_taxamount" name="total_taxamount" value="{{i.tax_amount}}"
                             class="bg-transparent border-0 text-right text-light form-control" step="any"></td>
                 </tr>
                 <tr style="font-weight: bold;">
                     <td>Shipping Charges</td>
-                    <td><input type="number" id="shipping_charge" name="shipping_charge" onchange="calc_ship()" value="{{estimate.shipping_charge}}"
+                    <td><input type="number" id="shipping_charge" name="shipping_charge" onchange="calc_ship()" value="{{i.shipping_charge}}"
                             class="bg-transparent border-0 text-right text-light form-control shipping_charge" step="any"></td>
                 </tr>
                 <tr style="font-weight: bold;">
                     <td>Adjustmment</td>
-                    <td><input type="number" id="adjustment_charge" name="adjustment_charge" onchange="calc_ship()" value="{{estimate.adjustment}}"
+                    <td><input type="number" id="adjustment_charge" name="adjustment_charge" onchange="calc_ship()" value="{{i.adjustment}}"
                             class="bg-transparent border-0 text-right text-light form-control adjustment" step="any"> </td>
                 </tr>
                 <tr>
                     <th style="color: rgb(245, 161, 5);font-weight: bold;">Total ( &#x20B9; )</th>
-                    <th><input type="text"  id="total" name="total" value="{{estimate.total}}"
+                    <th><input type="text"  id="total" name="total" value="{{i.total}}"
                             class="bg-transparent text-warning border-0 text-right" step="any"></th>
                 </tr>
             </table>
@@ -1077,7 +1062,7 @@ function calc_ship()
         <div class="col-md-6 col-lg-6 col-sm-12 py-5">
           <label for="">Terms & Conditions</label>
           <textarea class="form-control text-dark" style="height: 100%;" rows="6"  name="tearms_conditions" id="" 
-              placeholder=" Enter the terms & conditions of your business to be displayed in your transaction.">{{ estimate.terms_conditions }}</textarea>
+              placeholder=" Enter the terms & conditions of your business to be displayed in your transaction.">{{ i.terms_conditions }}</textarea>
       </div>
     
           
@@ -1103,8 +1088,8 @@ function calc_ship()
                   style="background-color: rgb(210, 132, 30);">
                   <i class="fas fa-upload text-white"></i> Upload File
               </label>
-              {% if estimate.attachment != ""%}
-                <input id="file-upload" class="form-control bg-light text-dark" value="{{estimate.attachment.url}}" type="file" name="file" style="display:none;">
+              {% if i.attachment != ""%}
+                <input id="file-upload" class="form-control bg-light text-dark" value="{{i.attachment.url}}" type="file" name="file" style="display:none;">
                 {%else%}
                 <input id="file-upload" class="form-control bg-light text-dark"  type="file" name="file" style="display:none;">
                 {%endif%}

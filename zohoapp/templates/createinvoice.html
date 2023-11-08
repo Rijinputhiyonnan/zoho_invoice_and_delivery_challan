@@ -151,30 +151,34 @@ crossorigin="anonymous"></script>
         }
     </style>
     
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-      $(document).ready(function () {
-        $('#customer_sel').change(function () {
-          var selectedOption = $(this).find(':selected');
-          $('#customer_email').val(selectedOption.data('email'));
-          $('#gst_treatment').val(selectedOption.data('gsttreatment'));
-          $('#place_of_supply').val(selectedOption.data('placeofsupply'));
+        // Add an event listener to the customer selection dropdown
+        document.getElementById('customer_sel').addEventListener('change', function () {
+            // Get the selected option
+            var selectedOption = this.options[this.selectedIndex];
+            
+            // Update the input fields with customer information
+            document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+            document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+            document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
     
-          var gstTreatment = selectedOption.data('gsttreatment');
-          var gstNumberContainer = $('#gst_number_row');
-    
-          if (gstTreatment === 'Unregistered Business-not Registered under GST') {
-            $('#gst_number').val('');
-            gstNumberContainer.hide();
-          } else {
-            $('#gst_number').val(selectedOption.data('gstnumber'));
-            gstNumberContainer.show();
-          }
+            // Check the GST treatment to determine whether to show or hide the GST number
+            var gstTreatment = selectedOption.getAttribute('data-gsttreatment');
+            var gstNumberField = document.getElementById('gst_number');
+            var gstNumberContainer = document.getElementById('gst_number_container');
+            if (gstTreatment === "Unregistered Business-not Registered under GST") {
+                gstNumberField.value = ''; // Clear the value of the GST number field
+                gstNumberContainer.style.visibility = 'hidden'; // Hide the GST number field container
+            } else {
+                gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
+                gstNumberContainer.style.visibility = 'visible'; // Show the GST number field container
+            }
         });
-      });
     </script>
     
-      
+      </script>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
         $('#customer_sel').change(function () {

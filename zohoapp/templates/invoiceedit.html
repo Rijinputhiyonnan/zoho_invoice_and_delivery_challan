@@ -185,7 +185,7 @@ crossorigin="anonymous"></script>
           </div>
       </div>
       
-      <div class="row mb-4">
+      <div class="row mb-4"  id="gst_number_container">
           <div class="col-sm-2"><label for="gst_number">GST Number</label></div>
           <div class="col-sm-6">
               <input type="text" class="form-control text-black" id="gst_number" name="gst_number" value="{{i.customer.GSTIN}}" readonly>
@@ -200,18 +200,44 @@ crossorigin="anonymous"></script>
       </div>
       
       <script>
-          // Add an event listener to the customer selection dropdown
-          document.getElementById('customer_sel').addEventListener('change', function () {
-              // Get the selected option
-              var selectedOption = this.options[this.selectedIndex];
-              
-              // Update the input fields with customer information
-              document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
-              document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
-              document.getElementById('gst_number').value = selectedOption.getAttribute('data-gstnumber');
-              document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
-          });
+        // Add an event listener to the customer selection dropdown
+        document.getElementById('customer_sel').addEventListener('change', function () {
+            // Get the selected option
+            var selectedOption = this.options[this.selectedIndex];
+            
+            // Update the input fields with customer information
+            document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+            document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+            document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
+    
+            // Check the GST treatment to determine whether to show or hide the GST number
+            var gstTreatment = selectedOption.getAttribute('data-gsttreatment');
+            var gstNumberField = document.getElementById('gst_number');
+            var gstNumberContainer = document.getElementById('gst_number_container');
+            if (gstTreatment === "Unregistered Business-not Registered under GST") {
+                gstNumberField.value = ''; // Clear the value of the GST number field
+                gstNumberContainer.style.visibility = 'hidden'; // Hide the GST number field container
+            } else {
+                gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
+                gstNumberContainer.style.visibility = 'visible'; // Show the GST number field container
+            }
+        });
+    </script>
+    
       </script>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#customer_sel').change(function () {
+            var selectedOption = $(this).find(':selected');
+            $('#customer_email').val(selectedOption.data('email'));
+            $('#gst_treatment').val(selectedOption.data('gsttreatment'));
+            $('#gst_number').val(selectedOption.data('gstnumber'));
+            $('#place_of_supply').val(selectedOption.data('placeofsupply'));
+        });
+    });
+</script>
       
    
 </div>
@@ -249,42 +275,7 @@ crossorigin="anonymous"></script>
       </div>
  
       
-      <script>
-        function calculateDueDate() {
-          const invoiceDate = new Date(document.getElementById('input-1').value);
-          const paymentTerm = document.getElementById('inv_term').value;
-          const dueDateField = document.getElementById('input-2');
-      
-          if (paymentTerm === "recpt") {
-            // Due on receipt, no additional days
-            dueDateField.value = document.getElementById('input-1').value;
-          } else if (paymentTerm === "end_of_month") {
-            // Calculate due date as the end of the month
-            const dueDate = new Date(invoiceDate);
-            dueDate.setMonth(dueDate.getMonth() + 1);
-            dueDate.setDate(0); // Set to the last day of the current month
-            const formattedDueDate = dueDate.toISOString().slice(0, 10);
-            dueDateField.value = formattedDueDate;
-          } else {
-            // Get the number of days from the selected payment term
-            const days = parseInt(paymentTerm);
-            const dueDate = new Date(invoiceDate);
-            dueDate.setDate(invoiceDate.getDate() + days);
-            const formattedDueDate = dueDate.toISOString().slice(0, 10);
-            dueDateField.value = formattedDueDate;
-          }
-        }
-      
-        function setupEventListeners() {
-          document.getElementById('input-1').addEventListener('change', calculateDueDate);
-          document.getElementById('inv_term').addEventListener('change', calculateDueDate);
-          window.onload = calculateDueDate;
-        }
-      
-        setupEventListeners();
-      </script>
-      
-      
+  
 
             <div class="row mb-4 border-bottom pb-5">
               <div class="col-sm-2">
@@ -314,24 +305,71 @@ crossorigin="anonymous"></script>
                         <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
                     </a>
                 </div>
+                <div class="col-sm-8">
+                  <p id="alertMessage" style="color: red; font-style: italic;"></p> <!-- Element to display the alert -->
+                </div>
+                
+                <script>
+                  function calculateDueDate() {
+                    const invoiceDate = new Date(document.getElementById('input-1').value);
+                    const paymentTerm = document.getElementById('inv_term').value;
+                    const dueDateField = document.getElementById('input-2');
+                    const alertElement = document.getElementById('alertMessage');
+                
+                    if (paymentTerm === "recpt") {
+                      // Due on receipt, no additional days
+                      dueDateField.value = document.getElementById('input-1').value;
+                      alertElement.textContent = ''; // Clear the alert message
+                    } else if (paymentTerm === "Due end of the month") {
+                      let dueDate;
+                      const nextMonth = new Date(invoiceDate.getFullYear(), invoiceDate.getMonth() + 1, 1);
+                      dueDate = new Date(nextMonth - 1);
+                      const formattedDueDate = dueDate.toISOString().slice(0, 10);
+                      dueDateField.value = formattedDueDate;
+                      alertElement.textContent = ''; // Clear the alert message
+                    } else {
+                      // Get the number of days from the selected payment term
+                      const days = parseInt(paymentTerm);
+                      const dueDate = new Date(invoiceDate);
+                      dueDate.setDate(invoiceDate.getDate() + days);
+                      const formattedDueDate = dueDate.toISOString().slice(0, 10);
+                      dueDateField.value = formattedDueDate;
+                      alertElement.textContent = ''; // Clear the alert message
+                    }
+                  }
+                
+                  document.getElementById('input-1').addEventListener('change', function() {
+                    calculateDueDate();
+                  });
+                
+                  document.getElementById('inv_term').addEventListener('change', function() {
+                    calculateDueDate(); // Update the due date
+                    const alertElement = document.getElementById('alertMessage');
+                    alertElement.textContent = "Please re-enter the invoice date to calculate the due date."; // Set the alert message
+                  });
+                
+                  calculateDueDate(); // Calculate the initial due date
+                </script>
+                
             </div>
-
 
             
 <!--payment method-->
 
 
 
-
 <div class="row mb-4">
   <div class="col-sm-2">
+   
       <label for="payment_method" >Payment Method</label>
   </div>
   <div class="col-sm-6">
+
+
     
-      <select class="form-control text-black" name="payment_method" id="payment_method" >
-       
-        <option value="{{invpay.payment_method}}">Select
+      <select class="form-control text-black" name="payment_method" id="payment_method"    >
+        
+        <option value="{{ip.payment_method}}"> {{invp.payment_method}} 
         </option> 
           <option value="cash">Cash</option>
           <option value="cheque">Cheque</option>
@@ -339,6 +377,7 @@ crossorigin="anonymous"></script>
           <option value="bank">Bank</option>
       </select>
   </div>
+  
 </div>
 <!-- Payment Method: Cash -->
 <div class="form-group row" id="cash_section" style="display: none;">
@@ -373,11 +412,11 @@ crossorigin="anonymous"></script>
   <label for="bank_name" class="col-sm-2 col-form-label">Select a Bank</label>
   <div class="col-sm-6">
     <select class="form-control text-dark" name="bank_name" id="bank_name">
-      {% for bank in banks %}
+   
       <option style="color: black;" value="{{ bank.id }}">{{ invp.bank.name }} </option>
      
         <option style="color: black;" value="{{ bank.id }}">{{ bank.name }}</option>
-      {% endfor %}
+      
     </select>
   </div>
 </div>
@@ -414,7 +453,7 @@ crossorigin="anonymous"></script>
 
            
 
-<div class="row">
+
   <div class="col-sm-12">
     
 <table class="table table-bordered text-white"  id="item_table" style="background-color: #b6b3b36b;table-layout: fixed;width: 100%;" onchange="calc()">
