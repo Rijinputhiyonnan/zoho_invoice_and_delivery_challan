@@ -15130,71 +15130,6 @@ def filter_by_sent_chellan_overview(request,pk):
 
 
 
-def convert_challan_to_invoice(request, id):
-    
-    challan = DeliveryChellan.objects.get(id=id)
-    user = request.user
-    company = company_details.objects.get(user=user)
-    all_estimates = DeliveryChellan.objects.filter(user=user)
-    estimate = DeliveryChellan.objects.get(id=id)
-    items = ChallanItems.objects.filter(chellan=estimate)
-    chellan_comments = delivery_chellan_comments.objects.filter(chellan=estimate.id, user=user)
-    
-
-   
-    new_invoice = invoice(
-        user=challan.user,
-        customer=challan.cu,
-        invoice_no=challan.chellan_no,
-        terms=challan.terms_conditions,
-        order_no=0,  # Update this value as needed
-        inv_date=challan.chellan_date,
-        due_date=challan.chellan_date,  # Update this value as needed
-        igst=challan.igst,
-        cgst=challan.cgst,
-        sgst=challan.sgst,
-        t_tax=challan.tax_amount,
-        subtotal=challan.sub_total,
-        shipping_charge=challan.shipping_charge,
-        adjustment=challan.adjustment,
-        grandtotal=challan.total,
-        cxnote=challan.customer_notes,
-        terms_condition=challan.terms_conditions,
-        status=challan.status,
-        file=challan.attachment,
-        estimate=None,  # Update this value as needed
-        paid_amount=0.0,
-        balance=challan.total  # Set the balance to the total amount initially
-    )
-    new_invoice.save()
-
-    # Retrieve the corresponding ChallanItems and create corresponding invoice_items
-    challan_items = ChallanItems.objects.filter(chellan=challan)
-    for item in challan_items:
-        new_invoice_item = invoice_item(
-            product=item.item_name,
-            quantity=item.quantity,
-            hsn=item.hsn,
-            tax=item.tax_percentage,
-            total=item.amount,
-            discount=item.discount,
-            rate=item.rate,
-            inv=new_invoice
-        )
-        new_invoice_item.save()
-        
-        context = {
-        
-        'company': company,
-        'all_estimates': all_estimates,
-        'estimate': estimate,
-        'items': items,
-        'comments': chellan_comments,
-        
-        
-    }
-
-    return render(request, 'delivery_challan_overview.html', context)
 
 
 
@@ -15208,6 +15143,7 @@ def delivery_challan_overview(request, id):
     estimate = DeliveryChellan.objects.get(id=id)
     items = ChallanItems.objects.filter(chellan=estimate)
     chellan_comments = delivery_chellan_comments.objects.filter(chellan=estimate.id, user=user)
+    inv = invoice.objects.all()
     
     print(items)
     context = {
@@ -15216,6 +15152,7 @@ def delivery_challan_overview(request, id):
         'estimate': estimate,
         'items': items,
         'comments': chellan_comments,
+        'inv': inv,
         
     }
     return render(request, 'delivery_challan_overview.html', context)
@@ -15613,3 +15550,77 @@ def edited_prod(request, id):
     }
 
     return render(request, 'invoiceedit.html', context)
+
+
+
+
+
+def convert_challan_to_invoice(request, id):
+    
+    challan = DeliveryChellan.objects.get(id=id)
+    user = request.user
+    company = company_details.objects.get(user=user)
+    all_estimates = DeliveryChellan.objects.filter(user=user)
+    estimate = DeliveryChellan.objects.get(id=id)
+    items = ChallanItems.objects.filter(chellan=estimate)
+    chellan_comments = delivery_chellan_comments.objects.filter(chellan=estimate.id, user=user)
+    
+
+   
+    new_invoice = invoice(
+        user=challan.user,
+        customer=challan.cu,
+        invoice_no=challan.chellan_no,
+        terms=challan.terms_conditions,
+        order_no=0,  # Update this value as needed
+        inv_date=challan.chellan_date,
+        due_date=challan.chellan_date,  # Update this value as needed
+        igst=challan.igst,
+        cgst=challan.cgst,
+        sgst=challan.sgst,
+        t_tax=challan.tax_amount,
+        subtotal=challan.sub_total,
+        shipping_charge=challan.shipping_charge,
+        adjustment=challan.adjustment,
+        grandtotal=challan.total,
+        cxnote=challan.customer_notes,
+        terms_condition=challan.terms_conditions,
+        status=challan.status,
+        file=challan.attachment,
+        estimate=None,  # Update this value as needed
+        paid_amount=0.0,
+        balance=challan.total  # Set the balance to the total amount initially
+    )
+    new_invoice.save()
+
+    # Retrieve the corresponding ChallanItems and create corresponding invoice_items
+    challan_items = ChallanItems.objects.filter(chellan=challan)
+    for item in challan_items:
+        new_invoice_item = invoice_item(
+            product=item.item_name,
+            quantity=item.quantity,
+            hsn=item.hsn,
+            tax=item.tax_percentage,
+            total=item.amount,
+            discount=item.discount,
+            rate=item.rate,
+            inv=new_invoice
+        )
+        new_invoice_item.save()
+        
+        is_converted = True  # Replace this with a check in your database for the invoice
+        if is_converted:
+            messages.error(request, 'Already converted to an invoice')
+        context = {
+        
+        'company': company,
+        'all_estimates': all_estimates,
+        'estimate': estimate,
+        'items': items,
+        'comments': chellan_comments,
+        'is_converted': is_converted,
+        
+        
+    }
+
+    return render(request, 'delivery_challan_overview.html', context)

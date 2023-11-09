@@ -58,6 +58,68 @@
     color: rgb(255, 255, 255);
 }
     
+
+
+
+
+.equal-length-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%; /* Make the container fill the height of the column */
+    margin-left: 2vh;
+    margin-right: .2vh;
+}
+
+.equal-length-item {
+    flex: 1;
+    text-align: center;
+}
+
+
+.page {
+    background: var(--white);
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    
+}
+
+.page[size="A4"] {
+    width: 24cm;
+    height: 29.7cm;
+    overflow: hidden;
+}
+
+
+.ribbon .ribbon-inner {
+    text-align: center;
+    color: #fff;
+    top: -20px;
+    left: -90px;
+    width: 120px;
+    padding: 3px;
+    /* position: relative;
+    transform: rotate(-45deg); */
+}
+.ribbon .ribbon-open {
+    background-color: #268ddd;
+    border-color: #1c72b4;
+}
+
+:root {
+    --body-bg: rgb(204, 204, 204);
+    --white: #000000;
+    --darkWhite: #ccc;
+    --black: #000000;
+    --dark: #615c60;
+    --themeColor: #22b8d1;
+    --pageShadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+}
+
+/* Font Include */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap');
+
 </style>
 
 
@@ -194,21 +256,43 @@
                             </a>
         
                             <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-                                {% if estimate.status == 'Draft'%}
-                        <a href="{% url 'change_status' id=estimate.id  %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
-                        data-toggle="tooltip" title="Change Status"><i class="fas fa-exchange-alt"> Change status</i>
-                       </a>
-                       
-                        {% endif %}
-                                                      
-<form action="{% url 'convert_challan_to_invoice' estimate.id %}" method="post">
-    {% csrf_token %}
-    <button type="submit"  style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"><i class="fas fa-exchange-alt">Convert to Invoice</i></button>
-</form>
-                                        
+                                {% if estimate.status == 'Draft' %}
+                                    <a href="{% url 'change_status' id=estimate.id %}" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white" data-toggle="tooltip" title="Change Status">
+                                        <i class="fas fa-exchange-alt"> Change status</i>
+                                    </a>
+                                {% endif %}
+                                {% if not estimate.invoice %}
+                                    <form action="{% url 'convert_challan_to_invoice' estimate.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white"  onclick="convertToInvoice()" {% if is_converted %}disabled{% endif %}>
+                                            <i class="fas fa-exchange-alt">Convert to Invoice</i>
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </div>
-
+                        <script>
+                            function convertToInvoice() {
+                              var button = document.getElementById('convert-to-invoice');
+                              button.innerHTML = 'Converting...';
+                              button.disabled = true;
+                          
+                              // Save the conversion status in local storage
+                              localStorage.setItem('isConverted', true);
+                          
+                              // Additional logic for the conversion process
+                            }
+                          
+                            // Check the conversion status on page load
+                            document.addEventListener('DOMContentLoaded', function () {
+                              var isConverted = localStorage.getItem('isConverted');
+                              if (isConverted === 'true') {
+                                var button = document.getElementById('convert-to-invoice');
+                                button.innerHTML = 'Already converted';
+                                button.disabled = true;
+                              }
+                            });
+                          </script>
                            
                         <div class="dropdown m-0 p-0 ms-1 mt-1" title="comments" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;">
                             <a href=" " class=" fas fa-comment-dots dropdown-toggle  btn-sm text-white ms-1"  
@@ -242,125 +326,161 @@
 
 <!-- .................................................................................. -->
 
-    <div id="div_estimate"  class="mx-2 my-4 p-4 "
-    style="background-color: rgba(124, 124, 123, 0.507);">
-    <div class="slip p-5 convert_to_pdf bg-light" id="selected-area"
-        style="box-shadow: 5px 5px 10px rgb(45, 45, 45);">
-        <div class="row">
-            <div class="col-sm-2 col-lg-2 col-md-2">
-                <!-- <div style="height: 40px;background-color: rgb(192, 128, 8);" > -->
-                    <h4 class="pt-2" style="color: rgb(192, 128, 8);">{{ estimate.status }}</h4>
-         <!-- </div> -->
-            </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col-md-12 ">
-                <h3 class="text-dark" style="text-transform: uppercase;">{{ company.company_name }}</h3>
-                <p class="text-dark" style="font-size: .71rem;font-weight:;">{{ company.address }}</p>
-                <p class="text-dark" style="font-size: .71rem;font-weight: ;">{{ company.city }},{{ company.state }}</p>
-                <h1 class="text-dark" style="font-size: 3rem; margin-left: 20rem;margin-top: -15%;">DELIVERY CHALLAN</h1>
-                <h6 class="text-dark" style="margin-left: 20rem;margin-top: -1%;">Delivery Challan Number : {{estimate.chellan_no }}</h6>
-            </div>
-            <!-- <div class="col-md-6 text-right">
-                <h1 class="text-dark" style="font-size: 3rem; margin-left: 2rem;">ESTIMATE</h1>
-                <h6 class="text-dark">Estimate Number : {{estimate.estimate_no }}</h6>
-            </div> -->
-        </div>
-        <hr>
-        <div class="row ">
-            <div class="col-md-12 mt-auto">
-                <h6 class="text-dark">Bill To</h6>
-                <h6 style="color: rgb(218, 142, 3);">{{ estimate.customer_name }} <br><span class="text-dark">{{ estimate.customer_mailid }}</span> </h6>
-                {% if estimate.customer.GSTIN %}
-                <h6 class="text-dark ">GSTIN : {{ estimate.customer.GSTIN }}</h6>
-                {% endif %}
-                <h6 class="text-dark " style="margin-left: 20rem;margin-top: -4%;">Order Date : {{ estimate.chellan_date }}</h6>
-                
+<div id="div_estimate"  class="mx-2 my-4 p-4 ">
+<div class="slip p-5 convert_to_pdf " id="selected-area"
+    >
 
-            </div>
-            <!-- <div class="col-md-6 text-right mt-auto">
-                <h6 class="text-dark ">Order Date : {{ estimate.estimate_date }}</h6>
-            </div> -->
-        </div>
-        <table class="table mt-2 " style="border-color: black;border-collapse: collapse;background-color: rgb(237, 237, 240);">
-            <thead >
-                <tr style="border-bottom: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;border-top: 1px solid black;"> 
-                    <th style="color: black;">#</th>
-                    <th  style="width: 30rem;color: black;">Item</th>
-                    <th  style="width: 30rem;color: black;">Hsn</th>
-                    <th  style="color: black;width: 20rem;">Quantity</th>
-                    <th  style="color: black;width: 20rem;">Rate</th>
-                    <th  style="color: black;width: 20rem;">Discount</th>
-                    <th  style="color: black;width: 20rem;">Tax</th>
-                    <th  style="color: black;width: 20rem;">Amount</th>
-                </tr>
-            </thead>
-            <tbody style="border-left: 1px solid black;border-right: 1px solid black" class="text-right text-dark">
-                {% for item in items %}
-                <tr style="border-bottom: 1px solid black;">
-                    <td class="text-right text-dark">{{ forloop.counter }}</td>
-                    <td class="text-right text-dark" style="text-align: center;">{{ item.item_name }}</td>
-                    <td class="text-right text-dark" style="text-align: center;">{{ item.hsn }}</td>
-                    <td class="text-right text-dark" style="text-align: center;">{{ item.quantity }}</td>
-                    <td class="text-right text-dark" style="text-align: center;">{{ item.rate|floatformat:1 }}</td>
-                    <td class="text-right text-dark" style="text-align: center;">{{ item.discount|floatformat:1 }}</td>
-                    <td class="text-right text-dark" style="text-align: center;">{{ item.tax_percentage }}</td>
-                    <td class="text-right text-dark" style="text-align: center;">{{ item.amount|floatformat:1 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="row">
-            <!-- <div class="col-sm-6 col-md-6 col-lg-6"></div> -->
+        <div id="slipdiv" style="background-color: #000000; border-radius: 2vh; ">
+            <div class="p-5"  >
+                <div class="my-5 page" size="A4">
+                    <div class="row" style="margin-top:1%;" id="printslip">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6 ml-3">
+                            <div class="card bg-white" style="border: 2px dotted black;">
+                                <div class="mt-2" style="text-align: center;">
+                                    <div class="text-center" style="font-size: 3vh; color: black;">
+                                        <b>{{company.company_name }} </b>
+                                    </div>
+                                    <span style="font-size: x-small; color: black;">{{ company.address }} <br>
+                                        {{company.city}},
+                                        {{company.state}}
+                                        {{company.pincode}} <br>
+                                        {{ company.contact_number }} <br>{{ company.company_email }} 
+                                    </span>
+                                </div>
+                                <div class="ml-4 mt-2" style="color: black;">
+                                    <div class="row">
+                                        <div class="col-md-6 text-left">Challan Number:</div>
+                                        <div class="col-md-5 text-right">{{estimate.chellan_no}}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 text-left">Customer Name:</div>
+                                        <div class="col-md-5 text-right">{{estimate.customer_name}}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 text-left">Order Date :</div>
+                                        <div class="col-md-5 text-right">{{estimate.chellan_date | date:'d-m-Y'}}</div>
+                                    </div>
+                                   
+                                </div>
+                                <div><br>
+                                    <div class="equal-length-container" style="color: black; ">
+                                        <div class="equal-length-item" style=" text-align: center;">
+                                            Product
+                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:95%">
+                                        </div>
+                                        <div class="equal-length-item ml-2"  style=" text-align:center;">
+                                            HSN
+                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%;">
+                                        </div>
+                                        <div class="equal-length-item"  style=" text-align: center; ">
+                                            Qty
+                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
+                                        </div>
+                                        <div class="equal-length-item"  style=" text-align: center; ">
+                                            Price
+                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
+                                        </div>
+                                        <div class="equal-length-item"  style=" text-align: center; ">
+                                           Discount
+                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
+                                        </div>
+                                        <div class="equal-length-item"  style=" text-align: center; ">
+                                            Tax
+                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
+                                        </div>
+                                        <div class="equal-length-item" style=" text-align: center; ">
+                                            Total
+                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% for j in items %}
+                                    <div class="equal-length-container" style="color: black; font-size: small; word-wrap: break-word; margin-bottom: 1vh;">
+                                        <div class="equal-length-item"  style="text-align: center; margin-left: 2px;">
+                                            {{j.item_name }}
+                                        </div>
+                                        <div class="equal-length-item" style="text-align: right;">
+                                            {{j.hsn}}
+                                        </div>
+                                        <div class="equal-length-item" style="text-align: center; ">
+                                            {{j.quantity}}
+                                        </div>
+                                        <div class="equal-length-item" style="text-align: center; ">
+                                            {{j.rate}}
+                                        </div>
+                                        <div class="equal-length-item" style="text-align: center; ">
+                                            {{j.discount}}
+                                        </div>
+                                        <div class="equal-length-item" style="text-align: center; ">
+                                            {{j.tax_percentage}}
+                                        </div>
+                                        <div class="equal-length-item" style="text-align: center; ">
+                                            {{j.amount}}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
 
-            <div class="col-sm-11 col-md-11 col-lg-11">
-                <table class="mt-2" style="margin-left: 70%;margin-top: 3%;">
-                    <tr>
-                        <td class=" text-dark" style="font-weight: bold;">Sub-Total:</td>
+                                <div><br>
+                                    
+                                    <div class="col-sm-11 col-md-11 col-lg-11">
+                                        <table class="mt-2" style="margin-right: 70%;margin-top: 3%;">
+                                            <tr>
+                                                <td class=" text-dark" style="font-weight: bold;">Sub-Total:</td>
+                                                
+                                                <td class="text-right text-dark" style="text-align: end;">{{ estimate.sub_total|floatformat:1}}</td>
+                                            </tr>
+                                            {% if estimate.cgst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">CGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;">{{ estimate.cgst|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if estimate.sgst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">SGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;">{{ estimate.sgst|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if estimate.igst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">IGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;">{{ estimate.igst|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if estimate.shipping_charge != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">Shipping Charge:</td>
+                                                <td class="text-right text-dark" style="text-align: end;">{{ estimate.shipping_charge|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if estimate.adjustment != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">Adjustment:</td>
+                                                <td class="text-end text-dark" style="text-align: end;">{{ estimate.adjustment|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            <tr>
                         
-                        <td class="text-right text-dark" style="text-align: end;">{{ estimate.sub_total|floatformat:1}}</td>
-                    </tr>
-                    {% if estimate.cgst != 0 %}
-                    <tr>
-                        <td class="text-right text-dark">CGST:</td>
-                        <td class="text-right text-dark" style="text-align: end;">{{ estimate.cgst|floatformat:1}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if estimate.sgst != 0 %}
-                    <tr>
-                        <td class="text-right text-dark">SGST:</td>
-                        <td class="text-right text-dark" style="text-align: end;">{{ estimate.sgst|floatformat:1}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if estimate.igst != 0 %}
-                    <tr>
-                        <td class="text-right text-dark">IGST:</td>
-                        <td class="text-right text-dark" style="text-align: end;">{{ estimate.igst|floatformat:1}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if estimate.shipping_charge != 0 %}
-                    <tr>
-                        <td class="text-right text-dark">Shipping Charge:</td>
-                        <td class="text-right text-dark" style="text-align: end;">{{ estimate.shipping_charge|floatformat:1}}</td>
-                    </tr>
-                    {% endif %}
-                    {% if estimate.adjustment != 0 %}
-                    <tr>
-                        <td class="text-right text-dark">Adjustment:</td>
-                        <td class="text-end text-dark" style="text-align: end;">{{ estimate.adjustment|floatformat:1}}</td>
-                    </tr>
-                    {% endif %}
-                    <tr>
-
-                        <td class="text-right text-warning" style="font-weight: bold;">Total:</td>
-                        <!-- <td class="text-right text-dark "></td>
-                        <td class="text-right text-dark"></td>
-                        <td class="text-right text-dark"></td> -->
-                        <td class="text-right " style="font-weight: bold;text-align: end;color: rgb(233, 153, 3);">{{ estimate.total|floatformat:1}}</td>
-                    </tr>
-
-                </table>
+                                                <td class="text-right " style="font-weight: bold; color: #000000;">Total:</td>
+                                                <!-- <td class="text-right text-dark "></td>
+                                                <td class="text-right text-dark"></td>
+                                                <td class="text-right text-dark"></td> -->
+                                                <td class="text-right " style="font-weight: bold;text-align: end;color: #000000;">{{ estimate.total|floatformat:1}}</td>
+                                            </tr>
+                        
+                                        </table>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
             <div class="col-sm-1 col-md-1 col-lg-1"></div>
 
         </div>

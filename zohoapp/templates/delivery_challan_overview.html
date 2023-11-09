@@ -196,21 +196,43 @@
                             </a>
         
                             <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-                                {% if estimate.status == 'Draft'%}
-                        <a href="{% url 'change_status' id=estimate.id  %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
-                        data-toggle="tooltip" title="Change Status"><i class="fas fa-exchange-alt"> Change status</i>
-                       </a>
-                       
-                        {% endif %}
-                                                      
-<form action="{% url 'convert_challan_to_invoice' estimate.id %}" method="post">
-    {% csrf_token %}
-    <button type="submit"  style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"><i class="fas fa-exchange-alt">Convert to Invoice</i></button>
-</form>
-                                        
+                                {% if estimate.status == 'Draft' %}
+                                    <a href="{% url 'change_status' id=estimate.id %}" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white" data-toggle="tooltip" title="Change Status">
+                                        <i class="fas fa-exchange-alt"> Change status</i>
+                                    </a>
+                                {% endif %}
+                                {% if not estimate.invoice %}
+                                    <form action="{% url 'convert_challan_to_invoice' estimate.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white"  onclick="convertToInvoice()" {% if is_converted %}disabled{% endif %}>
+                                            <i class="fas fa-exchange-alt">Convert to Invoice</i>
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </div>
-
+                        <script>
+                            function convertToInvoice() {
+                              var button = document.getElementById('convert-to-invoice');
+                              button.innerHTML = 'Converting...';
+                              button.disabled = true;
+                          
+                              // Save the conversion status in local storage
+                              localStorage.setItem('isConverted', true);
+                          
+                              // Additional logic for the conversion process
+                            }
+                          
+                            // Check the conversion status on page load
+                            document.addEventListener('DOMContentLoaded', function () {
+                              var isConverted = localStorage.getItem('isConverted');
+                              if (isConverted === 'true') {
+                                var button = document.getElementById('convert-to-invoice');
+                                button.innerHTML = 'Already converted';
+                                button.disabled = true;
+                              }
+                            });
+                          </script>
 
              
                            
@@ -380,81 +402,58 @@ style="height: auto;background-color: burlywood">
         
                 </div>    <div class="p-info col-6 my-2" style="height: auto;">
                     <div class="card" style="background-color: rgb(110, 61, 46); padding:0.9rem;">       
-                        {% for customer in customers %}
+                       
                         <div class="row">
                             
                             <div class="col-4"><label for="">Place of Supply:</label></div>
                             <div class="col-8">
                                 <p>{{ estimate.cu.placeofsupply }}</p>
-                                {% endfor%}
+                               
                         </div>
                         <hr>
 
-                        <div class="row my-2"><h4>Invoice Details</h4></div>
+                        <div class="row my-2"><h4>Delivery Challan Details</h4></div>
                         
                         <div class="row">
                             
-                            <div class="col-6"><label for="">Invoice Date:</label></div>
+                            <div class="col-6"><label for="">Challan Date:</label></div>
                             <div class="col-6">
-                            <label>  <p>{{ invoice.inv_date|date:"d/m/Y" }}</p><label>
+                            <label>  <p>{{ estimate.chellan_date|date:"d/m/Y" }}</p><label>
                         </div>
 
 
                         <div class="row">
                             
-                            <div class="col-6"><label for="">Due Date:</label></div>
+                            <div class="col-6"><label for="">Challan Type:</label></div>
                             <div class="col-6">
-                            <label>  <p>{{ invoice.due_date|date:"d/m/Y" }}</p></label>
+                            <label>  <p>{{ estimate.chellan_type}}</p></label>
                             </div>
                         </div>
-                        <div class="row my-2"><label><h4>Payment Details</h4></label></div>
+                        <div class="row my-2"><label><h4>GST Details</h4></label></div>
                         
                         <div class="row">
                             
-                            <div class="col-6"><label for="">Payment Method:</label></div>
+                            <div class="col-6"><label for="">GST Treatment:</label></div>
 
                             <div class="col-6 text-uppercase" >
-                                {% for payment in payment %}
-                            <label>  <p>{{ payment.payment_method }}</p></label>
+                                
+                            <label>  <p>{{ estimate.cu.GSTTreatment }}</p></label>
                                
                         </div>
+
+                        {% if estimate.cu.GSTTreatment != "Unregistered Business-not Registered under GST" %}
+                        <div class="row">
+                            
+                            <div class="col-6"><label for="">GST Number:</label></div>
+
+                            <div class="col-6 text-uppercase" >
+                                
+                            <label>  <p>{{ estimate.cu.GSTIN }}</p></label>
+                               
+                        </div>
+
+{% endif %}
                        
-{% if payment.payment_method|lower == 'cash' %}
-<div></div>
-{% elif payment.payment_method|lower == 'upi' %}
-                        <div class="row">
-                            
-                            <div class="col-6"><label for="">UPI ID:</label></div>
-                            <div class="col-6 " >
-                            <label>  <p >{{ payment.upi_id }}</p></label>
-
-                            </div>
-                        </div>
-
-                        {% elif payment.payment_method|lower == 'cheque' %}
-                        
-                        <div class="row">
-                            
-                            <div class="col-3"><label for="">Cheque No:</label></div>
-                            <div class="col-9">
-                            <label>  <p>{{ payment.cheque_number }}</p></label>
-                            </div>
-                        </div>
-
-                        
-                        {% elif payment.payment_method|lower == 'bank' %}
-                        
-                        <div class="row">
-                            
-                            <div class="col-6"><label for="">Bank Name:</label></div>
-                            <div class="col-6">
-                               
-                                <label for="">  <p>{{ payment.bank.name }}</p></label>
-                               
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% endfor%}
                       
                     
                                

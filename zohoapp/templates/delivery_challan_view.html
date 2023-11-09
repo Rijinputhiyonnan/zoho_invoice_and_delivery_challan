@@ -195,21 +195,43 @@
                             </a>
         
                             <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
-                                {% if estimate.status == 'Draft'%}
-                        <a href="{% url 'change_status' id=estimate.id  %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"
-                        data-toggle="tooltip" title="Change Status"><i class="fas fa-exchange-alt"> Change status</i>
-                       </a>
-                       
-                        {% endif %}
-                                                      
-<form action="{% url 'convert_challan_to_invoice' estimate.id %}" method="post">
-    {% csrf_token %}
-    <button type="submit"  style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white"><i class="fas fa-exchange-alt">Convert to Invoice</i></button>
-</form>
-                                        
+                                {% if estimate.status == 'Draft' %}
+                                    <a href="{% url 'change_status' id=estimate.id %}" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white" data-toggle="tooltip" title="Change Status">
+                                        <i class="fas fa-exchange-alt"> Change status</i>
+                                    </a>
+                                {% endif %}
+                                {% if not estimate.invoice %}
+                                    <form action="{% url 'convert_challan_to_invoice' estimate.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white"  onclick="convertToInvoice()" {% if is_converted %}disabled{% endif %}>
+                                            <i class="fas fa-exchange-alt">Convert to Invoice</i>
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </div>
-
+                        <script>
+                            function convertToInvoice() {
+                              var button = document.getElementById('convert-to-invoice');
+                              button.innerHTML = 'Converting...';
+                              button.disabled = true;
+                          
+                              // Save the conversion status in local storage
+                              localStorage.setItem('isConverted', true);
+                          
+                              // Additional logic for the conversion process
+                            }
+                          
+                            // Check the conversion status on page load
+                            document.addEventListener('DOMContentLoaded', function () {
+                              var isConverted = localStorage.getItem('isConverted');
+                              if (isConverted === 'true') {
+                                var button = document.getElementById('convert-to-invoice');
+                                button.innerHTML = 'Already converted';
+                                button.disabled = true;
+                              }
+                            });
+                          </script>
                            
                         <div class="dropdown m-0 p-0 ms-1 mt-1" title="comments" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;">
                             <a href=" " class=" fas fa-comment-dots dropdown-toggle  btn-sm text-white ms-1"  
@@ -279,7 +301,7 @@ style="background-color: rgba(124, 124, 123, 0.507); height: 800px;">
                 <th class="text-right;" style="color: black;">Quantity</th>
                 <th class="text-right;" style="color: black;">Rate</th>
                 <th class="text-right;" style="color: black;">Discount</th>
-                <th class="text-right;" style="color: black;">Tax</th>
+                <th class="text-right;" style="color: black;">Tax %</th>
                 <th class="text-right;" style="color: black;">Amount</th>
             </tr>
         </thead>
@@ -291,7 +313,7 @@ style="background-color: rgba(124, 124, 123, 0.507); height: 800px;">
                 <td  style="color: black;">{{ item.hsn }}</td>
                 <td class="text-right"  style="color: black;">{{ item.quantity }}</td>
                 <td class="text-right"  style="color: black;">{{ item.rate|floatformat:1 }}</td>
-                <td class="text-right"  style="color: black;">{{ item.discount|floatformat:1 }}</td>
+                <td class="text-right"  style="color: #000000;">{{ item.discount|floatformat:1 }}</td>
                 <td class="text-right"  style="color: black;">{{ item.tax_percentage }}</td>
                 <td class="text-right"  style="color: black;">{{ item.amount|floatformat:1 }}</td>
             </tr>
@@ -309,7 +331,7 @@ style="background-color: rgba(124, 124, 123, 0.507); height: 800px;">
                 {% if estimate.cgst != 0 %}
                 <tr>
                     <td class="text-right text-dark">CGST:</td>
-                    <td class="text-right" style="text-align: end; color: black;">{{ estimate.cgst|floatformat:1}}</td>
+                    <td class="text-right" style="text-align: end; color: #000000;">{{ estimate.cgst|floatformat:1}}</td>
                 </tr>
                 {% endif %}
                 {% if estimate.sgst != 0 %}
