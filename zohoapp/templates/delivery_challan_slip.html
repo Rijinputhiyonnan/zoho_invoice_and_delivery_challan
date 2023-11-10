@@ -43,6 +43,28 @@
 
 
 
+
+
+
+
+
+
+
+.page[size="A4"] {
+    width: 23cm;
+    height: 22.7cm;
+    overflow: hidden;
+}
+
+
+
+
+/* Font Include */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap');
+
+
+
+
 .searchbar,
 .overview .bar {
     align-items: center;
@@ -62,63 +84,6 @@
 
 
 
-.equal-length-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100%; /* Make the container fill the height of the column */
-    margin-left: 2vh;
-    margin-right: .2vh;
-}
-
-.equal-length-item {
-    flex: 1;
-    text-align: center;
-}
-
-
-.page {
-    background: var(--white);
-    display: block;
-    margin: 0 auto;
-    position: relative;
-    
-}
-
-.page[size="A4"] {
-    width: 24cm;
-    height: 29.7cm;
-    overflow: hidden;
-}
-
-
-.ribbon .ribbon-inner {
-    text-align: center;
-    color: #fff;
-    top: -20px;
-    left: -90px;
-    width: 120px;
-    padding: 3px;
-    /* position: relative;
-    transform: rotate(-45deg); */
-}
-.ribbon .ribbon-open {
-    background-color: #268ddd;
-    border-color: #1c72b4;
-}
-
-:root {
-    --body-bg: rgb(204, 204, 204);
-    --white: #000000;
-    --darkWhite: #ccc;
-    --black: #000000;
-    --dark: #615c60;
-    --themeColor: #22b8d1;
-    --pageShadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
-}
-
-/* Font Include */
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap');
 
 </style>
 
@@ -126,7 +91,7 @@
 
 <script>
     function printForm() {
-        var selectedArea = document.getElementById("selected-area");
+        var selectedArea = document.getElementById("div-to-pdf");
 
         var printWindow = window.open('', 'PrintWindow', 'height=800,width=800');
 
@@ -218,7 +183,7 @@
 
     </div>
     <div class="col-sm-8">
-        <div class="row  mx-1 py-3" style="background-color: rgba(136, 136, 135, 0.5)">
+        <div class="row  mx-1 py-3" style="background-color: rgba(136, 136, 135, 0.5);">
             
                 <div class="p-name">
                     <h3 class="px-2 pb-2" id="id1"> {{estimate.chellan_no }}</h3>
@@ -240,9 +205,36 @@
                     <a href="{% url 'delivery_challan_edit' estimate.id %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;"  class="btn btn-sm m-1 text-white"
                          data-toggle="tooltip" title="Edit">
                         <i class="mdi mdi-pencil"></i></a>
-                    <a href="{% url 'render_challan_pdf' estimate.id %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white " 
-                        data-toggle="tooltip" title="PDF" id="pdf">
-                        <i class="mdi mdi-file-pdf-box"></i></a>
+
+                        <a href=""  id="convertToPDFButton" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;"  class="btn btn-sm m-1 text-white   btn_print ml-1"
+                         data-toggle="tooltip" title="pdf">
+                         <i class="mdi mdi-file-pdf"></i></a>
+                       
+                    <!-- onclick="generatePDF()" -->
+                    
+                    <script type="text/javascript">
+                        $(document).ready(function ($) {
+                            console.log('print');
+
+                            $(document).on('click', '.btn_print', function (event) {
+                                console.log('print1');
+                                event.preventDefault();
+                                var customerName = "{{estimate.chellan_no}}";
+                                var element = document.getElementById('div-to-pdf');
+                                var opt =
+                                {
+                                    margin: 1,
+                                    filename: 'Challan_no_'+ customerName + '.pdf',
+                                    image: { type: 'jpeg', quality: 0.98 },
+                                    html2canvas: { scale: 2 },
+                                    jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
+                                };
+                                html2pdf().set(opt).from(element).save();
+
+                            });
+
+                        });
+                    </script>
                     <a href="" onclick="printForm()" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;" class="btn btn-sm m-1 text-white btn_print" 
                         data-toggle="tooltip" title="Print">
                         <i class="mdi mdi-printer"></i></a>
@@ -326,19 +318,17 @@
 
 <!-- .................................................................................. -->
 
-<div id="div_estimate"  class="mx-2 my-4 p-4 ">
-<div class="slip p-5 convert_to_pdf " id="selected-area"
-    >
 
-        <div id="slipdiv" style="background-color: #000000; border-radius: 2vh; ">
+
+        <div id="slipdiv" style=" border-radius: 2vh;  padding-left: -100px; ">
             <div class="p-5"  >
-                <div class="my-5 page" size="A4">
-                    <div class="row" style="margin-top:1%;" id="printslip">
-                        <div class="col-md-3"></div>
-                        <div class="col-md-6 ml-3">
-                            <div class="card bg-white" style="border: 2px dotted black;">
-                                <div class="mt-2" style="text-align: center;">
-                                    <div class="text-center" style="font-size: 3vh; color: black;">
+                <div class="my-5 page" size="A4"  id="div-to-pdf" >
+                    
+                      
+                        <div class="col-md-6 ml-3"  >
+                            <div class="card bg-white" style="border: 2px dotted black;"  >
+                                <div class="mt-2" style="text-align: center;"  >
+                                    <div class="text-center" style="font-size: 3vh; color: black;"  >
                                         <b>{{company.company_name }} </b>
                                     </div>
                                     <span style="font-size: x-small; color: black;">{{ company.address }} <br>
@@ -348,7 +338,8 @@
                                         {{ company.contact_number }} <br>{{ company.company_email }} 
                                     </span>
                                 </div>
-                                <div class="ml-4 mt-2" style="color: black;">
+                                <center>
+                                <div class="ml-4 mt-2" style="color: black;font-size:14px ">
                                     <div class="row">
                                         <div class="col-md-6 text-left">Challan Number:</div>
                                         <div class="col-md-5 text-right">{{estimate.chellan_no}}</div>
@@ -361,72 +352,58 @@
                                         <div class="col-md-6 text-left">Order Date :</div>
                                         <div class="col-md-5 text-right">{{estimate.chellan_date | date:'d-m-Y'}}</div>
                                     </div>
-                                   
-                                </div>
+                                </center>
+                              
                                 <div><br>
-                                    <div class="equal-length-container" style="color: black; ">
-                                        <div class="equal-length-item" style=" text-align: center;">
-                                            Product
-                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:95%">
-                                        </div>
-                                        <div class="equal-length-item ml-2"  style=" text-align:center;">
-                                            HSN
-                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%;">
-                                        </div>
-                                        <div class="equal-length-item"  style=" text-align: center; ">
-                                            Qty
-                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
-                                        </div>
-                                        <div class="equal-length-item"  style=" text-align: center; ">
-                                            Price
-                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
-                                        </div>
-                                        <div class="equal-length-item"  style=" text-align: center; ">
-                                           Discount
-                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
-                                        </div>
-                                        <div class="equal-length-item"  style=" text-align: center; ">
-                                            Tax
-                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
-                                        </div>
-                                        <div class="equal-length-item" style=" text-align: center; ">
-                                            Total
-                                            <hr style="border-bottom: 1px solid black; margin-top:1vh; width:60%">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    {% for j in items %}
-                                    <div class="equal-length-container" style="color: black; font-size: small; word-wrap: break-word; margin-bottom: 1vh;">
-                                        <div class="equal-length-item"  style="text-align: center; margin-left: 2px;">
-                                            {{j.item_name }}
-                                        </div>
-                                        <div class="equal-length-item" style="text-align: right;">
-                                            {{j.hsn}}
-                                        </div>
-                                        <div class="equal-length-item" style="text-align: center; ">
-                                            {{j.quantity}}
-                                        </div>
-                                        <div class="equal-length-item" style="text-align: center; ">
-                                            {{j.rate}}
-                                        </div>
-                                        <div class="equal-length-item" style="text-align: center; ">
-                                            {{j.discount}}
-                                        </div>
-                                        <div class="equal-length-item" style="text-align: center; ">
-                                            {{j.tax_percentage}}
-                                        </div>
-                                        <div class="equal-length-item" style="text-align: center; ">
-                                            {{j.amount}}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
+                                   <center>
+                                    <div class="equal-length-container" style="color: black; font-size:14px">
+                                                 
+                            <table>
+                                <thead style="background-color:transparent; font-weight: bold ;">
+                                    <tr>
+                                        <th style="color: #000; padding-right: 10px;">Product <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">HSN <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Qty <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Price <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Tax <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Discont <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Total <hr></th>
 
-                                <div><br>
+                                    </tr>
+                                </thead>
+
+                            </div>
                                     
+                            </div>
+                        </div>
+                        <div class="equal-length-item">
+                          
+                              <tbody>
+                                {% for pordr in items %}
+                                <tr>
+                                    <center>
+                                  <td style="color: #000; padding-right: 15px;">{{ pordr.item_name }}</td>
+                                  <td style="color: #000; padding-right: 25px;">{{ pordr.hsn }}</td>
+                                  <td style="color: #000; padding-right: 25px;">{{ pordr.quantity }}</td>
+                                  <td style="color: #000; padding-right: 15px;">{{ pordr.rate }}</td>
+                                  <td style="color: #000; padding-right: 15px;">{{ pordr.tax_percentage }}</td>
+                                  <td style="color: #000; padding-right: 10px;">{{ pordr.discount }}</td>
+                                  <td style="color: #000;">{{ pordr.amount }}</td>
+                                    </center>
+                                </tr>
+                                {% endfor %}
+                              </tbody>
+                           
+                          
+                            </table>
+                      
+                        </center>
+    
+                        </div>
+                                <div><br>
+                                    <center>
                                     <div class="col-sm-11 col-md-11 col-lg-11">
-                                        <table class="mt-2" style="margin-right: 70%;margin-top: 3%;">
+                                        <table class="mt-2" style="margin-right: 70%;margin-top: 3%;font-size:14px">
                                             <tr>
                                                 <td class=" text-dark" style="font-weight: bold;">Sub-Total:</td>
                                                 
@@ -472,6 +449,7 @@
                                             </tr>
                         
                                         </table>
+                                    </center>
                                     </div>
                             </div>
                         </div>
@@ -484,7 +462,7 @@
             <div class="col-sm-1 col-md-1 col-lg-1"></div>
 
         </div>
-
+        
 
     </div>
     <!-- <button id="generate-pdf">Generate PDF</button> -->

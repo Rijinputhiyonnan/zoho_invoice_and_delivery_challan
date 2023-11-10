@@ -172,6 +172,26 @@
     #tr_data:hover{
     background-color: #757575;
     }
+
+
+
+    
+
+
+
+.page[size="A4"] {
+    width: 23cm;
+    height: 22.7cm;
+    overflow: hidden;
+}
+
+
+
+
+/* Font Include */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap');
+
+
 </style>
 <section>
     <div class="row p-3 ">
@@ -261,7 +281,7 @@
 
 <script>
     function printForm() {
-        var selectedArea = document.getElementById("selected-area");
+        var selectedArea = document.getElementById("div-to-pdf");
 
         var printWindow = window.open('', 'PrintWindow', 'height=800,width=800');
 
@@ -455,133 +475,161 @@
                 <div id="upload-message" style="display:none;"></div>
                 <hr>
                 
-                <div id="div_estimate"  class="mx-2 my-4 p-4 border"
-                style="background-color: rgba(124, 124, 123, 0.507); width: 700px; height: 1200px;">
-                <div class="slip p-5 convert_to_pdf bg-light" id="selected-area"
-                    style="box-shadow: 5px 5px 10px rgb(45, 45, 45);  width: 650px; height: 1200px;">
-                    <div class="row">
-                        <div class="col-sm-2 col-lg-2 col-md-2">
-                            <h7 class="text-dark" style="font-size: 1rem; margin-left: 20rem;margin-top: -15%;">Slip</h7>
-                            <!-- <div style="height: 40px;background-color: rgb(192, 128, 8);" > -->
-                                <h4 class="pt-2" style="color: rgb(192, 128, 8);">{{ invoice.status }}</h4>
-                     <!-- </div> -->
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-12 ">
-                            <h3 class="text-dark" style="text-transform: uppercase;">{{ company.company_name }}</h3>
-                            <p class="text-dark" style="font-size: .71rem;font-weight: bold;">{{ company.address }}</p>
-                            <p class="text-dark" style="font-size: .71rem;font-weight: bold;">{{ company.city }},{{ company.state }}</p>
-                            <h1 class="text-dark" style="font-size: 3rem; margin-left: 20rem;margin-top: -15%;">INVOICE</h1><br>
-                            
-                            <h6 class="text-dark" style="margin-left: 20rem;margin-top: -1%;">invoice Number : {{invoice.invoice_no }}</h6>
-                        </div>
-                        <!-- <div class="col-md-6 text-right">
-                            <h1 class="text-dark" style="font-size: 3rem; margin-left: 2rem;">ESTIMATE</h1>
-                            <h6 class="text-dark">Estimate Number : {{estimate.estimate_no }}</h6>
-                        </div> -->
-                    </div>
-                    <hr>
-                    <div class="row ">
-                        <div class="col-md-12 mt-auto">
-                            <h6 class="text-dark">Bill To</h6>
-                            <h6 style="color: rgb(218, 142, 3);">{{ invoice.customer.customerName }} <br><span class="text-dark">{{ invoice.customer.customerEmail }}</span> </h6>
-                            {% if estimate.customer.GSTIN %}
-                            <h6 class="text-dark ">GSTIN : {{ estimate.customer.GSTIN }}</h6>
-                            {% endif %}
-                            <h6 class="text-dark " style="margin-left: 20rem;margin-top: -4%;">Order Date : {{ invoice.inv_date }}</h6>
-                            
-
-                        </div>
-                        <!-- <div class="col-md-6 text-right mt-auto">
-                            <h6 class="text-dark ">Order Date : {{ estimate.estimate_date }}</h6>
-                        </div> -->
-                    </div>
-                    <table class="table mt-2 " style="border-color: black;border-collapse: collapse;background-color: rgb(237, 237, 240);">
-                        <thead >
-                            <tr style="border-bottom: 1px solid black; solid black;border-right: .1px solid black;border-top: 1px solid black;   width: 100px; height: 5px;"> 
-                                <th style="color: black;">#</th>
-                                <th  style="width: 3rem;color: black;">Item</th>
-                                <th  style="width: 3rem;color: black;">Hsn</th>
-                                <th  style="color: black;width: .2rem;">Quantity</th>
-                                <th  style="color: black;width: .2rem;">Rate</th>
-                                <th  style="color: black;width: .2rem;">Discount</th>
-                                <th  style="color: black;width: .2rem;">Tax</th>
-                                <th  style="color: black;width: .2rem;">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody style="border-left: 1px solid black;border-right: 1px solid black" class="text-right text-dark">
-                            {% for item in invoiceitem %}
-                            <tr style="border-bottom: 1px solid black;">
-                                <td class="text-right text-dark">{{ forloop.counter }}</td>
-                                <td class="text-right text-dark" style="text-align: center;">{{ item.product }}</td>
-                                <td class="text-right text-dark" style="text-align: center;">{{ item.hsn }}</td>
-                                <td class="text-right text-dark" style="text-align: center;">{{ item.quantity }}</td>
-                                <td class="text-right text-dark" style="text-align: center;">{{ item.rate|floatformat:1 }}</td>
-                                <td class="text-right text-dark" style="text-align: center;">{{ item.discount|floatformat:1 }}</td>
-                                <td class="text-right text-dark" style="text-align: center;">{{ item.tax }}</td>
-                                <td class="text-right text-dark" style="text-align: center;">{{ item.total|floatformat:1 }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <div class="row">
-                        <!-- <div class="col-sm-6 col-md-6 col-lg-6"></div> -->
-
-                        <div class="col-sm-11 col-md-11 col-lg-11">
-                            <table class="mt-2" style="margin-left: 70%;margin-top: 3%;">
-                                <tr>
-                                    <td class=" text-dark" style="font-weight: bold;">Sub-Total:</td>
+               
+        <div id="slipdiv" style=" border-radius: 2vh;  padding-left: -100px; ">
+            <div class="p-5"  >
+                <div class="my-5 page" size="A4"  id="div-to-pdf" >
+                    
+                      
+                        <div class="col-md-6 ml-3"  >
+                            <div class="card bg-white" style="border: 2px dotted black;"  >
+                                <div class="mt-2" style="text-align: center;"  >
+                                    <div class="text-center" style="font-size: 3vh; color: black;"  >
+                                        <b  style="font-size: 3vh; color: black;" >{{company.company_name }} </b>
+                                    </div>
+                                    <span style="font-size: x-small; color: black;">{{ company.address }} <br>
+                                        {{company.city}},
+                                        {{company.state}}
+                                        {{company.pincode}} <br>
+                                        {{ company.contact_number }} <br>{{ company.company_email }} 
+                                    </span>
+                                </div>
+                                <center>
                                     
-                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.subtotal|floatformat:1}}</td>
-                                </tr>
-                                {% if estimate.cgst != 0 %}
-                                <tr>
-                                    <td class="text-right text-dark">CGST:</td>
-                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.cgst|floatformat:1}}</td>
-                                </tr>
-                                {% endif %}
-                                {% if estimate.sgst != 0 %}
-                                <tr>
-                                    <td class="text-right text-dark">SGST:</td>
-                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.sgst|floatformat:1}}</td>
-                                </tr>
-                                {% endif %}
-                                {% if estimate.igst != 0 %}
-                                <tr>
-                                    <td class="text-right text-dark">IGST:</td>
-                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.igst|floatformat:1}}</td>
-                                </tr>
-                                {% endif %}
-                                {% if estimate.shipping_charge != 0 %}
-                                <tr>
-                                    <td class="text-right text-dark">Shipping Charge:</td>
-                                    <td class="text-right text-dark" style="text-align: end;">{{ invoice.shipping_charge|floatformat:1}}</td>
-                                </tr>
-                                {% endif %}
-                                {% if estimate.adjustment != 0 %}
-                                <tr>
-                                    <td class="text-right text-dark">Adjustment:</td>
-                                    <td class="text-end text-dark" style="text-align: end;">{{ invoice.adjustment|floatformat:1}}</td>
-                                </tr>
-                                {% endif %}
-                                <tr>
-        
-                                    <td class="text-right text-warning" style="font-weight: bold;">Total:</td>
-                                    <!-- <td class="text-right text-dark "></td>
-                                    <td class="text-right text-dark"></td>
-                                    <td class="text-right text-dark"></td> -->
-                                    <td class="text-right " style="font-weight: bold;text-align: end;color: rgb(233, 153, 3);">{{ invoice.grandtotal|floatformat:1}}</td>
-                                </tr>
-        
-                            </table>
+                                <div class="ml-4 mt-2" style="color: black;font-size:14px ">
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 text-left" style="color: black;font-size:14px ">Invoice Number:</div>
+                                        <div class="col-md-5 text-right" style="color: black;font-size:14px ">{{invoice.invoice_no}}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 text-left" style="color: black;font-size:14px ">Customer Name:</div>
+                                        <div class="col-md-5 text-right" style="color: black;font-size:14px ">{{invoice.customer.customerName}}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 text-left" style="color: black;font-size:14px ">Invoice Date :</div>
+                                        <div class="col-md-5 text-right" style="color: black;font-size:14px ">{{invoice.inv_date | date:'d-m-Y'}}</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 text-left" style="color: black;font-size:14px ">Due Date :</div>
+                                        <div class="col-md-5 text-right" style="color: black;font-size:14px ">{{invoice.due_date | date:'d-m-Y'}}</div>
+                                    </div>
+
+                                </div>
+                                </center>
+                              
+                                <div><br>
+                                   <center>
+                                    <div class="equal-length-container" style="color: black; font-size:14px">
+                                                 
+                            <table>
+                                <thead style="background-color:transparent; font-weight: bold ;">
+                                    <tr>
+                                        <th style="color: #000; padding-right: 10px;">Product <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">HSN <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Qty <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Price <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Tax <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Discont <hr></th>
+                                        <th style="color: #000; padding-right: 10px;">Total <hr></th>
+
+                                    </tr>
+                                </thead>
+
+                            </div>
+                                    
+                            </div>
                         </div>
-                        <div class="col-sm-1 col-md-1 col-lg-1"></div>
-
+                        <div class="equal-length-item">
+                          
+                              <tbody>
+                                {% for pordr in invoiceitem %}
+                                <tr>
+                                    <center>
+                                  <td style="color: #000; padding-right: 15px;">{{ pordr.product }}</td>
+                                  <td style="color: #000; padding-right: 25px;">{{ pordr.hsn }}</td>
+                                  <td style="color: #000; padding-right: 25px;">{{ pordr.quantity }}</td>
+                                  <td style="color: #000; padding-right: 15px;">{{ pordr.rate }}</td>
+                                  <td style="color: #000; padding-right: 15px;">{{ pordr.tax }}</td>
+                                  <td style="color: #000; padding-right: 10px;">{{ pordr.discount }}</td>
+                                  <td style="color: #000;  padding-right: 10px;">{{ pordr.total }}</td>
+                                    </center>
+                                </tr>
+                                {% endfor %}
+                              </tbody>
+                           
+                          
+                            </table>
+                      
+                        </center>
+    
+                        </div>
+                                <div><br>
+                                    <center>
+                                    <div class="col-sm-11 col-md-11 col-lg-11">
+                                        <table class="mt-2" style="margin-right: 70%;margin-top: 3%;font-size:14px">
+                                            <tr>
+                                                <td class=" text-dark" style="font-weight: bold;">Sub-Total:</td>
+                                                
+                                                <td class="text-right text-dark" style="text-align: end;">{{ invoice.sub_total|floatformat:1}}</td>
+                                            </tr>
+                                            {% if invoice.cgst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">CGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;">{{ invoice.cgst|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if invoice.sgst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">SGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;">{{ invoice.sgst|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if invoice.igst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">IGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;">{{ invoice.igst|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if invoice.shipping_charge != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">Shipping Charge:</td>
+                                                <td class="text-right text-dark" style="text-align: end;">{{ invoice.shipping_charge|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if invoice.adjustment != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark">Adjustment:</td>
+                                                <td class="text-end text-dark" style="text-align: end;">{{ invoice.adjustment|floatformat:1}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            <tr>
+                        
+                                                <td class="text-right " style="font-weight: bold; color: #000000;">Total:</td>
+                                                <!-- <td class="text-right text-dark "></td>
+                                                <td class="text-right text-dark"></td>
+                                                <td class="text-right text-dark"></td> -->
+                                                <td class="text-right " style="font-weight: bold;text-align: end;color: #000000;">{{ invoice.grandtotal|floatformat:1}}</td>
+                                            </tr>
+                        
+                                        </table>
+                                    </center>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
                     </div>
-
-
                 </div>
+            </div>
+        </div>
+    </div>
+            <div class="col-sm-1 col-md-1 col-lg-1"></div>
+
+        </div>
+        
+
+    </div>
                 <!-- <button id="generate-pdf">Generate PDF</button> -->
 
                 

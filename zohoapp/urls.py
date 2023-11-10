@@ -746,7 +746,7 @@ urlpatterns = [
     path('change_status_invoice/<int:id>/', views.change_status_invoice, name='change_status_invoice'),
     
     
-    #new
+  
     path('delivery/challan/slip/<int:id>',views.delivery_challan_slip,name='delivery_challan_slip'),
     
     
@@ -754,8 +754,6 @@ urlpatterns = [
     path('chellan/overview/<int:pk>',views.filter_by_sent_chellan_overview,name='filter_by_sent_chellan_overview'),
     
     path('convert_challan_to_invoice/<int:id>/', views.convert_challan_to_invoice, name='convert_challan_to_invoice'),
-
-
 
     
     
