@@ -14746,20 +14746,7 @@ def recurbills_customer(request):
         
         
         
-@login_required(login_url='login')
-def customer_dropdown(request):
-    user = User.objects.get(id=request.user.id)
-    options = {}
-    option_objects = customer.objects.all()
-    for option in option_objects:
-        options[option.id] = {
-            'customerName': option.customerName,
-            'customerEmail': option.customerEmail,
-            'GSTTreatment': option.GSTTreatment,
-            'GSTIN': option.GSTIN,
-            'placeofsupply': option.placeofsupply,
-        }
-    return JsonResponse(options)
+
 
 def loan_dropdown(request):
     options = {}
@@ -15199,16 +15186,7 @@ def recurbills_item(request):    #updation
     return HttpResponse("Invalid request method.")
 
         
-@login_required(login_url='login')
-def item_dropdown(request):
-    user = User.objects.get(id=request.user.id)
-    options = {}
-    option_objects = AddItem.objects.filter(user=request.user)
-    for option in option_objects:
-        display_name = option.Name
-        options[option.id] = [display_name, option.hsn, f"{display_name} - {option.hsn}"]
 
-    return JsonResponse(options)
 
 
 #new 07-11-2023
@@ -15626,6 +15604,31 @@ def convert_challan_to_invoice(request, id):
     return render(request, 'delivery_challan_overview.html', context)
 
 
+#11 11 2023
+
+@login_required(login_url='login')
+def customer_dropdown(request):
+    user = User.objects.get(id=request.user.id)
+    options = {}
+    option_objects = customer.objects.all()
+    for option in option_objects:
+        options[option.id] = {
+            'customerName': option.customerName,
+            'customerEmail': option.customerEmail,
+            'GSTTreatment': option.GSTTreatment,
+            'GSTIN': option.GSTIN,
+            'placeofsupply': option.placeofsupply,
+        }
+    return JsonResponse(options)
 
 
+@login_required(login_url='login')
+def item_dropdown(request):
+    user = User.objects.get(id=request.user.id)
+    options = {}
+    option_objects = AddItem.objects.filter(user=request.user)
+    for option in option_objects:
+        display_name = option.Name
+        options[option.id] = [display_name, option.hsn, f"{display_name} - {option.hsn}"]
 
+    return JsonResponse(options)

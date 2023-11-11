@@ -454,64 +454,45 @@ crossorigin="anonymous"></script>
           {% endfor %}
         };
       
-        // Function to update the HSN input field when a product is selected
-        function updateHSN(selectElementId, hsnElementId) {
-          var selectedProduct = document.getElementById(selectElementId).value;
-          var hsnInput = document.getElementById(hsnElementId);
-      
-          // Check if the selected product exists in the map
-          if (productHSNMap[selectedProduct]) {
-            hsnInput.value = productHSNMap[selectedProduct];
-          } else {
-            hsnInput.value = ''; // Clear the HSN input if product not found
-          }
-        }
-      
-        // Add an event listener to the product dropdown
-        document.getElementById('item1').addEventListener('change', function () {
-          updateHSN('item1', 'hsn1');
-        });
-      
-        $('#item_table').on('change', '.item_select', function () {
-          var row = $(this).closest('tr');
-          var selectedProduct = row.find('.item_select').val();
-          var hsnInput = row.find('.hsn');
-      
-          if (productHSNMap[selectedProduct]) {
-            hsnInput.val(productHSNMap[selectedProduct]);
-          } else {
-            hsnInput.val(''); // Clear the HSN input if product not found
-          }
-        });
-      
-        $('#item_table').on('click', '.clone-row', function () {
-          var row = $(this).closest('tr');
-          var clonedRow = row.clone(); // Clone the current row
-          var newRowId = 'row' + rowCount; // Generate a new ID for the cloned row
-          clonedRow.attr('id', newRowId); // Set the new ID for the cloned row
-        
-          var currentItem = row.find('.item_select').val();
-          var currentTax = row.find('.tax').val();
-        
-          clonedRow.find('.item_select').val(currentItem);
-          clonedRow.find('.tax').val(currentTax);
-        
-          rowCount++; // Increment row counter
-        
-          $('#item_table tbody').append(clonedRow);
-          calc();
-          calc_total();
-        
-          var newSelectElementId = newRowId + ' .item_select';
-          var newHsnElementId = newRowId + ' .hsn';
-          $(newSelectElementId).on('change', function () {
-            updateHSN(newSelectElementId, newHsnElementId);
-          });
-        
-          // Update the HSN for the newly formed item
-          updateHSN(newSelectElementId, newHsnElementId);
-        });
-        
+       // Function to update the HSN input field and display when a product is selected
+function updateHSN(selectElementId, hsnElementId, hsnDisplayId) {
+  var selectedProduct = document.getElementById(selectElementId).value;
+  var hsnInput = document.getElementById(hsnElementId);
+  var hsnDisplay = document.getElementById(hsnDisplayId);
+
+  // Check if the selected product exists in the map
+  if (productHSNMap[selectedProduct]) {
+    var hsnValue = productHSNMap[selectedProduct];
+    hsnInput.value = hsnValue;
+    hsnDisplay.textContent = hsnValue; // Display HSN
+  } else {
+    hsnInput.value = ''; // Clear the HSN input if product not found
+    hsnDisplay.textContent = ''; // Clear the displayed HSN
+  }
+}
+
+// Example usage for the item dropdown
+document.getElementById('item1').addEventListener('change', function () {
+  updateHSN('item1', 'hsn1', 'hsnDisplay1');
+});
+
+// Example usage for dynamically added rows
+$('#item_table').on('change', '.item_select', function () {
+  var row = $(this).closest('tr');
+  var selectedProduct = row.find('.item_select').val();
+  var hsnInput = row.find('.hsn');
+  var hsnDisplay = row.find('.hsn-display');
+
+  if (productHSNMap[selectedProduct]) {
+    var hsnValue = productHSNMap[selectedProduct];
+    hsnInput.val(hsnValue);
+    hsnDisplay.text(hsnValue); // Display HSN
+  } else {
+    hsnInput.val(''); // Clear the HSN input if product not found
+    hsnDisplay.text(''); // Clear the displayed HSN
+  }
+});
+
       
       </script>
       
