@@ -15628,7 +15628,12 @@ def item_dropdown(request):
     options = {}
     option_objects = AddItem.objects.filter(user=request.user)
     for option in option_objects:
-        display_name = option.Name
-        options[option.id] = [display_name, option.hsn, f"{display_name} - {option.hsn}"]
+        
+        options[option.id] = {
+            'Name': option.Name,
+            'hsn': option.hsn,
+            'rate': option.rate,
+           
+        }
 
     return JsonResponse(options)
