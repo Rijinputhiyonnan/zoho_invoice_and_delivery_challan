@@ -435,7 +435,7 @@ crossorigin="anonymous"></script>
                   <option class="text-dark" >Select</option>
                   {% for i in p %}
                   
-                  <option class="text-dark" value="{{i.Name}}">{{ i.Name }}</option>
+                  <option class="text-dark" value="{{i.Name}}"   data-Hsn="{{ i.hsn }}" data-Rate="{{ i.rate }}">{{ i.Name }}</option>
                   {% endfor %}
               </select></div>
       </td>
@@ -2513,7 +2513,6 @@ $.ajax({
 });
 
 
-
 function reloadItem() {
   $.ajax({
     url: "{% url 'item_dropdown' %}",
@@ -2525,14 +2524,13 @@ function reloadItem() {
     success: function(data) {
       var dropdown = $('.itm');
       var dropdown1 = $('.itmm');
-      
       dropdown.empty();
       dropdown1.empty();
-      $.each(data, function(key, value) {
-        dropdown.append($('<option class="text-dark"></option>').attr('value', key).text(value[0]).val(value[1]));
-        dropdown1.append($('<option class="text-dark"></option>').attr('value', key).text(value[0]).val(value[1]));
-      });
 
+      $.each(data, function(key, value) {
+          dropdown.append($('<option  class="text-dark"></option>').attr('value', key).text(value).val(value));
+          dropdown1.append($('<option  class="text-dark"></option>').attr('value', key).text(value).val(value));
+      });
     },
     error: function(xhr, status, error) {
     console.error(xhr.responseText);

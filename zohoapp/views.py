@@ -15624,16 +15624,12 @@ def customer_dropdown(request):
 
 @login_required(login_url='login')
 def item_dropdown(request):
+
     user = User.objects.get(id=request.user.id)
+
     options = {}
-    option_objects = AddItem.objects.filter(user=request.user)
+    option_objects = AddItem.objects.all()
     for option in option_objects:
-        
-        options[option.id] = {
-            'Name': option.Name,
-            'hsn': option.hsn,
-            'rate': option.rate,
-           
-        }
+        options[option.id] = option.Name
 
     return JsonResponse(options)
