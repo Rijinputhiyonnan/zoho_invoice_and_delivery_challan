@@ -446,70 +446,7 @@ crossorigin="anonymous"></script>
         <!-- <span class='hsn-validation'></span> -->
 
       </td>
-      <script>
-        // Create a JavaScript object to map product names to HSN numbers
-        var productHSNMap = {
-          {% for i in p %}
-            "{{ i.Name }}": "{{ i.hsn }}",
-          {% endfor %}
-        };
-      
-       // Function to update the HSN input field and display when a product is selected
-function updateHSN(selectElementId, hsnElementId, hsnDisplayId) {
-  var selectedProduct = document.getElementById(selectElementId).value;
-  var hsnInput = document.getElementById(hsnElementId);
-  var hsnDisplay = document.getElementById(hsnDisplayId);
-
-  // Check if the selected product exists in the map
-  if (productHSNMap[selectedProduct]) {
-    var hsnValue = productHSNMap[selectedProduct];
-    hsnInput.value = hsnValue;
-    hsnDisplay.textContent = hsnValue; // Display HSN
-  } else {
-    hsnInput.value = ''; // Clear the HSN input if product not found
-    hsnDisplay.textContent = ''; // Clear the displayed HSN
-  }
-}
-
-// Example usage for the item dropdown
-document.getElementById('item1').addEventListener('change', function () {
-  updateHSN('item1', 'hsn1', 'hsnDisplay1');
-});
-
-// Example usage for dynamically added rows
-$('#item_table').on('change', '.item_select', function () {
-  var row = $(this).closest('tr');
-  var selectedProduct = row.find('.item_select').val();
-  var hsnInput = row.find('.hsn');
-  var hsnDisplay = row.find('.hsn-display');
-
-  if (productHSNMap[selectedProduct]) {
-    var hsnValue = productHSNMap[selectedProduct];
-    hsnInput.val(hsnValue);
-    hsnDisplay.text(hsnValue); // Display HSN
-  } else {
-    hsnInput.val(''); // Clear the HSN input if product not found
-    hsnDisplay.text(''); // Clear the displayed HSN
-  }
-});
-
-      
-      </script>
-      
-      
- <!-- <script>
- $(document).on("input", ".hsn", function() {
-        var hsn_value = $(this).val();
-        var hsn_length = hsn_value.length;
-        if (hsn_length > 6) {
-            $(this).val(hsn_value.substring(0, 6));
-            alert("HSN should not be more than 6 digits!");
-        }
-    });
-
-
-</script> -->
-
+    
 
       <td class='text-right'><input type='number' id='qty1'
         class='form-control bg-transparent border-0 text-light text-right qty' name='quantity[]'
@@ -729,72 +666,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
           </tbody>
     
       </table>
-      <script>
-        // Create a JavaScript object to map product names to HSN numbers
-        var productHSNMap = {
-          {% for i in p %}
-            "{{ i.Name }}": "{{ i.hsn }}",
-          {% endfor %}
-        };
-      
-        // Function to update the HSN input field when a product is selected
-        function updateHSN(selectElementId, hsnElementId) {
-          var selectedProduct = document.getElementById(selectElementId).value;
-          var hsnInput = document.getElementById(hsnElementId);
-      
-          // Check if the selected product exists in the map
-          if (productHSNMap[selectedProduct]) {
-            hsnInput.value = productHSNMap[selectedProduct];
-          } else {
-            hsnInput.value = ''; // Clear the HSN input if the product is not found
-          }
-        }
-      
-        // Add an event listener to the product dropdown for the original table
-        document.getElementById('item1').addEventListener('change', function () {
-          updateHSN('item1', 'hsn1');
-        });
-      
-        // Event listener for cloned tables
-        $('#item_tablee').on('change', '.item_selectt', function () {
-          var row = $(this).closest('tr');
-          var selectedProduct = row.find('.item_selectt').val();
-          var hsnInput = row.find('.hsnn');
-      
-          if (productHSNMap[selectedProduct]) {
-            hsnInput.val(productHSNMap[selectedProduct]);
-          } else {
-            hsnInput.val(''); // Clear the HSN input if the product is not found
-          }
-        });
-      
-        // Clone row logic
-        var rowCountt = 1;
-        $(document).ready(function () {
-          $('#add-roww').click(function () {
-            var tablee = document.getElementById("item_tablee");
-            var RowCountt = tablee.rows.length;
-            console.log(RowCountt);
-            var newRoww = $(`
-            <tr id='row${RowCountt}'>
-              <!-- your table row content here -->
-            </tr>`);
-      
-            $('#item_tablee').append(newRoww);
-            var newSelectElementId = `itemm${RowCountt}`;
-            var newHsnElementId = `hsnn${RowCountt}`;
-            $(`#${newSelectElementId}`).on('change', function () {
-              updateHSN(newSelectElementId, newHsnElementId);
-            });
-          });
-      
-          $('#item_tablee').on('click', '.delete-roww', function () {
-            $(this).closest('tr').remove();
-            calc();
-          });
-        });
-      </script>
-      
+    
   
   
       <button type="button" class="btn text-white" style="background-color: rgb(210, 132, 30) ;display: none;"
@@ -3433,7 +3305,8 @@ function test(taxamount) {
                   },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3456,7 +3329,8 @@ function test(taxamount) {
              
                     // place_of_supply=data3;
                     // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate1').value = data
+                    document.getElementById('rate1').value = dataRate;
+                    document.getElementById('hsn1').value = dataHSN;
                     document.getElementById('desc1').value = data4
                     // document.getElementById('state').value = data5
                     // document.getElementById('cx_mail').value = data6
@@ -3487,7 +3361,8 @@ function test(taxamount) {
                 },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3510,7 +3385,8 @@ function test(taxamount) {
              
                     // place_of_supply=data3;
                     // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate2').value = data
+                    document.getElementById('rate2').value = dataRate;
+                    document.getElementById('hsn2').value = dataHSN;
                     document.getElementById('desc2').value = data4
                     // document.getElementById('state').value = data5
                     // document.getElementById('cx_mail').value = data6
@@ -3540,7 +3416,8 @@ function test(taxamount) {
                 },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3565,7 +3442,8 @@ function test(taxamount) {
                            $('#tax3 optgroup[label="IGST"]').show();
                        }
                    });
-                    document.getElementById('rate3').value = data
+                   document.getElementById('rate3').value = dataRate;
+                   document.getElementById('hsn3').value = dataHSN;
                     document.getElementById('desc3').value = data4
                     // document.getElementById('state').value = data5
                     // document.getElementById('cx_mail').value = data6
@@ -3596,7 +3474,8 @@ function test(taxamount) {
                 },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3617,7 +3496,8 @@ function test(taxamount) {
                    });
                     // place_of_supply=data3;
                     // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate4').value = data
+                    document.getElementById('rate4').value = dataRate;
+                   document.getElementById('hsn4').value = dataHSN;
                     document.getElementById('desc4').value = data4
                     // document.getElementById('state').value = data5
                     // document.getElementById('cx_mail').value = data6
@@ -3648,7 +3528,8 @@ function test(taxamount) {
                 },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3669,7 +3550,8 @@ function test(taxamount) {
                    });
                     // place_of_supply=data3;
                     // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate5').value = data
+                    document.getElementById('rate5').value = dataRate;
+                   document.getElementById('hsn5').value = dataHSN;
                     document.getElementById('desc5').value = data4
                     // document.getElementById('state').value = data5
                     // document.getElementById('cx_mail').value = data6
@@ -3700,7 +3582,8 @@ function test(taxamount) {
                 },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3721,7 +3604,8 @@ function test(taxamount) {
                    });
                     // place_of_supply=data3;
                     // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate6').value = data
+                    document.getElementById('rate6').value = dataRate;
+                   document.getElementById('hsn6').value = dataHSN;
                     document.getElementById('desc6').value = data4
                     // document.getElementById('state').value = data5
                     // document.getElementById('cx_mail').value = data6
@@ -3753,7 +3637,8 @@ function test(taxamount) {
                 },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3774,7 +3659,8 @@ function test(taxamount) {
                    });
                     // place_of_supply=data3;
                     // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate7').value = data
+                    document.getElementById('rate7').value = dataRate;
+                   document.getElementById('hsn7').value = dataHSN;
                     document.getElementById('desc7').value = data4
                     // document.getElementById('state').value = data5
                     // document.getElementById('cx_mail').value = data6
@@ -3806,7 +3692,8 @@ function test(taxamount) {
                 },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3825,7 +3712,8 @@ function test(taxamount) {
                            $('#tax8 optgroup[label="IGST"]').show();
                        }
                    });
-                    document.getElementById('rate8').value = data
+                   document.getElementById('rate8').value = dataRate;
+                   document.getElementById('hsn8').value = dataHSN;
                     document.getElementById('desc8').value = data4
                     if (data3 == '{{ company.state }}') {
                         document.getElementById('tgst8').innerHTML = data1 + ' % GST';
@@ -3855,7 +3743,8 @@ function test(taxamount) {
                 },
                 success: function (response) {
                     console.log(response)
-                    data = response.rate
+                    dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                     data1 = response.gst
                     data2 = response.igst
                     data3 = response.pos
@@ -3874,7 +3763,8 @@ function test(taxamount) {
                    });
                     // place_of_supply=data3;
                     // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate9').value = data
+                    document.getElementById('rate9').value = dataRate;
+                   document.getElementById('hsn9').value = dataHSN;
                     document.getElementById('desc9').value = data4
                     if (data3 == '{{ company.state }}') {
                         document.getElementById('tgst9').innerHTML = data1 + ' % GST';
@@ -3921,7 +3811,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -3929,7 +3820,8 @@ function test(taxamount) {
                   data4 = response.desc
                   data6 = response.mail
                   
-                 document.getElementById('ratee1').value = data
+                  document.getElementById('ratee1').value = dataRate;
+                  document.getElementById('hsnn1').value = dataHSN;
                   document.getElementById('descc1').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
@@ -3967,7 +3859,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -3990,7 +3883,8 @@ function test(taxamount) {
            
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee2').value = data
+                  document.getElementById('ratee2').value = dataRate;
+                  document.getElementById('hsnn2').value = dataHSN;
                   document.getElementById('descc2').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
@@ -4020,7 +3914,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4045,7 +3940,8 @@ function test(taxamount) {
                          $('#tax3 optgroup[label="IGST"]').show();
                      }
                  });
-                  document.getElementById('ratee3').value = data
+                 document.getElementById('ratee3').value = dataRate;
+                 document.getElementById('hsnn3').value = dataHSN;
                   document.getElementById('descc3').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
@@ -4076,7 +3972,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4097,7 +3994,8 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee4').value = data
+                  document.getElementById('ratee4').value = dataRate;
+                  document.getElementById('hsnn4').value = dataHSN;
                   document.getElementById('descc4').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
@@ -4128,7 +4026,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4149,7 +4048,8 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee5').value = data
+                  document.getElementById('ratee5').value = dataRate;
+                  document.getElementById('hsnn5').value = dataHSN;
                   document.getElementById('descc5').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
@@ -4180,7 +4080,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4201,7 +4102,8 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee6').value = data
+                  document.getElementById('ratee6').value = dataRate;
+                  document.getElementById('hsnn6').value = dataHSN;
                   document.getElementById('descc6').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
@@ -4233,7 +4135,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4254,7 +4157,8 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee7').value = data
+                  document.getElementById('ratee7').value = dataRate;
+                  document.getElementById('hsnn7').value = dataHSN;
                   document.getElementById('descc7').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
@@ -4286,7 +4190,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4305,7 +4210,8 @@ function test(taxamount) {
                          $('#tax8 optgroup[label="IGST"]').show();
                      }
                  });
-                  document.getElementById('ratee8').value = data
+                 document.getElementById('ratee8').value = dataRate;
+                 document.getElementById('hsnn8').value = dataHSN;
                   document.getElementById('descc8').value = data4
                   if (data3 == '{{ company.state }}') {
                       document.getElementById('tgst8').innerHTML = data1 + ' % GST';
@@ -4335,7 +4241,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                    dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4354,7 +4261,8 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee9').value = data
+                  document.getElementById('ratee9').value = dataRate;
+                  document.getElementById('hsnn9').value = dataHSN;
                   document.getElementById('descc9').value = data4
                   if (data3 == '{{ company.state }}') {
                       document.getElementById('tgst9').innerHTML = data1 + ' % GST';

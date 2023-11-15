@@ -2100,6 +2100,7 @@ def customerdata(request):
     return JsonResponse(data7)
 
 
+
 def add_customer_for_invoice(request):
     pt=payment_terms.objects.all()
     if request.user.is_authenticated:
@@ -14829,6 +14830,7 @@ def delivery_challan_slip(request, id):
 def create_and_send_challan(request):
     cur_user = request.user
     user = User.objects.get(id=cur_user.id)
+    unit = Unit.objects.all()
     
     if request.method == 'POST':
         x = request.POST["hidden_state"]
@@ -15191,23 +15193,6 @@ def recurbills_item(request):    #updation
 
 #new 07-11-2023
 
-def itemdata_challan(request):
-    cur_user = request.user
-    user = cur_user.id
-    try:
-        id = request.GET.get('id')
-
-        try:
-            item = AddItem.objects.get(Name=id, user=user)
-            name = item.Name
-            rate = item.s_price
-            # Assuming `company_name` is a field in the `company_details` model
-            place = company_details.objects.get(user=cur_user).company_name
-            return JsonResponse({"status": "not", 'place': place, 'rate': rate})
-        except AddItem.DoesNotExist:
-            return JsonResponse({"status": "error", 'message': "Item not found"})
-    except Exception as e:
-        return JsonResponse({"status": "error", 'message': str(e)})
 
 
     
@@ -15633,3 +15618,25 @@ def item_dropdown(request):
         options[option.id] = option.Name
 
     return JsonResponse(options)
+
+
+
+
+def itemdata_challan(request):
+    cur_user = request.user
+    user = cur_user.id
+    try:
+        id = request.GET.get('id')
+
+        try:
+            item = AddItem.objects.get(Name=id, user=user)
+            name = item.Name
+            rate = item.s_price
+            hsn = item.hsn
+            # Assuming `company_name` is a field in the `company_details` model
+            place = company_details.objects.get(user=cur_user).company_name
+            return JsonResponse({"status": "not", 'place': place, 'rate': rate, 'hsn': hsn})
+        except AddItem.DoesNotExist:
+            return JsonResponse({"status": "error", 'message': "Item not found"})
+    except Exception as e:
+        return JsonResponse({"status": "error", 'message': str(e)})

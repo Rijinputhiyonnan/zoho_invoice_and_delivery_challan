@@ -493,71 +493,7 @@ crossorigin="anonymous"></script>
         <!-- <span class='hsn-validation'></span> -->
 
       </td>
-      <script>
-        // Create a JavaScript object to map product names to HSN numbers
-        var productHSNMap = {
-          {% for i in p %}
-            "{{ i.Name }}": "{{ i.hsn }}",
-          {% endfor %}
-        };
-      
-        // Function to update the HSN input field when a product is selected
-        function updateHSN(selectElementId, hsnElementId) {
-          var selectedProduct = document.getElementById(selectElementId).value;
-          var hsnInput = document.getElementById(hsnElementId);
-      
-          // Check if the selected product exists in the map
-          if (productHSNMap[selectedProduct]) {
-            hsnInput.value = productHSNMap[selectedProduct];
-          } else {
-            hsnInput.value = ''; // Clear the HSN input if product not found
-          }
-        }
-      
-        // Add an event listener to the product dropdown
-        document.getElementById('item1').addEventListener('change', function () {
-          updateHSN('item1', 'hsn1');
-        });
-      
-        $('#item_table').on('change', '.item_select', function () {
-          var row = $(this).closest('tr');
-          var selectedProduct = row.find('.item_select').val();
-          var hsnInput = row.find('.hsn');
-      
-          if (productHSNMap[selectedProduct]) {
-            hsnInput.val(productHSNMap[selectedProduct]);
-          } else {
-            hsnInput.val(''); // Clear the HSN input if product not found
-          }
-        });
-      
-        $('#item_table').on('click', '.clone-row', function () {
-          var row = $(this).closest('tr');
-          var clonedRow = row.clone(); // Clone the current row
-          var newRowId = 'row' + rowCount; // Generate a new ID for the cloned row
-          clonedRow.attr('id', newRowId); // Set the new ID for the cloned row
-      
-          var currentItem = row.find('.item_select').val();
-          var currentTax = row.find('.tax').val();
-      
-          clonedRow.find('.item_select').val(currentItem);
-          clonedRow.find('.tax').val(currentTax);
-      
-          rowCount++; // Increment row counter
-      
-          $('#item_table tbody').append(clonedRow);
-          var row = $(this).closest('tr');
-          calc();
-          calc_total();
-      
-          var newSelectElementId = newRowId + ' .item_select';
-          var newHsnElementId = newRowId + ' .hsn';
-          $(newSelectElementId).on('change', function () {
-            updateHSN(newSelectElementId, newHsnElementId);
-          });
-        });
-      
-      </script>
+     
       
       
  <!-- <script>
@@ -798,71 +734,7 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
           </tbody>
     
       </table>
-      <script>
-        // Create a JavaScript object to map product names to HSN numbers
-        var productHSNMap = {
-          {% for i in p %}
-            "{{ i.Name }}": "{{ i.hsn }}",
-          {% endfor %}
-        };
-      
-        // Function to update the HSN input field when a product is selected
-        function updateHSN(selectElementId, hsnElementId) {
-          var selectedProduct = document.getElementById(selectElementId).value;
-          var hsnInput = document.getElementById(hsnElementId);
-      
-          // Check if the selected product exists in the map
-          if (productHSNMap[selectedProduct]) {
-            hsnInput.value = productHSNMap[selectedProduct];
-          } else {
-            hsnInput.value = ''; // Clear the HSN input if the product is not found
-          }
-        }
-      
-        // Add an event listener to the product dropdown for the original table
-        document.getElementById('item1').addEventListener('change', function () {
-          updateHSN('item1', 'hsn1');
-        });
-      
-        // Event listener for cloned tables
-        $('#item_tablee').on('change', '.item_selectt', function () {
-          var row = $(this).closest('tr');
-          var selectedProduct = row.find('.item_selectt').val();
-          var hsnInput = row.find('.hsnn');
-      
-          if (productHSNMap[selectedProduct]) {
-            hsnInput.val(productHSNMap[selectedProduct]);
-          } else {
-            hsnInput.val(''); // Clear the HSN input if the product is not found
-          }
-        });
-      
-        // Clone row logic
-        var rowCountt = 1;
-        $(document).ready(function () {
-          $('#add-roww').click(function () {
-            var tablee = document.getElementById("item_tablee");
-            var RowCountt = tablee.rows.length;
-            console.log(RowCountt);
-            var newRoww = $(`
-            <tr id='row${RowCountt}'>
-              <!-- your table row content here -->
-            </tr>`);
-      
-            $('#item_tablee').append(newRoww);
-            var newSelectElementId = `itemm${RowCountt}`;
-            var newHsnElementId = `hsnn${RowCountt}`;
-            $(`#${newSelectElementId}`).on('change', function () {
-              updateHSN(newSelectElementId, newHsnElementId);
-            });
-          });
-      
-          $('#item_tablee').on('click', '.delete-roww', function () {
-            $(this).closest('tr').remove();
-            calc();
-          });
-        });
-      </script>
+    
       
   
   
@@ -1722,7 +1594,6 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
 
  <!-- .................................................ITEM MODAL................................................. -->
 
-
  <div class="modal fade" id="newitem">
   <div class="modal-dialog modal-xl">
     <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
@@ -1774,6 +1645,40 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
                 </div>
               </div>
             </div>
+            <div class="row mt-2">
+              <div class="col-md-3">
+                <label for="name" style="color: rgb(190, 88, 88);">HSN Code</label>
+              </div>
+              <div class="col-md-6">
+                <input type="text" class="form-control text-dark bg-light" id="myInputField" name="hsn_number" oninput="validateInput()" required>
+                <div id="validationResult"></div>
+              </div>
+            </div>
+
+           
+            <script>
+              function validateSixDigits(field) {
+                // Define the regular expression pattern for exactly six digits
+                var pattern = /^\d{6}$/;
+              
+                // Check if the field matches the pattern
+                return pattern.test(field);
+              }
+              
+              function validateInput() {
+                var inputField = document.getElementById("myInputField");
+                var inputValue = inputField.value;
+              
+                var validationResultDiv = document.getElementById("validationResult");
+              
+                if (validateSixDigits(inputValue)) {
+                  validationResultDiv.textContent = "Valid: The field contains exactly six digits.";
+                } else {
+                  validationResultDiv.textContent = "Invalid: The field does not contain exactly six digits.";
+                }
+              }
+            
+            </script>
 
             <div class="row mt-2">
               <div class="col-md-4 ">
@@ -1914,6 +1819,75 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
 
             </div>
 
+            <div class="row" >
+              <div class="col-md-10">
+                {% comment %} <label><input type="checkbox" value="trackstate" name="trackstate" onclick="toggleForm()" style="display: none;">
+               Track Inventory for this item</label> {% endcomment %}
+                {% comment %} <input type="hidden" name="trackState" id="trackState" value="" unchecked> {% endcomment %}
+                <label>
+                  <input type="checkbox" name="trackstate" value="trackstate" class=" bg-dark"  onclick="toggleFormFields()">
+                  Track Inventory for this item
+                </label>
+                <div id="formFields" style="display: none;"> 
+                  <div class="form-group row" >
+                    <label class="col-sm-2 col-form-label">Inventory Account *</label>
+                    <div class="col-sm-10 col-md-7 col-9" style="margin-left: -1rem;">
+                      <select class="form-select form-select-sm mt-3" name="invacc">
+                        <option>Choose..</option>
+                        <option value="inventory assets">Inventory Asset</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group row ">
+                    <label class="col-sm-2 col-form-label">Opening Stock</label>
+                    <div class=" col-md-5">
+                      <input  type="number" class="form-control  bg-dark"  name="openstock" value="0">
+                    </div>
+                    <div class="col-md-5  ">
+                      <div class="row align-items-center">
+                        <label class="col-sm-6 col-form-label">Opening Stock Rate per Unit</label>
+                        <div class="col-sm-6">
+                          <input type="number" class="form-control bg-dark" name="inventoryaccntperunit"  value="0">
+                        </div>
+
+                      </div>
+                    </div>
+                    <fieldset class="form-group">
+                      <div class="row">
+                        <label class="col-form-label col-sm-2 pt-2">Activation tag<i class="fa fa-question-circle"></i></label>
+                        <div class="col-sm-10 form-inline">
+                          <div class="form-check ">
+                            <input  class="form-check-input" type="radio" name="satus" id="gridRadios1" value="Active"  style="margin-left:5px;" >
+                            <label class="form-check-label" for="gridRadios1">Activate</label>
+                          </div>
+                          <div class="form-check ml-5">
+                            <input  class="form-check-input" type="radio" name="satus" id="gridRadios2" value="Inactive"  style="margin-left:50px;">
+                            <label class="form-check-label" for="gridRadios2">Non-Activate</label>
+                          </div>
+                                      
+                        </div>
+                      </div>
+                    </fieldset>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <script>
+              function toggleFormFields() {
+                var formFields = document.getElementById("formFields");
+                var checkbox = document.querySelector("input[name=trackstate]");
+          
+                if (checkbox.checked) {
+                  formFields.style.display = "block";
+                } else {
+                  formFields.style.display = "none";
+                }
+              }
+            </script>
+            <br><br> <br>
+
+
             <div class="row mt-3">
                 <div class="col-md-6">
                   <input type="checkbox" value="" id="invalidCheck" name="invalidCheck" required>
@@ -1943,8 +1917,6 @@ style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></bu
       </div>
   </div>  
 </div>  
-
-
           
           
           
@@ -2271,94 +2243,95 @@ function reloadPayment() {
 
   $(document).ready(function() {
 
-$("#item-tax1").click(function() {
-  $(".inter-intra").removeClass('d-none');
-  $(".inter-intra").addClass('d-flex');
-});
-
-$("#item-tax2").click(function() {
-
-  $(".inter-intra").removeClass('d-flex');
-  $(".inter-intra").addClass("d-none");
-});
-});
-
-
-$(document).on("click","#itemSave",function(){
-
-if ($('input[name="radioOption"]:checked').val() == 'Goods'){
-
-    itemtype = $('#item_type1').val();
-  }
-else{
-  itemtype = $('#item_type2').val();
-}
-
-if ($('input[name="radioOption1"]:checked').val() == 'Taxable'){
-    inter_st = $('#inter').val();
-    intra_st = $('#intra').val();
-  }
-else{
-  inter_st = 0;
-  intra_st = 0;
-}
-
-$.ajax({
-  
-  type : 'POST',
-  url:"{% url 'recurbills_item' %}",
-  
-  data:{
-      type : itemtype,
-      name : $("#item_name").val(),
-      unit : $("#item_units").val(),
-      inter : inter_st,
-      intra : intra_st,
-      sell_price : $("#sell_price").val(),
-      cost_price : $("#cost_price").val(),
-      sell_acc : $("#sell_acc").val(),
-      cost_acc : $("#cost_acc").val(),
-      sell_desc : $("#sell_desc").val(),
-      cost_desc : $("#cost_desc").val(),
-      
-      csrfmiddlewaretoken: '{{ csrf_token }}'
-      
-    },
-  
-    success: function(response) {
-      // console.log(response)
-      document.getElementById("modalItem").reset();
-      reloadItem();
-    },
-});        
-});
-
-
-
-function reloadItem() {
-  $.ajax({
-    url: "{% url 'item_dropdown' %}",
-    type: "GET",
-    dataType: "json",
-    data: $(this).serialize(),
-    csrfmiddlewaretoken: '{{ csrf_token }}',
-
-    success: function(data) {
-      var dropdown = $('.itm');
-      var dropdown1 = $('.itmm');
-      dropdown.empty();
-      dropdown1.empty();
-      $.each(data, function(key, value) {
-        dropdown.append($('<option class="text-dark"></option>').attr('value', key).text(value[0]).val(value[1]));
-        dropdown1.append($('<option class="text-dark"></option>').attr('value', key).text(value[0]).val(value[1]));
-      });
-
-    },
-    error: function(xhr, status, error) {
-    console.error(xhr.responseText);
+    $("#item-tax1").click(function() {
+      $(".inter-intra").removeClass('d-none');
+      $(".inter-intra").addClass('d-flex');
+    });
+    
+    $("#item-tax2").click(function() {
+    
+      $(".inter-intra").removeClass('d-flex');
+      $(".inter-intra").addClass("d-none");
+    });
+    });
+    
+    
+    $(document).on("click","#itemSave",function(){
+    
+    if ($('input[name="radioOption"]:checked').val() == 'Goods'){
+    
+        itemtype = $('#item_type1').val();
+      }
+    else{
+      itemtype = $('#item_type2').val();
     }
-  });
-}
+    
+    if ($('input[name="radioOption1"]:checked').val() == 'Taxable'){
+        inter_st = $('#inter').val();
+        intra_st = $('#intra').val();
+      }
+    else{
+      inter_st = 0;
+      intra_st = 0;
+    }
+    
+    $.ajax({
+      
+      type : 'POST',
+      url:"{% url 'recurbills_item' %}",
+      
+      data:{
+          type : itemtype,
+          name : $("#item_name").val(),
+          unit : $("#item_units").val(),
+          hsn_number : $("#myInputField").val(),
+          inter : inter_st,
+          intra : intra_st,
+          sell_price : $("#sell_price").val(),
+          cost_price : $("#cost_price").val(),
+          sell_acc : $("#sell_acc").val(),
+          cost_acc : $("#cost_acc").val(),
+          sell_desc : $("#sell_desc").val(),
+          cost_desc : $("#cost_desc").val(),
+          
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+          
+        },
+      
+        success: function(response) {
+          // console.log(response)
+          document.getElementById("modalItem").reset();
+          reloadItem();
+        },
+    });        
+    });
+    
+    
+    function reloadItem() {
+      $.ajax({
+        url: "{% url 'item_dropdown' %}",
+        type: "GET",
+        dataType: "json",
+        data: $(this).serialize(),
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+    
+        success: function(data) {
+          var dropdown = $('.itm');
+          var dropdown1 = $('.itmm');
+          dropdown.empty();
+          dropdown1.empty();
+    
+          $.each(data, function(key, value) {
+              dropdown.append($('<option  class="text-dark"></option>').attr('value', key).text(value).val(value));
+              dropdown1.append($('<option  class="text-dark"></option>').attr('value', key).text(value).val(value));
+          });
+        },
+        error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+        }
+      });
+    }
+    
 
 
 
@@ -3225,494 +3198,6 @@ function test(taxamount) {
 </script>
 
 <script>
-    var place_of_supply='';
-    $(document).ready(function () {
-
-        
-        var roinc = 0
-        console.log("ajax");
-
-        $(document).on('click','#item1', function () {
-            select = $('#item1').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                  },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data5 = response.place
-                    data4 = response.desc
-                    data6 = response.mail
-
-                    var customerState = data3;
-                  var companyState = data5;
-              
-                  $(document).ready(function() {
-                      if (customerState === companyState) {
-                          $('#tax2 optgroup[label="GST"]').show();
-                          $('#tax2 optgroup[label="IGST"]').hide();
-                      } else {
-                          $('#tax2 optgroup[label="GST"]').hide();
-                          $('#tax2 optgroup[label="IGST"]').show();
-                      }
-                  });
-             
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate1').value = data
-                    document.getElementById('desc1').value = data4
-                    // document.getElementById('state').value = data5
-                    // document.getElementById('cx_mail').value = data6
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst1').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst1').value = data1
-                    }
-                    document.getElementById('tigst1').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst1').value = data2
-
-                }
-            });
-
-        });
-
-
-        $(document).on('click', '#item2', function () {
-            select = $('#item2').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data5 = response.place
-                    data4 = response.desc
-                    data6 = response.mail
-
-                    var customerState = data3;
-                  var companyState = data5;
-              
-                  $(document).ready(function() {
-                      if (customerState === companyState) {
-                          $('#tax2 optgroup[label="GST"]').show();
-                          $('#tax2 optgroup[label="IGST"]').hide();
-                      } else {
-                          $('#tax2 optgroup[label="GST"]').hide();
-                          $('#tax2 optgroup[label="IGST"]').show();
-                      }
-                  });
-             
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate2').value = data
-                    document.getElementById('desc2').value = data4
-                    // document.getElementById('state').value = data5
-                    // document.getElementById('cx_mail').value = data6
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst2').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst2').value = data1
-                    }
-                    document.getElementById('tigst2').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst2').value = data2
-
-                }
-            });
-
-        });
-
-        $(document).on('click', '#item3', function () {
-            select = $('#item3').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data5 = response.place
-                    data4 = response.desc
-                    data6 = response.mail
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    console.log(data2,data1)
-                   
-                  
-                   // Assuming you have the customer state and company state values in variables
-                   var customerState = data3;
-                   var companyState = data5;
-               
-                   $(document).ready(function() {
-                       if (customerState === companyState) {
-                           $('#tax3 optgroup[label="GST"]').show();
-                           $('#tax3 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax3 optgroup[label="GST"]').hide();
-                           $('#tax3 optgroup[label="IGST"]').show();
-                       }
-                   });
-                    document.getElementById('rate3').value = data
-                    document.getElementById('desc3').value = data4
-                    // document.getElementById('state').value = data5
-                    // document.getElementById('cx_mail').value = data6
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst3').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst3').value = data1
-                    }
-                    document.getElementById('tigst3').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst3').value = data2
-
-                }
-            });
-
-        });
-
-
-        $(document).on('click', '#item4', function () {
-            select = $('#item4').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data5 = response.place
-                    data4 = response.desc
-                    data6 = response.mail
-                    var customerState = data3;
-                   var companyState = data5;
-               
-                   $(document).ready(function() {
-                       if (customerState === companyState) {
-                           $('#tax4 optgroup[label="GST"]').show();
-                           $('#tax4 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax4 optgroup[label="GST"]').hide();
-                           $('#tax4 optgroup[label="IGST"]').show();
-                       }
-                   });
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate4').value = data
-                    document.getElementById('desc4').value = data4
-                    // document.getElementById('state').value = data5
-                    // document.getElementById('cx_mail').value = data6
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst4').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst4').value = data1
-                    }
-                    document.getElementById('tigst4').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst4').value = data2
-
-                }
-            });
-
-        });
-
-
-        $(document).on('click', '#item5', function () {
-            select = $('#item5').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data5 = response.place
-                    data4 = response.desc
-                    data6 = response.mail
-                    var customerState = data3;
-                   var companyState = data5;
-               
-                   $(document).ready(function() {
-                       if (customerState === companyState) {
-                           $('#tax5 optgroup[label="GST"]').show();
-                           $('#tax5 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax5 optgroup[label="GST"]').hide();
-                           $('#tax5 optgroup[label="IGST"]').show();
-                       }
-                   });
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate5').value = data
-                    document.getElementById('desc5').value = data4
-                    // document.getElementById('state').value = data5
-                    // document.getElementById('cx_mail').value = data6
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst5').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst5').value = data1
-                    }
-                    document.getElementById('tigst5').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst5').value = data2
-
-                }
-            });
-
-        });
-
-
-        $(document).on('click', '#item6', function () {
-            select = $('#item6').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data5 = response.place
-                    data4 = response.desc
-                    data6 = response.mail
-                    var customerState = data3;
-                   var companyState = data5;
-               
-                   $(document).ready(function() {
-                       if (customerState === companyState) {
-                           $('#tax6 optgroup[label="GST"]').show();
-                           $('#tax6 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax6 optgroup[label="GST"]').hide();
-                           $('#tax6 optgroup[label="IGST"]').show();
-                       }
-                   });
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate6').value = data
-                    document.getElementById('desc6').value = data4
-                    // document.getElementById('state').value = data5
-                    // document.getElementById('cx_mail').value = data6
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst6').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst6').value = data1
-                    }
-                    document.getElementById('tigst6').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst6').value = data2
-
-                }
-            });
-
-        });
-
-
-
-        $(document).on('click', '#item7', function () {
-            select = $('#item7').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data5 = response.place
-                    data4 = response.desc
-                    data6 = response.mail
-                    var customerState = data3;
-                   var companyState = data5;
-               
-                   $(document).ready(function() {
-                       if (customerState === companyState) {
-                           $('#tax7 optgroup[label="GST"]').show();
-                           $('#tax7 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax7 optgroup[label="GST"]').hide();
-                           $('#tax7 optgroup[label="IGST"]').show();
-                       }
-                   });
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate7').value = data
-                    document.getElementById('desc7').value = data4
-                    // document.getElementById('state').value = data5
-                    // document.getElementById('cx_mail').value = data6
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst7').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst7').value = data1
-                    }
-                    document.getElementById('tigst7').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst7').value = data2
-
-                }
-            });
-
-        });
-
-
-
-        $(document).on('click', '#item8', function () {
-            select = $('#item8').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data4 = response.desc
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    var customerState = data3;
-                   var companyState = data5;
-               
-                   $(document).ready(function() {
-                       if (customerState === companyState) {
-                           $('#tax8 optgroup[label="GST"]').show();
-                           $('#tax8 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax8 optgroup[label="GST"]').hide();
-                           $('#tax8 optgroup[label="IGST"]').show();
-                       }
-                   });
-                    document.getElementById('rate8').value = data
-                    document.getElementById('desc8').value = data4
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst8').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst8').value = data1
-                    }
-                    document.getElementById('tigst8').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst8').value = data2
-
-                }
-            });
-
-        });
-
-
-
-        $(document).on('click', '#item9', function () {
-            select = $('#item9').val();
-            customer = $('#customer_sel').val();
-            console.log(select);
-            console.log(customer);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'itemdata_challan' %}",
-                data: {
-                    id: select,
-                    cust: customer
-                },
-                success: function (response) {
-                    console.log(response)
-                    data = response.rate
-                    data1 = response.gst
-                    data2 = response.igst
-                    data3 = response.pos
-                    data4 = response.desc
-                    var customerState = data3;
-                   var companyState = data5;
-               
-                   $(document).ready(function() {
-                       if (customerState === companyState) {
-                           $('#tax9 optgroup[label="GST"]').show();
-                           $('#tax9 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax9 optgroup[label="GST"]').hide();
-                           $('#tax9 optgroup[label="IGST"]').show();
-                       }
-                   });
-                    // place_of_supply=data3;
-                    // console.log('pos:'+place_of_supply);
-                    document.getElementById('rate9').value = data
-                    document.getElementById('desc9').value = data4
-                    if (data3 == '{{ company.state }}') {
-                        document.getElementById('tgst9').innerHTML = data1 + ' % GST';
-                        document.getElementById('tgst9').value = data1
-                    }
-                    document.getElementById('tigst9').innerHTML = data2 + ' % IGST';
-                    document.getElementById('tigst9').value = data2
-
-                }
-            });
-
-        });
-
-
-
-
-
-    });
-
-     </script>
-
-
-
-
-<script>
   var place_of_supply='';
   $(document).ready(function () {
 
@@ -3720,8 +3205,8 @@ function test(taxamount) {
       var roinc = 0
       console.log("ajax");
 
-      $(document).on('click', '#itemm1', function () {
-          select = $('#itemm1').val();
+      $(document).on('click','#item1', function () {
+          select = $('#item1').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
@@ -3731,56 +3216,11 @@ function test(taxamount) {
               data: {
                   id: select,
                   cust: customer
-              },
+                },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
-                  data1 = response.gst
-                  data2 = response.igst
-                  data3 = response.pos
-                  data5 = response.place
-                  data4 = response.desc
-                  data6 = response.mail
-                  
-                 document.getElementById('ratee1').value = data
-                  document.getElementById('descc1').value = data4
-                  // document.getElementById('state').value = data5
-                  // document.getElementById('cx_mail').value = data6
-                  console.log(data2,data1)
-                 
-                
-                 // Assuming you have the customer state and company state values in variables
-                 var customerState = data3;
-                 var companyState = data5;
-             
-                 $(document).ready(function() {
-                     if (customerState === companyState) {
-                         $('#tax1 optgroup[label="GST"]').show();
-                         $('#tax1 optgroup[label="IGST"]').hide();
-                     } else {
-                         $('#tax1 optgroup[label="GST"]').hide();
-                         $('#tax1 optgroup[label="IGST"]').show();
-                     }
-                 });
-              }
-          });
-
-      });
-      $(document).on('click', '#itemm2', function () {
-          select = $('#itemm2').val();
-          customer = $('#customer_sel').val();
-          console.log(select);
-          console.log(customer);
-          $.ajax({
-              type: "GET",
-              url: "{% url 'itemdata_challan' %}",
-              data: {
-                  id: select,
-                  cust: customer
-              },
-              success: function (response) {
-                  console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -3803,8 +3243,65 @@ function test(taxamount) {
            
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee2').value = data
-                  document.getElementById('descc2').value = data4
+                  document.getElementById('rate1').value = dataRate;
+                  document.getElementById('hsn1').value = dataHSN;
+                  document.getElementById('desc1').value = data4
+                  // document.getElementById('state').value = data5
+                  // document.getElementById('cx_mail').value = data6
+                  if (data3 == '{{ company.state }}') {
+                      document.getElementById('tgst1').innerHTML = data1 + ' % GST';
+                      document.getElementById('tgst1').value = data1
+                  }
+                  document.getElementById('tigst1').innerHTML = data2 + ' % IGST';
+                  document.getElementById('tigst1').value = data2
+
+              }
+          });
+
+      });
+
+
+      $(document).on('click', '#item2', function () {
+          select = $('#item2').val();
+          customer = $('#customer_sel').val();
+          console.log(select);
+          console.log(customer);
+          $.ajax({
+              type: "GET",
+              url: "{% url 'itemdata_challan' %}",
+              data: {
+                  id: select,
+                  cust: customer
+              },
+              success: function (response) {
+                  console.log(response)
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
+                  data1 = response.gst
+                  data2 = response.igst
+                  data3 = response.pos
+                  data5 = response.place
+                  data4 = response.desc
+                  data6 = response.mail
+
+                  var customerState = data3;
+                var companyState = data5;
+            
+                $(document).ready(function() {
+                    if (customerState === companyState) {
+                        $('#tax2 optgroup[label="GST"]').show();
+                        $('#tax2 optgroup[label="IGST"]').hide();
+                    } else {
+                        $('#tax2 optgroup[label="GST"]').hide();
+                        $('#tax2 optgroup[label="IGST"]').show();
+                    }
+                });
+           
+                  // place_of_supply=data3;
+                  // console.log('pos:'+place_of_supply);
+                  document.getElementById('rate2').value = dataRate;
+                  document.getElementById('hsn2').value = dataHSN;
+                  document.getElementById('desc2').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
                   if (data3 == '{{ company.state }}') {
@@ -3819,8 +3316,8 @@ function test(taxamount) {
 
       });
 
-      $(document).on('click', '#itemm3', function () {
-          select = $('#itemm3').val();
+      $(document).on('click', '#item3', function () {
+          select = $('#item3').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
@@ -3833,7 +3330,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -3858,8 +3356,9 @@ function test(taxamount) {
                          $('#tax3 optgroup[label="IGST"]').show();
                      }
                  });
-                  document.getElementById('ratee3').value = data
-                  document.getElementById('descc3').value = data4
+                 document.getElementById('rate3').value = dataRate;
+                 document.getElementById('hsn3').value = dataHSN;
+                  document.getElementById('desc3').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
                   if (data3 == '{{ company.state }}') {
@@ -3875,8 +3374,8 @@ function test(taxamount) {
       });
 
 
-      $(document).on('click', '#itemm4', function () {
-          select = $('#itemm4').val();
+      $(document).on('click', '#item4', function () {
+          select = $('#item4').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
@@ -3889,7 +3388,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -3910,8 +3410,9 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee4').value = data
-                  document.getElementById('descc4').value = data4
+                  document.getElementById('rate4').value = dataRate;
+                 document.getElementById('hsn4').value = dataHSN;
+                  document.getElementById('desc4').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
                   if (data3 == '{{ company.state }}') {
@@ -3927,8 +3428,8 @@ function test(taxamount) {
       });
 
 
-      $(document).on('click', '#itemm5', function () {
-          select = $('#itemm5').val();
+      $(document).on('click', '#item5', function () {
+          select = $('#item5').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
@@ -3941,7 +3442,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -3962,8 +3464,9 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee5').value = data
-                  document.getElementById('descc5').value = data4
+                  document.getElementById('rate5').value = dataRate;
+                 document.getElementById('hsn5').value = dataHSN;
+                  document.getElementById('desc5').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
                   if (data3 == '{{ company.state }}') {
@@ -3979,8 +3482,8 @@ function test(taxamount) {
       });
 
 
-      $(document).on('click', '#itemm6', function () {
-          select = $('#itemm6').val();
+      $(document).on('click', '#item6', function () {
+          select = $('#item6').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
@@ -3993,7 +3496,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4014,8 +3518,9 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee6').value = data
-                  document.getElementById('descc6').value = data4
+                  document.getElementById('rate6').value = dataRate;
+                 document.getElementById('hsn6').value = dataHSN;
+                  document.getElementById('desc6').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
                   if (data3 == '{{ company.state }}') {
@@ -4032,8 +3537,8 @@ function test(taxamount) {
 
 
 
-      $(document).on('click', '#itemm7', function () {
-          select = $('#itemm7').val();
+      $(document).on('click', '#item7', function () {
+          select = $('#item7').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
@@ -4046,7 +3551,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4067,8 +3573,9 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee7').value = data
-                  document.getElementById('descc7').value = data4
+                  document.getElementById('rate7').value = dataRate;
+                 document.getElementById('hsn7').value = dataHSN;
+                  document.getElementById('desc7').value = data4
                   // document.getElementById('state').value = data5
                   // document.getElementById('cx_mail').value = data6
                   if (data3 == '{{ company.state }}') {
@@ -4085,8 +3592,8 @@ function test(taxamount) {
 
 
 
-      $(document).on('click', '#itemm8', function () {
-          select = $('#itemm8').val();
+      $(document).on('click', '#item8', function () {
+          select = $('#item8').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
@@ -4099,7 +3606,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4118,8 +3626,9 @@ function test(taxamount) {
                          $('#tax8 optgroup[label="IGST"]').show();
                      }
                  });
-                  document.getElementById('ratee8').value = data
-                  document.getElementById('descc8').value = data4
+                 document.getElementById('rate8').value = dataRate;
+                 document.getElementById('hsn8').value = dataHSN;
+                  document.getElementById('desc8').value = data4
                   if (data3 == '{{ company.state }}') {
                       document.getElementById('tgst8').innerHTML = data1 + ' % GST';
                       document.getElementById('tgst8').value = data1
@@ -4134,8 +3643,8 @@ function test(taxamount) {
 
 
 
-      $(document).on('click', '#itemm9', function () {
-          select = $('#itemm9').val();
+      $(document).on('click', '#item9', function () {
+          select = $('#item9').val();
           customer = $('#customer_sel').val();
           console.log(select);
           console.log(customer);
@@ -4148,7 +3657,8 @@ function test(taxamount) {
               },
               success: function (response) {
                   console.log(response)
-                  data = response.rate
+                  dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
                   data1 = response.gst
                   data2 = response.igst
                   data3 = response.pos
@@ -4167,8 +3677,9 @@ function test(taxamount) {
                  });
                   // place_of_supply=data3;
                   // console.log('pos:'+place_of_supply);
-                  document.getElementById('ratee9').value = data
-                  document.getElementById('descc9').value = data4
+                  document.getElementById('rate9').value = dataRate;
+                 document.getElementById('hsn9').value = dataHSN;
+                  document.getElementById('desc9').value = data4
                   if (data3 == '{{ company.state }}') {
                       document.getElementById('tgst9').innerHTML = data1 + ' % GST';
                       document.getElementById('tgst9').value = data1
@@ -4186,6 +3697,505 @@ function test(taxamount) {
 
 
   });
+
+   </script>
+
+
+
+
+<script>
+var place_of_supply='';
+$(document).ready(function () {
+
+    
+    var roinc = 0
+    console.log("ajax");
+
+    $(document).on('click', '#itemm1', function () {
+        select = $('#itemm1').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data5 = response.place
+                data4 = response.desc
+                data6 = response.mail
+                
+                document.getElementById('ratee1').value = dataRate;
+                document.getElementById('hsnn1').value = dataHSN;
+                document.getElementById('descc1').value = data4
+                // document.getElementById('state').value = data5
+                // document.getElementById('cx_mail').value = data6
+                console.log(data2,data1)
+               
+              
+               // Assuming you have the customer state and company state values in variables
+               var customerState = data3;
+               var companyState = data5;
+           
+               $(document).ready(function() {
+                   if (customerState === companyState) {
+                       $('#tax1 optgroup[label="GST"]').show();
+                       $('#tax1 optgroup[label="IGST"]').hide();
+                   } else {
+                       $('#tax1 optgroup[label="GST"]').hide();
+                       $('#tax1 optgroup[label="IGST"]').show();
+                   }
+               });
+            }
+        });
+
+    });
+    $(document).on('click', '#itemm2', function () {
+        select = $('#itemm2').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data5 = response.place
+                data4 = response.desc
+                data6 = response.mail
+
+                var customerState = data3;
+              var companyState = data5;
+          
+              $(document).ready(function() {
+                  if (customerState === companyState) {
+                      $('#tax2 optgroup[label="GST"]').show();
+                      $('#tax2 optgroup[label="IGST"]').hide();
+                  } else {
+                      $('#tax2 optgroup[label="GST"]').hide();
+                      $('#tax2 optgroup[label="IGST"]').show();
+                  }
+              });
+         
+                // place_of_supply=data3;
+                // console.log('pos:'+place_of_supply);
+                document.getElementById('ratee2').value = dataRate;
+                document.getElementById('hsnn2').value = dataHSN;
+                document.getElementById('descc2').value = data4
+                // document.getElementById('state').value = data5
+                // document.getElementById('cx_mail').value = data6
+                if (data3 == '{{ company.state }}') {
+                    document.getElementById('tgst2').innerHTML = data1 + ' % GST';
+                    document.getElementById('tgst2').value = data1
+                }
+                document.getElementById('tigst2').innerHTML = data2 + ' % IGST';
+                document.getElementById('tigst2').value = data2
+
+            }
+        });
+
+    });
+
+    $(document).on('click', '#itemm3', function () {
+        select = $('#itemm3').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data5 = response.place
+                data4 = response.desc
+                data6 = response.mail
+                // place_of_supply=data3;
+                // console.log('pos:'+place_of_supply);
+                console.log(data2,data1)
+               
+              
+               // Assuming you have the customer state and company state values in variables
+               var customerState = data3;
+               var companyState = data5;
+           
+               $(document).ready(function() {
+                   if (customerState === companyState) {
+                       $('#tax3 optgroup[label="GST"]').show();
+                       $('#tax3 optgroup[label="IGST"]').hide();
+                   } else {
+                       $('#tax3 optgroup[label="GST"]').hide();
+                       $('#tax3 optgroup[label="IGST"]').show();
+                   }
+               });
+               document.getElementById('ratee3').value = dataRate;
+               document.getElementById('hsnn3').value = dataHSN;
+                document.getElementById('descc3').value = data4
+                // document.getElementById('state').value = data5
+                // document.getElementById('cx_mail').value = data6
+                if (data3 == '{{ company.state }}') {
+                    document.getElementById('tgst3').innerHTML = data1 + ' % GST';
+                    document.getElementById('tgst3').value = data1
+                }
+                document.getElementById('tigst3').innerHTML = data2 + ' % IGST';
+                document.getElementById('tigst3').value = data2
+
+            }
+        });
+
+    });
+
+
+    $(document).on('click', '#itemm4', function () {
+        select = $('#itemm4').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data5 = response.place
+                data4 = response.desc
+                data6 = response.mail
+                var customerState = data3;
+               var companyState = data5;
+           
+               $(document).ready(function() {
+                   if (customerState === companyState) {
+                       $('#tax4 optgroup[label="GST"]').show();
+                       $('#tax4 optgroup[label="IGST"]').hide();
+                   } else {
+                       $('#tax4 optgroup[label="GST"]').hide();
+                       $('#tax4 optgroup[label="IGST"]').show();
+                   }
+               });
+                // place_of_supply=data3;
+                // console.log('pos:'+place_of_supply);
+                document.getElementById('ratee4').value = dataRate;
+                document.getElementById('hsnn4').value = dataHSN;
+                document.getElementById('descc4').value = data4
+                // document.getElementById('state').value = data5
+                // document.getElementById('cx_mail').value = data6
+                if (data3 == '{{ company.state }}') {
+                    document.getElementById('tgst4').innerHTML = data1 + ' % GST';
+                    document.getElementById('tgst4').value = data1
+                }
+                document.getElementById('tigst4').innerHTML = data2 + ' % IGST';
+                document.getElementById('tigst4').value = data2
+
+            }
+        });
+
+    });
+
+
+    $(document).on('click', '#itemm5', function () {
+        select = $('#itemm5').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data5 = response.place
+                data4 = response.desc
+                data6 = response.mail
+                var customerState = data3;
+               var companyState = data5;
+           
+               $(document).ready(function() {
+                   if (customerState === companyState) {
+                       $('#tax5 optgroup[label="GST"]').show();
+                       $('#tax5 optgroup[label="IGST"]').hide();
+                   } else {
+                       $('#tax5 optgroup[label="GST"]').hide();
+                       $('#tax5 optgroup[label="IGST"]').show();
+                   }
+               });
+                // place_of_supply=data3;
+                // console.log('pos:'+place_of_supply);
+                document.getElementById('ratee5').value = dataRate;
+                document.getElementById('hsnn5').value = dataHSN;
+                document.getElementById('descc5').value = data4
+                // document.getElementById('state').value = data5
+                // document.getElementById('cx_mail').value = data6
+                if (data3 == '{{ company.state }}') {
+                    document.getElementById('tgst5').innerHTML = data1 + ' % GST';
+                    document.getElementById('tgst5').value = data1
+                }
+                document.getElementById('tigst5').innerHTML = data2 + ' % IGST';
+                document.getElementById('tigst5').value = data2
+
+            }
+        });
+
+    });
+
+
+    $(document).on('click', '#itemm6', function () {
+        select = $('#itemm6').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data5 = response.place
+                data4 = response.desc
+                data6 = response.mail
+                var customerState = data3;
+               var companyState = data5;
+           
+               $(document).ready(function() {
+                   if (customerState === companyState) {
+                       $('#tax6 optgroup[label="GST"]').show();
+                       $('#tax6 optgroup[label="IGST"]').hide();
+                   } else {
+                       $('#tax6 optgroup[label="GST"]').hide();
+                       $('#tax6 optgroup[label="IGST"]').show();
+                   }
+               });
+                // place_of_supply=data3;
+                // console.log('pos:'+place_of_supply);
+                document.getElementById('ratee6').value = dataRate;
+                document.getElementById('hsnn6').value = dataHSN;
+                document.getElementById('descc6').value = data4
+                // document.getElementById('state').value = data5
+                // document.getElementById('cx_mail').value = data6
+                if (data3 == '{{ company.state }}') {
+                    document.getElementById('tgst6').innerHTML = data1 + ' % GST';
+                    document.getElementById('tgst6').value = data1
+                }
+                document.getElementById('tigst6').innerHTML = data2 + ' % IGST';
+                document.getElementById('tigst6').value = data2
+
+            }
+        });
+
+    });
+
+
+
+    $(document).on('click', '#itemm7', function () {
+        select = $('#itemm7').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data5 = response.place
+                data4 = response.desc
+                data6 = response.mail
+                var customerState = data3;
+               var companyState = data5;
+           
+               $(document).ready(function() {
+                   if (customerState === companyState) {
+                       $('#tax7 optgroup[label="GST"]').show();
+                       $('#tax7 optgroup[label="IGST"]').hide();
+                   } else {
+                       $('#tax7 optgroup[label="GST"]').hide();
+                       $('#tax7 optgroup[label="IGST"]').show();
+                   }
+               });
+                // place_of_supply=data3;
+                // console.log('pos:'+place_of_supply);
+                document.getElementById('ratee7').value = dataRate;
+                document.getElementById('hsnn7').value = dataHSN;
+                document.getElementById('descc7').value = data4
+                // document.getElementById('state').value = data5
+                // document.getElementById('cx_mail').value = data6
+                if (data3 == '{{ company.state }}') {
+                    document.getElementById('tgst7').innerHTML = data1 + ' % GST';
+                    document.getElementById('tgst7').value = data1
+                }
+                document.getElementById('tigst7').innerHTML = data2 + ' % IGST';
+                document.getElementById('tigst7').value = data2
+
+            }
+        });
+
+    });
+
+
+
+    $(document).on('click', '#itemm8', function () {
+        select = $('#itemm8').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data4 = response.desc
+                // place_of_supply=data3;
+                // console.log('pos:'+place_of_supply);
+                var customerState = data3;
+               var companyState = data5;
+           
+               $(document).ready(function() {
+                   if (customerState === companyState) {
+                       $('#tax8 optgroup[label="GST"]').show();
+                       $('#tax8 optgroup[label="IGST"]').hide();
+                   } else {
+                       $('#tax8 optgroup[label="GST"]').hide();
+                       $('#tax8 optgroup[label="IGST"]').show();
+                   }
+               });
+               document.getElementById('ratee8').value = dataRate;
+               document.getElementById('hsnn8').value = dataHSN;
+                document.getElementById('descc8').value = data4
+                if (data3 == '{{ company.state }}') {
+                    document.getElementById('tgst8').innerHTML = data1 + ' % GST';
+                    document.getElementById('tgst8').value = data1
+                }
+                document.getElementById('tigst8').innerHTML = data2 + ' % IGST';
+                document.getElementById('tigst8').value = data2
+
+            }
+        });
+
+    });
+
+
+
+    $(document).on('click', '#itemm9', function () {
+        select = $('#itemm9').val();
+        customer = $('#customer_sel').val();
+        console.log(select);
+        console.log(customer);
+        $.ajax({
+            type: "GET",
+            url: "{% url 'itemdata_challan' %}",
+            data: {
+                id: select,
+                cust: customer
+            },
+            success: function (response) {
+                console.log(response)
+                dataRate = response.rate; // Fetch rate from the server response
+                  dataHSN = response.hsn;
+                data1 = response.gst
+                data2 = response.igst
+                data3 = response.pos
+                data4 = response.desc
+                var customerState = data3;
+               var companyState = data5;
+           
+               $(document).ready(function() {
+                   if (customerState === companyState) {
+                       $('#tax9 optgroup[label="GST"]').show();
+                       $('#tax9 optgroup[label="IGST"]').hide();
+                   } else {
+                       $('#tax9 optgroup[label="GST"]').hide();
+                       $('#tax9 optgroup[label="IGST"]').show();
+                   }
+               });
+                // place_of_supply=data3;
+                // console.log('pos:'+place_of_supply);
+                document.getElementById('ratee9').value = dataRate;
+                document.getElementById('hsnn9').value = dataHSN;
+                document.getElementById('descc9').value = data4
+                if (data3 == '{{ company.state }}') {
+                    document.getElementById('tgst9').innerHTML = data1 + ' % GST';
+                    document.getElementById('tgst9').value = data1
+                }
+                document.getElementById('tigst9').innerHTML = data2 + ' % IGST';
+                document.getElementById('tigst9').value = data2
+
+            }
+        });
+
+    });
+
+
+
+
+
+});
+
 
    </script>
 
