@@ -13618,56 +13618,6 @@ def delete_customer(request,id):
 from datetime import date
 from django.http import HttpResponseServerError
 
-def create_delivery_chellan(request):
-    user = request.user
-    try:
-        company = company_details.objects.get(user=user)
-        items = AddItem.objects.filter(user_id=user.id)
-        customers = customer.objects.filter(user_id=user.id)
-        p = AddItem.objects.all()
-
-        today = date.today()
-
-        # Count the number of DeliveryChellan objects
-        chellan_count = DeliveryChellan.objects.count()
-
-        if chellan_count > 0:
-            count = chellan_count + 1
-        else:
-            count = 1
-
-        unit = Unit.objects.all()
-        sale = Sales.objects.all()
-        purchase = Purchase.objects.all()
-        accounts = Purchase.objects.all()
-        account_types = set(Purchase.objects.values_list('Account_type', flat=True))
-
-        account = Sales.objects.all()
-        account_type = set(Sales.objects.values_list('Account_type', flat=True))
-        payments = payment_terms.objects.all()
-
-        context = {
-            'company': company,
-            'items': items,
-            'customers': customers,
-            'count': count,
-            'date': today,
-            'unit': unit,
-            'sale': sale,
-            'purchase': purchase,
-            "account": account,
-            "account_type": account_type,
-            "accounts": accounts,
-            "account_types": account_types,
-            'payments': payments,
-            'p': p,
-        }
-
-        return render(request, 'create_delivery_chellan.html', context)
-
-    except company_details.DoesNotExist:
-        return HttpResponseServerError("Company details not found.")
-
 
 
 def delivery_chellan_home(request):
@@ -14842,7 +14792,7 @@ def create_and_send_challan(request):
         chellan_no = request.POST['chellan_number']
         reference = request.POST['reference']
         chellan_date = request.POST['chellan_date']
-        customer_mailid = request.POST['customer_mail']
+        customer_mailid = request.POST['customer_email']
         chellan_type = request.POST['chellan_type']
         
         if x == y:
@@ -14953,7 +14903,7 @@ def create_challan_draft(request):
             chellan_no = request.POST['chellan_number']
             reference = request.POST['reference']
             chellan_date = request.POST['chellan_date']
-            customer_mailid = request.POST['customer_mail']
+            customer_mailid = request.POST['customer_email']
             chellan_type = request.POST['chellan_type']
 
             if x == y:
@@ -15214,6 +15164,7 @@ def update_challan(request,id):
         cust_name =cus.customerName
         estimate = DeliveryChellan.objects.get(id=id)
         
+        
         # estimate.customer_name = request.POST['customer_name']
         estimate.customer_name = cust_name
         estimate.customer=custo
@@ -15337,7 +15288,7 @@ def delivery_challan_edit(request,id):
         'i': estimate,
         'customers': customers,
         'items': items,
-        'est_items': est_items,
+        'est': est_items,
         'unit':unit,
         'sale':sale,
         'purchase':purchase,
@@ -15352,6 +15303,56 @@ def delivery_challan_edit(request,id):
     }
     return render(request, 'delivery_challan_edit.html', context)
 
+
+def create_delivery_chellan(request):
+    user = request.user
+    try:
+        company = company_details.objects.get(user=user)
+        items = AddItem.objects.filter(user_id=user.id)
+        customers = customer.objects.filter(user_id=user.id)
+        p = AddItem.objects.all()
+
+        today = date.today()
+
+        # Count the number of DeliveryChellan objects
+        chellan_count = DeliveryChellan.objects.count()
+
+        if chellan_count > 0:
+            count = chellan_count + 1
+        else:
+            count = 1
+
+        unit = Unit.objects.all()
+        sale = Sales.objects.all()
+        purchase = Purchase.objects.all()
+        accounts = Purchase.objects.all()
+        account_types = set(Purchase.objects.values_list('Account_type', flat=True))
+
+        account = Sales.objects.all()
+        account_type = set(Sales.objects.values_list('Account_type', flat=True))
+        payments = payment_terms.objects.all()
+
+        context = {
+            'company': company,
+            'items': items,
+            'customers': customers,
+            'count': count,
+            'date': today,
+            'unit': unit,
+            'sale': sale,
+            'purchase': purchase,
+            "account": account,
+            "account_type": account_type,
+            "accounts": accounts,
+            "account_types": account_types,
+            'payments': payments,
+            'p': p,
+        }
+
+        return render(request, 'create_delivery_chellan.html', context)
+
+    except company_details.DoesNotExist:
+        return HttpResponseServerError("Company details not found.")
 
 
 
