@@ -14277,7 +14277,7 @@ def add_prod(request):     #updation
     company = company_details.objects.get(user=request.user.id)
     p = AddItem.objects.all()
     i = invoice.objects.all()
-    payments = payment_terms.objects.all()
+    payments = payment_terms.objects.filter(user = request.user)
     sales = Sales.objects.all()
     purchase = Purchase.objects.all()
     unit = Unit.objects.all()
