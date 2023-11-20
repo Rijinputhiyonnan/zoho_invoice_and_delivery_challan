@@ -15486,9 +15486,20 @@ def edited_prod(request, id):
                 mapped = zip(invoiceitem.itemm, invoiceitem.hsnn, invoiceitem.quantityy, invoiceitem.descc, invoiceitem.taxx, invoiceitem.amountt, invoiceitem.ratee)
                 mapped = list(mapped)
                 for element in mapped:
-                    created = invoice_item.objects.get_or_create(inv=invoic, product=element[0], hsn=element[1],
-                                                                 quantity=element[2], discount=element[3], tax=element[4],
-                                                                 total=element[5], rate=element[6])
+                    print("Debug - Values before get_or_create:", invoic, element[0], element[1])
+                    created = invoice_item.objects.get_or_create(
+                        inv=invoic,
+                        product=element[0],
+                        hsn=element[1],
+                        quantity=element[2],
+                        discount=element[3],
+                        tax=element[4],
+                        total=element[5],
+                        rate=element[6]
+                    )
+                    print("Debug - After get_or_create")
+
+
 
                 return redirect('invoice_overview', id)
 
