@@ -700,7 +700,14 @@ function calc_ship()
                 </div>
             </div>
             
-            <script>
+            <style>
+              #gst_number_container {
+                  height: auto;
+                  display: none;
+              }
+          </style>
+          
+          <script>
               // Add an event listener to the customer selection dropdown
               document.getElementById('customer_sel').addEventListener('change', function () {
                   // Get the selected option
@@ -717,10 +724,10 @@ function calc_ship()
                   var gstNumberContainer = document.getElementById('gst_number_container');
                   if (gstTreatment === "Unregistered Business-not Registered under GST") {
                       gstNumberField.value = ''; // Clear the value of the GST number field
-                      gstNumberContainer.style.visibility = 'hidden'; // Hide the GST number field container
+                      gstNumberContainer.style.display = 'none'; // Hide the GST number field container
                   } else {
                       gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
-                      gstNumberContainer.style.visibility = 'visible'; // Show the GST number field container
+                      gstNumberContainer.style.display = 'flex'; // Show the GST number field container
                   }
               });
           </script>

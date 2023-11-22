@@ -630,7 +630,7 @@ transition: transform 0.4s ,top 0.4s;
     <style>
         #gst_number_container {
             height: auto;
-            visibility: visible;
+            display: none;
         }
     </style>
     
@@ -651,10 +651,10 @@ transition: transform 0.4s ,top 0.4s;
             var gstNumberContainer = document.getElementById('gst_number_container');
             if (gstTreatment === "Unregistered Business-not Registered under GST") {
                 gstNumberField.value = ''; // Clear the value of the GST number field
-                gstNumberContainer.style.visibility = 'hidden'; // Hide the GST number field container
+                gstNumberContainer.style.display = 'none'; // Hide the GST number field container
             } else {
                 gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
-                gstNumberContainer.style.visibility = 'visible'; // Show the GST number field container
+                gstNumberContainer.style.display = 'flex'; // Show the GST number field container
             }
         });
     </script>
