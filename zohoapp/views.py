@@ -14334,8 +14334,8 @@ def add_prod(request):     #updation
                 pass
 
             
-            inv_date_str = request.POST['inv_date']  # Retrieve the invoice date as a string
-            due_date_str = request.POST['due_date']  # Retrieve the due date as a string
+            inv_date_str = request.POST['inv_date']  
+            due_date_str = request.POST['due_date']  
             
             inv_date_str = request.POST.get('inv_date', "")
             due_date_str = request.POST.get('due_date', "")
@@ -15415,11 +15415,8 @@ def edited_prod(request, id):
 
         invoic.terms_condition = request.POST.get('ter_cond')
 
-        status = request.POST['sd']
-        if status == 'draft':
-            invoic.status = status
-        else:
-            invoic.status = status
+        
+        
 
         invoic.save()
         
@@ -15486,18 +15483,31 @@ def edited_prod(request, id):
                 mapped = zip(invoiceitem.itemm, invoiceitem.hsnn, invoiceitem.quantityy, invoiceitem.descc, invoiceitem.taxx, invoiceitem.amountt, invoiceitem.ratee)
                 mapped = list(mapped)
                 for element in mapped:
-                    print("Debug - Values before get_or_create:", invoic, element[0], element[1])
-                    created = invoice_item.objects.get_or_create(
+                    print("Debug - Values before filter:", invoic, element[0], element[1])
+                    existing_items = invoice_item.objects.filter(
                         inv=invoic,
                         product=element[0],
                         hsn=element[1],
                         quantity=element[2],
-                        discount=element[3],
-                        tax=element[4],
-                        total=element[5],
-                        rate=element[6]
+                            discount=element[3],
+                            tax=element[4],
+                            total=element[5],
+                            rate=element[6]
                     )
-                    print("Debug - After get_or_create")
+
+                    if not existing_items.exists():
+                        created = invoice_item.objects.create(
+                            inv=invoic,
+                            product=element[0],
+                            hsn=element[1],
+                            quantity=element[2],
+                            discount=element[3],
+                            tax=element[4],
+                            total=element[5],
+                            rate=element[6]
+                        )
+                        print("Debug - After create")
+
 
 
 
