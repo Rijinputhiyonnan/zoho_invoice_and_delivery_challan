@@ -14221,8 +14221,6 @@ def get_all_payment_terms(request):
 
 
 from django.http import JsonResponse
-from .models import customer  # Import your Customer model
-
 def get_customer_details(request):
     if request.method == 'GET':
         customer_id = request.GET.get('customer_id')
@@ -14275,7 +14273,7 @@ def invoice_overview(request,id):
 def add_prod(request):     #updation
     c = customer.objects.all()
     company = company_details.objects.get(user=request.user.id)
-    p = AddItem.objects.all()
+    p = AddItem.objects.filter(user = request.user)
     i = invoice.objects.all()
     payments = payment_terms.objects.filter(user = request.user)
     sales = Sales.objects.all()
@@ -15259,11 +15257,11 @@ def delivery_challan_edit(request,id):
     
     c = customer.objects.all()
 
-    items = AddItem.objects.filter(user_id=user.id)
+    items = AddItem.objects.filter(user = request.user)
     estimate = DeliveryChellan.objects.get(id=id)
     cust = estimate.cu.placeofsupply 
     cust_id = estimate.cu.id
-    payments=payment_terms.objects.all()
+    payments=payment_terms.objects.filter(user = request.user)
     
     pls= customer.objects.get(customerName=estimate.customer_name)
     
@@ -15310,7 +15308,7 @@ def create_delivery_chellan(request):
         company = company_details.objects.get(user=user)
         items = AddItem.objects.filter(user_id=user.id)
         customers = customer.objects.filter(user_id=user.id)
-        p = AddItem.objects.all()
+        p = AddItem.objects.filter(user = request.user)
 
         today = date.today()
 
@@ -15330,7 +15328,7 @@ def create_delivery_chellan(request):
 
         account = Sales.objects.all()
         account_type = set(Sales.objects.values_list('Account_type', flat=True))
-        payments = payment_terms.objects.all()
+        payments = payment_terms.objects.filter(user = request.user)
 
         context = {
             'company': company,
@@ -15362,12 +15360,12 @@ def edited_prod(request, id):
     print(id)
     user = request.user
     c = customer.objects.all()
-    p = AddItem.objects.all()
+    p = AddItem.objects.filter(user = request.user)
     invoiceitem = invoice_item.objects.filter(inv_id=id)
     invoic = invoice.objects.get(id=id)
     cust = invoic.customer.placeofsupply
     cust_id = invoic.customer.id
-    pay = payment_terms.objects.all()
+    pay = payment_terms.objects.filter(user = request.user)
     sales = Sales.objects.all()
     purchase = Purchase.objects.all()
     invpay = InvoicePayment.objects.filter(invoice_id=id)
