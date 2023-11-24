@@ -15535,9 +15535,6 @@ def edited_prod(request, id):
     return render(request, 'invoiceedit.html', context)
 
 
-
-
-
 def convert_challan_to_invoice(request, id):
     
     challan = DeliveryChellan.objects.get(id=id)
