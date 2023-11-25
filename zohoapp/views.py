@@ -15240,7 +15240,7 @@ def update_challan(request,id):
                 for element in mapped:
                     created = ChallanItems.objects.create(
                         chellan=estimate, item_name=element[0],  hsn=element[1], quantity=element[2], rate=element[3], discount=element[4], tax_percentage=element[5], amount=element[6])
-            return redirect('delivery_chellan_home')
+            return redirect('delivery_challan_overview', id=id)
     context = {
         'c': c,
         'i': estimate,
@@ -15329,7 +15329,7 @@ def create_delivery_chellan(request):
         account = Sales.objects.all()
         account_type = set(Sales.objects.values_list('Account_type', flat=True))
         payments = payment_terms.objects.filter(user = request.user)
-
+        
         context = {
             'company': company,
             'items': items,

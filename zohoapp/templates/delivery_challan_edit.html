@@ -777,7 +777,7 @@ function calc_ship()
         <div class="col-sm-2"><label for="chellan_type">Challan type</label></div>
         <div class="col-sm-6 col-md-6 col-lg-6">
             <select class="form-control text-dark" id="customer_sel" name="chellan_type" >
-                <option value="{{estimate.chellan_type}}" selected>{{i.chellan_type}}</option>
+                <option value="{{i.chellan_type}}" >{{i.chellan_type}}</option>
               
                 <option value="Supplay Of Liquid Gas">Supplay Of Liquid Gas</option>
                 <option value="Job Work">Job Work</option>
@@ -955,6 +955,9 @@ function calc_ship()
             <td class='text-right'><input type='number' id='amountt1'
                     class='bg-transparent form-control border-0 text-light text-right amountt' name='amountt[]'
                     value="{{est.amount}}"></td>
+
+
+                    {% endfor %}
             <td class='text-center'><button type='button' id='del_btnn1'
                     class='btn btn-transparent text-danger btn-sm btn-outline-danger rounded-circle delete-roww'
                     style='width:30px'><i class='fa fa-times'></i></button>
@@ -963,7 +966,7 @@ function calc_ship()
                   </td>
         </tr>
     </tbody>
-    {% endfor %}
+  
 </table>
 <button type="button" class="btn btn-sm text-white" style="background-color: rgb(210, 132, 30) ; display: none;"
     id="add-roww"><i class="fa-solid  fa fa-plus rounded"
