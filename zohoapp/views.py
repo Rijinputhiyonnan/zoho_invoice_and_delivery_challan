@@ -15145,6 +15145,140 @@ def recurbills_item(request):    #updation
 
     
     
+
+def convert_challan_to_invoice(request, id):
+    
+    challan = DeliveryChellan.objects.get(id=id)
+    user = request.user
+    company = company_details.objects.get(user=user)
+    all_estimates = DeliveryChellan.objects.filter(user=user)
+    estimate = DeliveryChellan.objects.get(id=id)
+    items = ChallanItems.objects.filter(chellan=estimate)
+    chellan_comments = delivery_chellan_comments.objects.filter(chellan=estimate.id, user=user)
+    
+
+   
+    new_invoice = invoice(
+        user=challan.user,
+        customer=challan.cu,
+        invoice_no=challan.chellan_no,
+        terms=challan.terms_conditions,
+        order_no=0,  # Update this value as needed
+        inv_date=challan.chellan_date,
+        due_date=challan.chellan_date,  # Update this value as needed
+        igst=challan.igst,
+        cgst=challan.cgst,
+        sgst=challan.sgst,
+        t_tax=challan.tax_amount,
+        subtotal=challan.sub_total,
+        shipping_charge=challan.shipping_charge,
+        adjustment=challan.adjustment,
+        grandtotal=challan.total,
+        cxnote=challan.customer_notes,
+        terms_condition=challan.terms_conditions,
+        status=challan.status,
+        file=challan.attachment,
+        estimate=None,  # Update this value as needed
+        paid_amount=0.0,
+        balance=challan.total  # Set the balance to the total amount initially
+    )
+    new_invoice.save()
+
+    # Retrieve the corresponding ChallanItems and create corresponding invoice_items
+    challan_items = ChallanItems.objects.filter(chellan=challan)
+    for item in challan_items:
+        new_invoice_item = invoice_item(
+            product=item.item_name,
+            quantity=item.quantity,
+            hsn=item.hsn,
+            tax=item.tax_percentage,
+            total=item.amount,
+            discount=item.discount,
+            rate=item.rate,
+            inv=new_invoice
+        )
+        new_invoice_item.save()
+        
+        is_converted = True  # Replace this with a check in your database for the invoice
+        if is_converted:
+            messages.error(request, 'Already converted to an invoice')
+        context = {
+        
+        'company': company,
+        'all_estimates': all_estimates,
+        'estimate': estimate,
+        'items': items,
+        'comments': chellan_comments,
+        'is_converted': is_converted,
+        
+        
+    }
+
+    return render(request, 'delivery_challan_overview.html', context)
+
+
+#11 11 2023
+
+@login_required(login_url='login')
+def customer_dropdown(request):
+    user = User.objects.get(id=request.user.id)
+    options = {}
+    option_objects = customer.objects.all()
+    for option in option_objects:
+        options[option.id] = {
+            'customerName': option.customerName,
+            'customerEmail': option.customerEmail,
+            'GSTTreatment': option.GSTTreatment,
+            'GSTIN': option.GSTIN,
+            'placeofsupply': option.placeofsupply,
+        }
+    return JsonResponse(options)
+
+
+@login_required(login_url='login')
+def item_dropdown(request):
+
+    user = User.objects.get(id=request.user.id)
+
+    options = {}
+    option_objects = AddItem.objects.all()
+    for option in option_objects:
+        options[option.id] = option.Name
+
+    return JsonResponse(options)
+
+
+
+
+def itemdata_challan(request):
+    cur_user = request.user
+    user = cur_user.id
+    try:
+        id = request.GET.get('id')
+
+        try:
+            item = AddItem.objects.get(Name=id, user=user)
+            name = item.Name
+            rate = item.s_price
+            hsn = item.hsn
+            # Assuming `company_name` is a field in the `company_details` model
+            place = company_details.objects.get(user=cur_user).company_name
+            return JsonResponse({"status": "not", 'place': place, 'rate': rate, 'hsn': hsn})
+        except AddItem.DoesNotExist:
+            return JsonResponse({"status": "error", 'message': "Item not found"})
+    except Exception as e:
+        return JsonResponse({"status": "error", 'message': str(e)})
+
+
+
+
+
+
+
+
+
+#28 11 2023
+
     
     
 def update_challan(request,id):
@@ -15190,52 +15324,53 @@ def update_challan(request,id):
             estimate.attachment = new
 
         estimate.save()
-
+        est_items = ChallanItems.objects.filter(chellan=estimate)
+        est_items.delete()
         if x==y:
 
-            item = request.POST.getlist('item[]')
-            hsn = request.POST.getlist('hsn[]')
-            quantity1 = request.POST.getlist('quantity[]')
-            quantity = [float(x) for x in quantity1]
-            rate1 = request.POST.getlist('rate[]')
-            rate = [float(x) for x in rate1]
-            discount1 = request.POST.getlist('discount[]')
-            discount = [float(x) for x in discount1]
-            tax1 = request.POST.getlist('tax[]')
-            tax = [float(x) for x in tax1]
-            amount1 = request.POST.getlist('amount[]')
-            amount = [float(x) for x in amount1]
+            est_items.item = request.POST.getlist('item[]')
+            est_items.hsn = request.POST.getlist('hsn[]')
+            est_items.quantity1 = request.POST.getlist('quantity[]')
+            est_items.quantity = [float(x) for x in est_items.quantity1]
+            est_items.rate1 = request.POST.getlist('rate[]')
+            est_items.rate = [float(x) for x in est_items.rate1]
+            est_items.discount1 = request.POST.getlist('discount[]')
+            est_items.discount = [float(x) for x in est_items.discount1]
+            est_items.tax1 = request.POST.getlist('tax[]')
+            est_items.tax = [float(x) for x in est_items.tax1]
+            est_items.amount1 = request.POST.getlist('amount[]')
+            est_items.amount = [float(x) for x in est_items.amount1]
         
         else:
 
-            itemm = request.POST.getlist('itemm[]')
-            hsnn = request.POST.getlist('hsnn[]')
-            quantityy1 = request.POST.getlist('quantityy[]')
-            quantityy = [float(x) for x in quantityy1]
-            ratee1 = request.POST.getlist('ratee[]')
-            ratee = [float(x) for x in ratee1]
-            discountt1 = request.POST.getlist('discountt[]')
-            discountt = [float(x) for x in discountt1]
-            taxx1 = request.POST.getlist('taxx[]')
-            taxx = [float(x) for x in taxx1]
-            amountt1 = request.POST.getlist('amountt[]')
-            amountt = [float(x) for x in amountt1]
+            est_items.itemm = request.POST.getlist('itemm[]')
+            est_items.hsnn = request.POST.getlist('hsnn[]')
+            est_items.quantityy1 = request.POST.getlist('quantityy[]')
+            est_items.quantityy = [float(x) for x in est_items.quantityy1]
+            est_items.ratee1 = request.POST.getlist('ratee[]')
+            est_items.ratee = [float(x) for x in est_items.ratee1]
+            est_items.discountt1 = request.POST.getlist('discountt[]')
+            est_items.discountt = [float(x) for x in est_items.discountt1]
+            est_items.taxx1 = request.POST.getlist('taxx[]')
+            est_items.taxx = [float(x) for x in est_items.taxx1]
+            est_items.amountt1 = request.POST.getlist('amountt[]')
+            est_items.amountt = [float(x) for x in est_items.amountt1]
        
 
         
 
         if x==y:
-            if len(item) == len(hsn) ==  len(quantity) == len(rate) == len(discount) == len(tax) == len(amount):
-                mapped = zip(item,hsn, quantity, rate, discount, tax, amount)
+            if len(est_items.item) == len(est_items.hsn) ==  len(est_items.quantity) == len(est_items.rate) == len(est_items.discount) == len(est_items.tax) == len(est_items.amount):
+                mapped = zip(est_items.item,est_items.hsn, est_items.quantity, est_items.rate, est_items.discount, est_items.tax, est_items.amount)
                 mapped = list(mapped)
                 for element in mapped:
                     created = ChallanItems.objects.get_or_create(
                         chellan=estimate, item_name=element[0], hsn=element[1], quantity=element[2], rate=element[3], discount=element[4], tax_percentage=element[5], amount=element[6])
-            return redirect('delivery_chellan_home')
+            return redirect('delivery_challan_overview', id=id)
 
         else:
-            if len(itemm) == len(hsnn) == len(quantityy) == len(ratee) == len(discountt) == len(taxx) == len(amountt):
-                mapped = zip(itemm, hsnn, quantityy, ratee, discountt, taxx, amountt)
+            if len(est_items.itemm) == len(est_items.hsnn) == len(est_items.quantityy) == len(est_items.ratee) == len(est_items.discountt) == len(est_items.taxx) == len(est_items.amountt):
+                mapped = zip(est_items.itemm, est_items.hsnn, est_items.quantityy, est_items.ratee, est_items.discountt, est_items.taxx, est_items.amountt1)
                 mapped = list(mapped)
                 for element in mapped:
                     created = ChallanItems.objects.create(
@@ -15432,6 +15567,7 @@ def edited_prod(request, id):
             invp.save()
 
         print("/////////////////////////////////////////////////////////")
+        
         if x == y:
             invoiceitem.item = request.POST.getlist('item[]')
             invoiceitem.hsn = request.POST.getlist('hsn[]')
@@ -15533,127 +15669,3 @@ def edited_prod(request, id):
     }
 
     return render(request, 'invoiceedit.html', context)
-
-
-def convert_challan_to_invoice(request, id):
-    
-    challan = DeliveryChellan.objects.get(id=id)
-    user = request.user
-    company = company_details.objects.get(user=user)
-    all_estimates = DeliveryChellan.objects.filter(user=user)
-    estimate = DeliveryChellan.objects.get(id=id)
-    items = ChallanItems.objects.filter(chellan=estimate)
-    chellan_comments = delivery_chellan_comments.objects.filter(chellan=estimate.id, user=user)
-    
-
-   
-    new_invoice = invoice(
-        user=challan.user,
-        customer=challan.cu,
-        invoice_no=challan.chellan_no,
-        terms=challan.terms_conditions,
-        order_no=0,  # Update this value as needed
-        inv_date=challan.chellan_date,
-        due_date=challan.chellan_date,  # Update this value as needed
-        igst=challan.igst,
-        cgst=challan.cgst,
-        sgst=challan.sgst,
-        t_tax=challan.tax_amount,
-        subtotal=challan.sub_total,
-        shipping_charge=challan.shipping_charge,
-        adjustment=challan.adjustment,
-        grandtotal=challan.total,
-        cxnote=challan.customer_notes,
-        terms_condition=challan.terms_conditions,
-        status=challan.status,
-        file=challan.attachment,
-        estimate=None,  # Update this value as needed
-        paid_amount=0.0,
-        balance=challan.total  # Set the balance to the total amount initially
-    )
-    new_invoice.save()
-
-    # Retrieve the corresponding ChallanItems and create corresponding invoice_items
-    challan_items = ChallanItems.objects.filter(chellan=challan)
-    for item in challan_items:
-        new_invoice_item = invoice_item(
-            product=item.item_name,
-            quantity=item.quantity,
-            hsn=item.hsn,
-            tax=item.tax_percentage,
-            total=item.amount,
-            discount=item.discount,
-            rate=item.rate,
-            inv=new_invoice
-        )
-        new_invoice_item.save()
-        
-        is_converted = True  # Replace this with a check in your database for the invoice
-        if is_converted:
-            messages.error(request, 'Already converted to an invoice')
-        context = {
-        
-        'company': company,
-        'all_estimates': all_estimates,
-        'estimate': estimate,
-        'items': items,
-        'comments': chellan_comments,
-        'is_converted': is_converted,
-        
-        
-    }
-
-    return render(request, 'delivery_challan_overview.html', context)
-
-
-#11 11 2023
-
-@login_required(login_url='login')
-def customer_dropdown(request):
-    user = User.objects.get(id=request.user.id)
-    options = {}
-    option_objects = customer.objects.all()
-    for option in option_objects:
-        options[option.id] = {
-            'customerName': option.customerName,
-            'customerEmail': option.customerEmail,
-            'GSTTreatment': option.GSTTreatment,
-            'GSTIN': option.GSTIN,
-            'placeofsupply': option.placeofsupply,
-        }
-    return JsonResponse(options)
-
-
-@login_required(login_url='login')
-def item_dropdown(request):
-
-    user = User.objects.get(id=request.user.id)
-
-    options = {}
-    option_objects = AddItem.objects.all()
-    for option in option_objects:
-        options[option.id] = option.Name
-
-    return JsonResponse(options)
-
-
-
-
-def itemdata_challan(request):
-    cur_user = request.user
-    user = cur_user.id
-    try:
-        id = request.GET.get('id')
-
-        try:
-            item = AddItem.objects.get(Name=id, user=user)
-            name = item.Name
-            rate = item.s_price
-            hsn = item.hsn
-            # Assuming `company_name` is a field in the `company_details` model
-            place = company_details.objects.get(user=cur_user).company_name
-            return JsonResponse({"status": "not", 'place': place, 'rate': rate, 'hsn': hsn})
-        except AddItem.DoesNotExist:
-            return JsonResponse({"status": "error", 'message': "Item not found"})
-    except Exception as e:
-        return JsonResponse({"status": "error", 'message': str(e)})
