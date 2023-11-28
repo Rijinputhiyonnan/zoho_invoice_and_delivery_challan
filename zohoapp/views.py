@@ -15364,7 +15364,7 @@ def update_challan(request,id):
                 mapped = zip(est_items.item,est_items.hsn, est_items.quantity, est_items.rate, est_items.discount, est_items.tax, est_items.amount)
                 mapped = list(mapped)
                 for element in mapped:
-                    created = ChallanItems.objects.get_or_create(
+                    created = ChallanItems.objects.create(
                         chellan=estimate, item_name=element[0], hsn=element[1], quantity=element[2], rate=element[3], discount=element[4], tax_percentage=element[5], amount=element[6])
             return redirect('delivery_challan_overview', id=id)
 
