@@ -15504,7 +15504,9 @@ def edited_prod(request, id):
     sales = Sales.objects.all()
     purchase = Purchase.objects.all()
     invpay = InvoicePayment.objects.filter(invoice_id=id)
-    ip = InvoicePayment.objects.all()
+    ip = InvoicePayment.objects.filter(invoice__user=request.user)
+
+
 
     invp = invpay[0] if invpay else None
     banks = Bankcreation.objects.all()
@@ -15561,7 +15563,7 @@ def edited_prod(request, id):
                 invp.cheque_number = request.POST.get('cheque_number', '')
             elif invp.payment_method == 'upi':
                 invp.upi_id = request.POST.get('upi_id', '')
-            elif invp.payment_method == 'bank':
+            else:
                 invp.bank_id = request.POST.get('bank_name', "")
 
             invp.save()
@@ -15669,3 +15671,233 @@ def edited_prod(request, id):
     }
 
     return render(request, 'invoiceedit.html', context)
+
+
+
+
+@login_required(login_url='login')
+
+
+def add_prod(request):     #updation
+    c = customer.objects.all()
+    company = company_details.objects.get(user=request.user.id)
+    p = AddItem.objects.filter(user = request.user)
+    i = invoice.objects.all()
+    payments = payment_terms.objects.filter(user = request.user)
+    sales = Sales.objects.all()
+    purchase = Purchase.objects.all()
+    unit = Unit.objects.all()
+    banks = Bankcreation.objects.all()
+    if invoice.objects.all().exists():
+        invoice_count = invoice.objects.last().id
+        count = invoice_count
+    else:
+        count = 1
+    # invoice_count = invoice.objects.last().id
+    # count=invoice_count+1
+    if not payment_terms.objects.filter(Terms='net 15').exists():
+       payment_terms(Terms='net 15', Days=15).save()
+    if not payment_terms.objects.filter(Terms='due end of month').exists():
+        payment_terms(Terms='due end of month', Days=60).save()
+    elif not payment_terms.objects.filter(Terms='net 30').exists():
+        payment_terms(Terms='net 30', Days=30).save()
+
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            user = request.user
+            x = request.POST["hidden_state"]
+            y = request.POST["hidden_cus_place"]
+            print("Value of x:", x)
+            print("Value of y:", y)
+            c = request.POST['cx_name']
+            print(c)
+            cus = customer.objects.get(id=c)
+            print(cus.id)
+            custo = cus
+            invoice_no = request.POST['inv_no']
+            terms = request.POST['term']
+            # term=payment_terms.objects.get(id=terms)
+            order_no = request.POST['ord_no']
+            cheque_number = ''
+            upi_id = ''
+            payment_method = request.POST['payment_method']
+            if payment_method == 'cash':
+                pass
+                # Handle cash related operations here
+            elif payment_method == 'cheque':
+                cheque_number = request.POST.get('cheque_number', '')
+                # Handle cheque related operations here
+            elif payment_method == 'upi':
+                upi_id = request.POST.get('upi_id', '')
+                # Handle UPI related operations here
+            elif payment_method == 'bank':
+                bank_id = request.POST.get('bank_name')
+                cheque_number = request.POST.get('cheque_number', '')
+                upi_id = request.POST.get('upi_id', '')
+                
+            else:
+                
+                pass
+
+            
+            inv_date_str = request.POST['inv_date']  
+            due_date_str = request.POST['due_date']  
+            
+            inv_date_str = request.POST.get('inv_date', "")
+            due_date_str = request.POST.get('due_date', "")
+
+            inv_date = None
+            due_date = None
+
+            if inv_date_str and due_date_str:
+                try:
+                    inv_date = datetime.strptime(inv_date_str, '%Y-%m-%d')
+                    due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+
+                    cxnote = request.POST.get('customer_note', "")
+                    subtotal = request.POST.get('subtotal', "")
+                    igst = request.POST.get('igst', "")
+                    cgst = request.POST.get('cgst', "")
+                    sgst = request.POST.get('sgst', "")
+                    totaltax = request.POST.get('totaltax', "")
+                    t_total = request.POST.get('t_total', "")
+                    file = request.FILES.get('file', None)
+                    tc = request.POST.get('ter_cond', "")
+                    status = request.POST.get('sd', "")
+                    shipping_charge = request.POST.get('shipping_charge', "")
+                    adjustment_charge = request.POST.get('adjustment_charge', "")
+                    paid_amount = request.POST.get('paid_amount', "")
+                    balance = request.POST.get('balance', "")
+
+                    # Code for different scenarios based on x and y values
+                    
+    # Save the invoice_payment instance to persist the changes in the database
+    
+
+                        
+                    
+
+                    inv = invoice(user=user, customer=custo, invoice_no=invoice_no, terms=terms, order_no=order_no, 
+                                  inv_date=inv_date, due_date=due_date, cxnote=cxnote, subtotal=subtotal, 
+                                  igst=igst, cgst=cgst, sgst=sgst, t_tax=totaltax, grandtotal=t_total, 
+                                  status=status, terms_condition=tc, file=file, adjustment=adjustment_charge, shipping_charge=shipping_charge, paid_amount=paid_amount, balance=balance)
+                    inv.save()
+                    
+                    invoice_payment = InvoicePayment(
+                                        invoice=inv,
+                                        payment_method=payment_method,
+                                        cheque_number=cheque_number,
+                                        upi_id=upi_id,
+                                    )
+                    if payment_method == 'bank' and bank_id:
+                        bank_instance = Bankcreation.objects.get(id=bank_id)
+                        invoice_payment.bank = bank_instance
+                    invoice_payment.save()
+
+                    # Additional code for creating invoice items
+
+                except ValueError as e:
+                    print(f"Value Error: {e}")
+
+           
+
+            if x == y:
+                item = request.POST.getlist("item[]")
+                print("Item List:", item) 
+
+                hsn = request.POST.getlist("hsn[]")
+                quantity = request.POST.getlist("quantity[]")
+                rate = request.POST.getlist("rate[]")
+                discount = request.POST.getlist("discount[]")
+                tax = request.POST.getlist("tax[]")
+                amount = request.POST.getlist("amount[]")
+                print('amount:', amount)
+                for i in range(len(item)):
+                    print(f"Item: {item[i]}, HSN: {hsn[i]}, Quantity: {quantity[i]}, Rate: {rate[i]}, Discount: {discount[i]}, Tax: {tax[i]}, Amount: {amount[i]}")
+
+                    
+                # term=payment_terms.objects.get(id=term.id)
+            else:
+                itemm = request.POST.getlist('itemm[]')
+                hsnn = request.POST.getlist('hsnn[]')
+                quantityy = request.POST.getlist('quantityy[]')
+                ratee = request.POST.getlist('ratee[]')
+                discountt = request.POST.getlist('discountt[]')
+                taxx = request.POST.getlist('taxx[]')
+                amountt = request.POST.getlist('amountt[]')
+                for i in range(len(itemm)):
+                    print(f"Item: {itemm[i]}, HSN: {hsnn[i]}, Quantity: {quantityy[i]}, Rate: {ratee[i]}, Discount: {discountt[i]}, Tax: {taxx[i]}, Amount: {amountt[i]}")
+
+                # term=payment_terms.objects.get(id=term.id)
+
+            
+            
+               
+            if x == y:
+                print("Length of invoiceitem.item: ", len(item))
+                print("Length of invoiceitem.hsn: ", len(hsn))
+                print("Length of invoiceitem.quantity: ", len(quantity))
+                print("Length of invoiceitem.desc: ", len(discount))
+                print("Length of invoiceitem.tax: ", len(tax))
+                print("Length of invoiceitem.amount: ", len(amount))
+                print("Length of invoiceitem.rate: ", len(rate))
+                print("Value of x: ", x)
+                print("Value of y: ", y)
+                
+                inv_id = invoice.objects.get(id=inv.id)
+                if len(item) == len(hsn) == len(quantity) == len(discount) == len(tax) == len(amount) == len(rate):
+                    mapped = list(zip(item, hsn, quantity, discount, tax, amount, rate))
+                    print(mapped)
+                    created_objects = [
+                        invoice_item(
+                            inv=inv_id,
+                            product=element[0],
+                            hsn=element[1],
+                            quantity=element[2],
+                            discount=element[3],
+                            tax=element[4],
+                            total=element[5],
+                            rate=element[6],
+                        )
+                        for element in mapped
+                    ]
+                    invoice_item.objects.bulk_create(created_objects)
+                    return redirect('invoiceview')     
+
+            else:
+                inv_id = invoice.objects.get(id=inv.id)
+                if len(itemm) == len(hsnn) == len(quantityy) == len(discountt) == len(taxx) == len(amountt) == len(ratee):
+                    mapped = list(zip(itemm, hsnn, quantityy, discountt, taxx, amountt, ratee))
+                    created_objects = [
+                        invoice_item(
+                            inv=inv_id,
+                            product=element[0],
+                            hsn=element[1],
+                            quantity=element[2],
+                            discount=element[3],
+                            tax=element[4],
+                            total=element[5],
+                            rate=element[6],
+                        )
+                        for element in mapped
+                    ]
+                    invoice_item.objects.bulk_create(created_objects)
+                    return redirect('invoiceview')   
+
+
+            
+
+    context = {
+        'c': c,
+        'p': p,
+        'i': i,
+        'company': company,
+        'sales': sales,
+        'purchase': purchase,
+        'units': unit,
+        'count': count,
+        'payments': payments,
+        'banks' : banks
+    }
+    return render(request, 'createinvoice.html', context)
+
