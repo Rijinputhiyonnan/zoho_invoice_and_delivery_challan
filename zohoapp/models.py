@@ -1415,14 +1415,15 @@ class invoice(models.Model):
     
     
 class invoice_item(models.Model):
-    product = models.TextField(max_length=255)
-    quantity = models.IntegerField()
+    inv = models.ForeignKey(invoice, on_delete=models.CASCADE,null=True,blank=True)
+    product = models.CharField(max_length=100,null=True,blank=True)
+    quantity = models.IntegerField(null=True,blank=True)
     hsn = models.TextField(max_length=255)
-    tax = models.FloatField()
-    total = models.FloatField()  
-    discount = models.FloatField(null=True, blank=True)
-    rate = models.TextField(max_length=255)
-    inv = models.ForeignKey(invoice, on_delete=models.CASCADE)
+    tax = models.IntegerField(null=True,blank=True)
+    total = models.FloatField(null=True,blank=True)
+    discount = models.FloatField(null=True,blank=True)
+    rate = models.FloatField(null=True,blank=True)
+    
     
     
     
