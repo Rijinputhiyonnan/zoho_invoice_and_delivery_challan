@@ -61,7 +61,7 @@
         height: 2.5vw;
     }
 
-    #div-to-pdf .p-info label,
+    #div-to-pdf label,
     #div-to-pdf .bank-div label {
         color: #ffffff;
         font-size: .8rem;
@@ -82,12 +82,24 @@
     }
 
 
-    #div-to-pdf .p-info .bold,
+    #div-to-pdf  .bold,
     #div-to-pdf .bank-div .bold {
         font-size: 1rem;
         color: #ffffff;
         /* font-weight: bold; */
     }
+
+
+   .p-info
+    {
+        font-size: 1rem;
+        color: #000000;
+        /* font-weight: bold; */
+    }
+
+
+
+
 
     .modal {
         z-index: 9999;
@@ -562,8 +574,8 @@
                                     </div>
                                 </div>
                     
-                            </div>    <div class="p-info col-6 my-2" style="height: auto;">
-                                <div class="card" style="background-color: rgb(110, 61, 46); padding:0.9rem;">       
+                            </div>    <div class="p-info col-6 my-2" style="">
+                                <div class="card" style="height: 50vh; background-color: rgb(110, 61, 46); padding:0.9rem;">       
                                     {% for customer in customers %}
                                     <div class="row">
                                         
@@ -576,7 +588,7 @@
 
                                     <div class="row my-2"><h4>Invoice Details</h4></div>
                                     
-                                    <div class="row">
+                                    <div class="row" >
                                         
                                         <div class="col-6"><label for="">Invoice Date:</label></div>
                                         <div class="col-6">

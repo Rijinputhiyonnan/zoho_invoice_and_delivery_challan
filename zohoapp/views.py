@@ -15244,7 +15244,7 @@ def item_dropdown(request):
     user = User.objects.get(id=request.user.id)
 
     options = {}
-    option_objects = AddItem.objects.all()
+    option_objects = AddItem.objects.filter(user = request.user)
     for option in option_objects:
         options[option.id] = option.Name
 
