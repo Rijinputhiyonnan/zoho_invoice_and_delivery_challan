@@ -535,17 +535,17 @@ $(document).ready(function() {
 <div>
     <form method="post" action="{% url 'edited_prod' i.id %}" enctype="multipart/form-data" class="">
         {% csrf_token %}
-           <input class="hidden"  id="state" name="hidden_state" value="{{ company.state }}">
+        <!--    <input class="hidden"  id="state" name="hidden_state" value="{{ company.state }}">
     <input class="hidden"  id="state1" name="hidden_state" value="{{ company.state }}">
     <input class="hidden" type="text" name="samp" id="samp" >
-    <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
+    <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="{{ company.state }}">-->
 
 
-  <!--  <input class="hidden"  id="state1" name="hidden_state1" value="{{ company.state }}">
+   <input class="hidden"  id="state1" name="hidden_state1" value="{{ company.state }}">
     <input class="hidden"  id="state" name="hidden_state" value="">
         <input class="hidden" type="text" name="samp" id="samp" >
     <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
-                <input type="number" id="customer_id" name="customer_id" style="display: none;"  readonly>-->
+           <!--      <input type="number" id="customer_id" name="customer_id"   readonly>-->
 
 
         <div class="row mb-4 border-top pt-5">
@@ -628,8 +628,6 @@ $(document).ready(function() {
         });
     </script>
     
-      </script>
-
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -644,7 +642,7 @@ $(document).ready(function() {
 </script>
       
    
-</div>
+
         <div class="row mb-4">
             <div class="col-sm-2"><label for="estimate_number">Invoice#*</label></div>
             <div class="col-sm-6"><input type="text" class="form-control text-dark" id="estimate_number" name="inv_no" value="{{i.invoice_no}}">
@@ -659,6 +657,39 @@ $(document).ready(function() {
     
      
       
+
+        <div class="row mb-4 border-bottom pb-5">
+          <div class="col-sm-2">
+            <label for="input-2">Terms</label>
+          </div>
+          <div class="col-sm-6 ">
+            <select class="my-select form-control text-dark" name="term" id="inv_term">
+              <!-- {% for p in pay %}
+                <option value="{{p.Terms}}">{{p.Terms}}</option>
+              {% endfor %} -->
+              {% for p in pay %}
+              <option value="{{p.Terms}}">{{i.Name}} {{p.Terms}}</option>
+
+              {% endfor%}
+              <option  value="15">NET 15</option>
+                    <option value="30">NET 30</option>
+                    <option value="45">NET 45</option>
+                    <option value="60">NET 60</option>
+                    <option value="90">NET 90</option>
+                    <option value="Due end of the month">Due end of the month</option>
+                    <option value="recpt">Due on receipt</option>
+           
+              </select> 
+            </div>
+            <div class="col-sm-4">
+                <a href="#" data-target="#newpayment" data-toggle="modal">
+                    <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
+                </a>
+            </div>
+            <div class="col-sm-8">
+              <p id="alertMessage" style="color: red; font-style: italic;"></p> <!-- Element to display the alert -->
+            </div>
+            
       <div class="row mb-4 ">
           <div class="col-sm-6 col-lg-2 col-md-2">
             <label class="mr-3 " for="input-1">invoice Date</label>
@@ -680,39 +711,6 @@ $(document).ready(function() {
  
       
   
-
-            <div class="row mb-4 border-bottom pb-5">
-              <div class="col-sm-2">
-                <label for="input-2">Terms</label>
-              </div>
-              <div class="col-sm-6 ">
-                <select class="my-select form-control text-dark" name="term" id="inv_term">
-                  <!-- {% for p in pay %}
-                    <option value="{{p.Terms}}">{{p.Terms}}</option>
-                  {% endfor %} -->
-                  {% for p in pay %}
-                  <option value="{{p.Terms}}">{{i.Name}} {{p.Terms}}</option>
-
-                  {% endfor%}
-                  <option  value="15">NET 15</option>
-                        <option value="30">NET 30</option>
-                        <option value="45">NET 45</option>
-                        <option value="60">NET 60</option>
-                        <option value="90">NET 90</option>
-                        <option value="Due end of the month">Due end of the month</option>
-                        <option value="recpt">Due on receipt</option>
-               
-                  </select> 
-                </div>
-                <div class="col-sm-4">
-                    <a href="#" data-target="#newpayment" data-toggle="modal">
-                        <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
-                    </a>
-                </div>
-                <div class="col-sm-8">
-                  <p id="alertMessage" style="color: red; font-style: italic;"></p> <!-- Element to display the alert -->
-                </div>
-                
                 <script>
                   function calculateDueDate() {
                     const invoiceDate = new Date(document.getElementById('input-1').value);

@@ -81,6 +81,50 @@ crossorigin="anonymous"></script>
       <div class="col-md-12 " style="width: 100%;">
         
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+   
+<script>
+  // Add an event listener to the customer selection dropdown
+  document.getElementById('customer_sel').addEventListener('change', function () {
+      // Get the selected option
+      var selectedOption = this.options[this.selectedIndex];
+      
+      // Update the input fields with customer information
+      document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+      document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+      document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
+
+      // Check the GST treatment to determine whether to show or hide the GST number
+      var gstTreatment = selectedOption.getAttribute('data-gsttreatment');
+      var gstNumberField = document.getElementById('gst_number');
+      var gstNumberContainer = document.getElementById('gst_number_container');
+      if (gstTreatment === "Unregistered Business-not Registered under GST") {
+          gstNumberField.value = ''; // Clear the value of the GST number field
+          gstNumberContainer.style.display = 'none'; // Hide the GST number field container
+      } else {
+          gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
+          gstNumberContainer.style.display = 'flex'; 
+      }
+  });
+</script>
+
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function () {
+  $('#customer_sel').change(function () {
+      var selectedOption = $(this).find(':selected');
+      $('#customer_email').val(selectedOption.data('email'));
+      $('#gst_treatment').val(selectedOption.data('gsttreatment'));
+      $('#gst_number').val(selectedOption.data('gstnumber'));
+      $('#place_of_supply').val(selectedOption.data('placeofsupply'));
+  });
+});
+</script>
+
+
+
+
 
 <div class="row mx-3">
     <div class="col-md-6"><a class="text-white" style="font-size: 1.5rem;"><i class="fa-solid fa-plus"></i> New
@@ -115,6 +159,9 @@ crossorigin="anonymous"></script>
                   style="color: white; background-color: rgb(210, 132, 30);height: 37px;"></i></a>
           </div>
         </div>
+
+
+        
      
         <div class="row mb-4">
           <div class="col-sm-2"><label for="customer_email">Customer Email</label></div>
@@ -150,51 +197,7 @@ crossorigin="anonymous"></script>
             display: none;
         }
     </style>
-    
-    <script>
-        // Add an event listener to the customer selection dropdown
-        document.getElementById('customer_sel').addEventListener('change', function () {
-            // Get the selected option
-            var selectedOption = this.options[this.selectedIndex];
-            
-            // Update the input fields with customer information
-            document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
-            document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
-            document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
-    
-            // Check the GST treatment to determine whether to show or hide the GST number
-            var gstTreatment = selectedOption.getAttribute('data-gsttreatment');
-            var gstNumberField = document.getElementById('gst_number');
-            var gstNumberContainer = document.getElementById('gst_number_container');
-            if (gstTreatment === "Unregistered Business-not Registered under GST") {
-                gstNumberField.value = ''; // Clear the value of the GST number field
-                gstNumberContainer.style.display = 'none'; // Hide the GST number field container
-            } else {
-                gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
-                gstNumberContainer.style.display = 'flex'; 
-            }
-        });
-    </script>
-    
-      </script>
-
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#customer_sel').change(function () {
-            var selectedOption = $(this).find(':selected');
-            $('#customer_email').val(selectedOption.data('email'));
-            $('#gst_treatment').val(selectedOption.data('gsttreatment'));
-            $('#gst_number').val(selectedOption.data('gstnumber'));
-            $('#place_of_supply').val(selectedOption.data('placeofsupply'));
-        });
-    });
-</script>
-
-      
-      
-   
-</div>
+ 
         <div class="row mb-4">
             <div class="col-sm-2"><label for="estimate_number">Invoice#*</label></div>
             <div class="col-sm-6"><input type="text" class="form-control text-dark" id="estimate_number" name="inv_no" value="INV-{{count}}">
@@ -208,6 +211,45 @@ crossorigin="anonymous"></script>
         </div>
     
      
+
+        <div class="row mb-4 border-bottom pb-5">
+          <div class="col-sm-2">
+            <label for="input-2">Terms</label>
+          
+          </div>
+
+
+          
+          <div class="col-sm-6 ">
+            <select class="my-select form-control text-dark" name="term" id="inv_term">
+              <!-- {% for p in pay %}
+                <option value="{{p.Terms}}">{{p.Terms}}</option>
+              {% endfor %} -->
+              <option value="15">NET 15</option>
+                    <option value="30">NET 30</option>
+                    <option value="45">NET 45</option>
+                    <option value="60">NET 60</option>
+                    <option value="90">NET 90</option>
+                    <option value="Due end of the month">Due end of the month</option>
+                    <option value="recpt">Due on receipt</option>
+
+               
+
+                    {% for p in payments%}
+            <option value="{{p.Days}}">{{ p.Terms }}</option>
+            {% endfor%}
+              </select> 
+             
+            </div>
+            
+            <div class="col-sm-4">
+                <a href="#" data-target="#newpayment" data-toggle="modal">
+                    <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
+                </a>
+            </div>
+            <div class="col-sm-8">
+              <p id="alertMessage" style="color: red; font-style: italic;"></p> <!-- Element to display the alert -->
+            </div>
       
       <div class="row mb-4 ">
           <div class="col-sm-6 col-lg-2 col-md-2">
@@ -229,53 +271,12 @@ crossorigin="anonymous"></script>
       </div>
 
       <script src="path/to/your/script.js"></script>
-      <script>
  
        
         
 
       
   
-</script>
-
-            <div class="row mb-4 border-bottom pb-5">
-              <div class="col-sm-2">
-                <label for="input-2">Terms</label>
-              
-              </div>
-
-
-              
-              <div class="col-sm-6 ">
-                <select class="my-select form-control text-dark" name="term" id="inv_term">
-                  <!-- {% for p in pay %}
-                    <option value="{{p.Terms}}">{{p.Terms}}</option>
-                  {% endfor %} -->
-                  <option value="15">NET 15</option>
-                        <option value="30">NET 30</option>
-                        <option value="45">NET 45</option>
-                        <option value="60">NET 60</option>
-                        <option value="90">NET 90</option>
-                        <option value="Due end of the month">Due end of the month</option>
-                        <option value="recpt">Due on receipt</option>
-
-                   
-
-                        {% for p in payments%}
-                <option value="{{p.Days}}">{{ p.Terms }}</option>
-                {% endfor%}
-                  </select> 
-                 
-                </div>
-                
-                <div class="col-sm-4">
-                    <a href="#" data-target="#newpayment" data-toggle="modal">
-                        <i class="fa-solid fa fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 37px;"></i>
-                    </a>
-                </div>
-                <div class="col-sm-8">
-                  <p id="alertMessage" style="color: red; font-style: italic;"></p> <!-- Element to display the alert -->
-                </div>
                 
                 <script>
                   function calculateDueDate() {
@@ -2863,6 +2864,7 @@ modalEl.addEventListener('click', (event) => {
                            
                             {% endfor %}
                         </select></div>
+
                 </td>
                 <td class='text-right'>
             <input type='text' id='hsn${RowCount}'  class='form-control bg-transparent  text-white border-0  text-right hsn' name="hsn[]" placeholder="6 Digit No" pattern="[0-9]{6}" value='' readonly required>
