@@ -15612,6 +15612,7 @@ def edited_prod(request, id):
         if x==y:
 
             est_items.item = request.POST.getlist('item[]')
+            print(est_items.item )
             est_items.hsn = request.POST.getlist('hsn[]')
             est_items.quantity1 = request.POST.getlist('quantity[]')
             est_items.quantity = [float(x) for x in est_items.quantity1]
@@ -15627,6 +15628,8 @@ def edited_prod(request, id):
         else:
 
             est_items.itemm = request.POST.getlist('itemm[]')
+            print(est_items.itemm )
+
             est_items.hsnn = request.POST.getlist('hsnn[]')
             est_items.quantityy1 = request.POST.getlist('quantityy[]')
             est_items.quantityy = [float(x) for x in est_items.quantityy1]

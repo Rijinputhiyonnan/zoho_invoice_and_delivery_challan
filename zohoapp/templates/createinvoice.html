@@ -107,7 +107,6 @@ crossorigin="anonymous"></script>
   });
 </script>
 
-</script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -192,11 +191,50 @@ $(document).ready(function () {
     </div>
     
     <style>
-        #gst_number_container {
-            
-            display: none;
-        }
-    </style>
+      #gst_number_container {
+          height: auto;
+          display: none;
+      }
+  </style>
+    <script>
+      // Add an event listener to the customer selection dropdown
+      document.getElementById('customer_sel').addEventListener('change', function () {
+          // Get the selected option
+          var selectedOption = this.options[this.selectedIndex];
+          
+          // Update the input fields with customer information
+          document.getElementById('customer_email').value = selectedOption.getAttribute('data-email');
+          document.getElementById('gst_treatment').value = selectedOption.getAttribute('data-gsttreatment');
+          document.getElementById('place_of_supply').value = selectedOption.getAttribute('data-placeofsupply');
+  
+          // Check the GST treatment to determine whether to show or hide the GST number
+          var gstTreatment = selectedOption.getAttribute('data-gsttreatment');
+          var gstNumberField = document.getElementById('gst_number');
+          var gstNumberContainer = document.getElementById('gst_number_container');
+          if (gstTreatment === "Unregistered Business-not Registered under GST") {
+              gstNumberField.value = ''; // Clear the value of the GST number field
+              gstNumberContainer.style.display = 'none'; // Hide the GST number field container
+          } else {
+              gstNumberField.value = selectedOption.getAttribute('data-gstnumber');
+              gstNumberContainer.style.display = 'flex'; // Show the GST number field container
+          }
+      });
+  </script>
+  
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function () {
+      $('#customer_sel').change(function () {
+          var selectedOption = $(this).find(':selected');
+          $('#customer_email').val(selectedOption.data('email'));
+          $('#gst_treatment').val(selectedOption.data('gsttreatment'));
+          $('#gst_number').val(selectedOption.data('gstnumber'));
+          $('#place_of_supply').val(selectedOption.data('placeofsupply'));
+      });
+  });
+</script>
  
         <div class="row mb-4">
             <div class="col-sm-2"><label for="estimate_number">Invoice#*</label></div>
