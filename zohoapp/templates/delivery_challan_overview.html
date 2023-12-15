@@ -169,9 +169,10 @@
 
                     
                         <a class="btn mx-1, fa fa-eye"  href="#home" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;"  class="btn btn-sm m-1 text-white">Overview</a>
+                        <a class="btn mx-1,  fas fa-file-invoice"  href="{% url 'delivery_challan_slip' id=estimate.id %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;"  class="btn btn-sm m-1 text-white">Slip</a>
 
-                        <a class="btn mx-1, fas fa-file-invoice"  href="{% url 'delivery_challan_slip' id=estimate.id %}" style="background-color:  rgb(212, 139, 3);border-radius: 5px;height: 1.7rem;"  class="btn btn-sm m-1 text-white">Slip</a>
-            
+
+                      
             </div>
             
             <div class="col-sm-7 text-white text-right my-auto" style="text-align: end;">
@@ -197,7 +198,7 @@
         
                             <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
                                 {% if estimate.status == 'Draft' %}
-                                    <a href="{% url 'change_status' id=estimate.id %}" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white" data-toggle="tooltip" title="Change Status">
+                                    <a href="{% url 'change_statusdel' id=estimate.id %}" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white" data-toggle="tooltip" title="Change Status">
                                         <i class="fas fa-exchange-alt"> Change status</i>
                                     </a>
                                 {% endif %}
@@ -296,24 +297,24 @@ style="height: auto;background-color: burlywood">
             <table class="table  " style="border-color: black;">
                 <thead >
                     <tr>
-                        <th style="color: black;font-weight: bold;">#</th>
-                        <th style="width: 10rem;color: black;font-weight: bold;">Product</th>
+                        <th style="color: black;font-weight: bold;text-align: center;">#</th>
+                        <th style="width: 10rem;color: black;font-weight: bold;text-align: center;">Product</th>
                         <!-- <th class="text-right;" style="color: black;font-weight: bold;">Hsn</th> -->
                         <!-- <th class="text-right;" style="color: black;font-weight: bold;">Description</th> -->
-                        <th class="text-right;" style="color: black;font-weight: bold;">HSN</th>
-                        <th class="text-right;" style="color: black;font-weight: bold;">Quantity</th>
-                        <th class="text-right;" style="color: black;font-weight: bold;">Price</th>
-                        <th class="text-right;" style="color: black;font-weight: bold;">Discount</th>
+                        <th class="text-right;" style="color: black;font-weight: bold;text-align: center;">HSN</th>
+                        <th class="text-right;" style="color: black;font-weight: bold;text-align: center;">Quantity</th>
+                        <th class="text-right;" style="color: black;font-weight: bold;text-align: center;">Price</th>
+                        <th class="text-right;" style="color: black;font-weight: bold;text-align: center;">Discount</th>
         
-                        <th class="text-right;" style="color: black;font-weight: bold;">Tax%</th>
-                        <th class="text-right;" style="color: black;font-weight: bold;">Total</th>
+                        <th class="text-right;" style="color: black;font-weight: bold;text-align: center;">Tax%</th>
+                        <th class="text-right;" style="color: black;font-weight: bold;text-align: center;">Total</th>
                     </tr>
                     
                 </thead>
                 <tbody>
                     {% for item in items %}
                     <tr>
-                        <td style="color: black;font-weight: bold;">{{ forloop.counter }}</td>
+                        <td style="color: black;font-weight: bold; text-align: center;">{{ forloop.counter }}</td>
                         <td style="width: 10rem; color: black; font-weight: bold; text-align: center;">{{ item.item_name }}</td>
 
                         <!-- <td class="text-right">{{ item.hsn }}</td> -->
@@ -402,7 +403,7 @@ style="height: auto;background-color: burlywood">
                     </div>
         
                 </div>    <div class="p-info col-6 my-2" style="height: auto;">
-                    <div class="card" style="background-color: rgb(110, 61, 46); padding:0.9rem;">       
+                    <div class="card" style=" padding:0.9rem;">       
                        
                         <div class="row">
                             

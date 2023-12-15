@@ -1366,6 +1366,7 @@ class ChallanItems(models.Model):
     
     
     
+    
 class delivery_chellan_comments(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     chellan=models.ForeignKey(DeliveryChellan,on_delete=models.CASCADE,null=True,blank=True)

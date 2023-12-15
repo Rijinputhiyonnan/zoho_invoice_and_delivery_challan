@@ -196,7 +196,7 @@
         
                             <div class="dropdown-menu" aria-labelledby="attachmentDropdown">
                                 {% if estimate.status == 'Draft' %}
-                                    <a href="{% url 'change_status' id=estimate.id %}" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white" data-toggle="tooltip" title="Change Status">
+                                    <a href="{% url 'change_statusdel' id=estimate.id %}" style="background-color:  rgb(212, 139, 3); border-radius: 5px; height: 1.7rem;" class="btn btn-sm m-1 text-white" data-toggle="tooltip" title="Change Status">
                                         <i class="fas fa-exchange-alt"> Change status</i>
                                     </a>
                                 {% endif %}

@@ -434,12 +434,24 @@
                 <div id="selected-area">
                 <div class="div-to-pdf row" id="div-to-pdf" style="height: auto;background-color: burlywood">
                     
-                    <div class="bar pt-2 pb-4">
+                    <div class="row justify-content-between">
+                        <div class="col-md-6">
+                            <h2 class="text-dark" style="text-transform: uppercase; color: rgb(0, 0, 0); font-weight: bold">{{ company.company_name }}</h2>
+                            <h6 class="text-dark">{{ company.address }}</h6>
+                            <h6 class="text-dark">{{ company.city }},{{ company.state }}</h6>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="right" style="font-size: 1rem;font-weight: 600;">Order No &nbsp;&nbsp;&nbsp;&nbsp; : {{ invoice.order_no }} <br> Invoice Date&nbsp;: {{invoice.inv_date}}  </div>
+                        </div>
+                    </div>
+                    
+                    
+                        <div class="bar pt-2 pb-4">
                         <div class="left" style="font-size: 1rem;font-weight: 600;"> {{p.designation}}
                             <h6 class="text-dark">Client :</h6>
                             <h6  style="color: rgb(0, 0, 0);font-weight: bold"><div class="text-uppercase">{{ invoice.customer.customerName }} </div><span class="text-dark" style="color: rgb(0, 0, 0);font-weight: bold">{{ invoice.customer.customerEmail }}</span>  <br><span class="text-dark">{{ invoice.customer.customerMobile }}</span></h6>
                         </div>
-                        <div class="right" style="font-size: 1rem;font-weight: 600;">Order No &nbsp;&nbsp;&nbsp;&nbsp; : {{ invoice.order_no }} <br> Invoice Date&nbsp;: {{invoice.inv_date}}  </div>
+                       
                     </div>
                    
                     <div class="row text-center">
@@ -489,7 +501,7 @@
                                 
                             </tbody>
                         </table>
-                        <div class="gen-info col-6 " style="padding-left: 3rem;">
+                        <div class="gen-info col-8 " style="padding-left: 3rem;">
                                 <table class="table ">
                                     <tr>
                                         <td class="text-dark" style="font-weight: bold;">Sub-Total:</td>
@@ -574,88 +586,90 @@
                                     </div>
                                 </div>
                     
-                            </div>    <div class="p-info col-6 my-2" style="">
-                                <div class="card" style="height: 50vh; background-color: rgb(110, 61, 46); padding:0.9rem;">       
-                                    {% for customer in customers %}
+                            </div>    <div class="p-info col-4 my-2" style="">
+                                <div class="card" style="height: 50vh;  padding:0.9rem;">       
+                                    
                                     <div class="row">
-                                        
-                                        <div class="col-4"><label for="">Place of Supply:</label></div>
-                                        <div class="col-8">
+                                        {% for customer in customers %}
+                                        <div class="col-4" ><label >Place of Supply:</label></div>
+                                        <div class="col-8" >
                                             <p>{{ customer.placeofsupply }}</p>
                                             {% endfor%}
-                                    </div>
-                                    <hr>
+                                            <hr>
 
-                                    <div class="row my-2"><h4>Invoice Details</h4></div>
-                                    
-                                    <div class="row" >
-                                        
-                                        <div class="col-6"><label for="">Invoice Date:</label></div>
-                                        <div class="col-6">
-                                        <label>  <p>{{ invoice.inv_date|date:"d/m/Y" }}</p><label>
-                                    </div>
-
-
-                                    <div class="row">
-                                        
-                                        <div class="col-6"><label for="">Due Date:</label></div>
-                                        <div class="col-6">
-                                        <label>  <p>{{ invoice.due_date|date:"d/m/Y" }}</p></label>
-                                        </div>
-                                    </div>
-                                    <div class="row my-2"><label><h4>Payment Details</h4></label></div>
-                                    
-                                    <div class="row">
-                                        
-                                        <div class="col-6"><label for="">Payment Method:</label></div>
-
-                                        <div class="col-6 text-uppercase" >
-                                            {% for payment in payment %}
-                                        <label>  <p>{{ payment.payment_method }}</p></label>
+                                            <div class="row my-4" > <label  style="display: inline-block;" ><h4>Invoice Details</h4></label>
+                                           <hr>
+                                            
                                            
+                                                
+                                                <div class="col-6"><label for="">Invoice Date:</label></div>
+                                                <div class="col-6">
+                                                <label>  <p>{{ invoice.inv_date|date:"d/m/Y" }}</p><label>
+                                            </div>
+        
+        
+                                            
+                                                
+                                                <div class="col-6"><label for="">Due Date:</label></div>
+                                                <div class="col-6">
+                                                <label>  <p>{{ invoice.due_date|date:"d/m/Y" }}</p></label>
+                                                </div>
+                                            </div>
+                                            <div class="row my-2" ><label   style="display: inline-block;"><h4>Payment Details</h4></label></div>
+                                            
+                                            <div class="row">
+                                                
+                                                <div class="col-6"><label for="">Payment Method:</label></div>
+        
+                                                <div class="col-6 text-uppercase" >
+                                                    {% for payment in payment %}
+                                                <label>  <p>{{ payment.payment_method }}</p></label>
+                                                   
+                                            </div>
+                                           
+        {% if payment.payment_method|lower == 'cash' %}
+        <div></div>
+        {% elif payment.payment_method|lower == 'upi' %}
+                                            <div class="row">
+                                                
+                                                <div class="col-6"><label for="">UPI ID:</label></div>
+                                                <div class="col-6 " >
+                                                <label>  <p >{{ payment.upi_id }}</p></label>
+        
+                                                </div>
+                                            </div>
+        
+                                            {% elif payment.payment_method|lower == 'cheque' %}
+                                            
+                                            <div class="row">
+                                                
+                                                <div class="col-3"><label for="">Cheque No:</label></div>
+                                                <div class="col-9">
+                                                <label>  <p>{{ payment.cheque_number }}</p></label>
+                                                </div>
+                                            </div>
+        
+                                            
+                                            {% elif payment.payment_method|lower == 'bank' %}
+                                            
+                                            <div class="row">
+                                                
+                                                <div class="col-6"><label for="">Bank Name:</label></div>
+                                                <div class="col-6">
+                                                   
+                                                    <label for="">  <p>{{ payment.bank.name }}</p></label>
+                                                   
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            {% endfor%}
+                                          
+                                        
+                                                   
+        
+                                        </div>     
                                     </div>
                                    
-{% if payment.payment_method|lower == 'cash' %}
-<div></div>
-{% elif payment.payment_method|lower == 'upi' %}
-                                    <div class="row">
-                                        
-                                        <div class="col-6"><label for="">UPI ID:</label></div>
-                                        <div class="col-6 " >
-                                        <label>  <p >{{ payment.upi_id }}</p></label>
-
-                                        </div>
-                                    </div>
-
-                                    {% elif payment.payment_method|lower == 'cheque' %}
-                                    
-                                    <div class="row">
-                                        
-                                        <div class="col-3"><label for="">Cheque No:</label></div>
-                                        <div class="col-9">
-                                        <label>  <p>{{ payment.cheque_number }}</p></label>
-                                        </div>
-                                    </div>
-
-                                    
-                                    {% elif payment.payment_method|lower == 'bank' %}
-                                    
-                                    <div class="row">
-                                        
-                                        <div class="col-6"><label for="">Bank Name:</label></div>
-                                        <div class="col-6">
-                                           
-                                            <label for="">  <p>{{ payment.bank.name }}</p></label>
-                                           
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                    {% endfor%}
-                                  
-                                
-                                           
-
-                                </div>     
                             </div>
                         </div>     
                                 </div>

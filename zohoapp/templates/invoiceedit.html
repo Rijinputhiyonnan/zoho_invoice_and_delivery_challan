@@ -196,23 +196,249 @@ $(document).ready(function () {
 
                 <input class="hidden" type="text" name="samp" id="samp" >
                 <input class="hidden"  id="cus_place" name="hidden_cus_place"  value="">
+                <input type="number" id="customer_id" name="customer_id" style="display: none;"  readonly>
         <div class="row mb-4 border-top pt-5">
           <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
           <div class="col-sm-6">
             <select class="registration-type form-control text-dark" id="customer_sel" name="cx_name">
              
-                {% for cust in c %}
-                {% if cust.customerName != i.customer.customerName %}
-                        <option value="{{cust.id}}" data-email="{{ cust.customerEmail }}" data-gsttreatment="{{ cust.GSTTreatment }}" data-gstnumber="{{ cust.GSTIN }}" data-placeofsupply="{{ cust.placeofsupply }}">{{cust.customerName}}</option>
-                    {% endif %}
-                    {% if cust.customerName == i.customer.customerName %}
-                        <option value="{{cust.id}}" data-email="{{ cust.customerEmail }}" data-gsttreatment="{{ cust.GSTTreatment }}" data-gstnumber="{{ cust.GSTIN }}" data-placeofsupply="{{ cust.placeofsupply }}">{{cust.customerName}}</option>
-                    {% endif %}
-                {% endfor %}
+              <option value="{{i.customer.id}}" data-email="{{ i.customer.customerEmail }}" data-gsttreatment="{{ i.customer.GSTTreatment }}" data-gstnumber="{{ i.customer.GSTIN }}" data-placeofsupply="{{ i.customer.placeofsupply }}" selected>{{i.customer.customerName}}</option>
+                      {% for cust in c %}
+                          {% if cust.customerName != i.customer.customerName%}
+                              <option value="{{cust.id}}" data-email="{{ cust.customerEmail }}" data-gsttreatment="{{ cust.GSTTreatment }}" data-gstnumber="{{ cust.GSTIN }}" data-placeofsupply="{{ cust.placeofsupply }}">{{cust.customerName}}</option>
+                          {% endif %}
+                      {% endfor %}
             </select>
             
             
             </div>
+            
+<script>
+
+ 
+  
+  // Function to dynamically change the selected option
+function changeSelectedOption() {
+  var currentOption = $('#customer_sel option:selected');
+  var allOptions = $('#customer_sel option').not(':selected');
+  var originalOption = $('#customer_sel option:first');
+
+  // Get the next option in the list or go back to the original option
+  var nextOption = allOptions.length > 0 ? allOptions.first() : originalOption;
+
+  // Change the selected option
+  currentOption.prop('selected', false);
+  nextOption.prop('selected', true);
+
+  // Trigger the change event to update the tables
+  $('#customer_sel').change();
+}
+
+// Trigger the changeSelectedOption function once on page load
+$(document).ready(function () {
+  // Change the selected option once on page load
+  changeSelectedOption();
+
+  // Event handler for the change event on #customer_sel
+  $('#customer_sel').change(function () {
+      updateTables();
+  });
+
+  // Revert to the original selected item after a delay (adjust as needed)
+  setTimeout(function () {
+      var originalOption = $('#customer_sel option:first');
+      originalOption.prop('selected', true);
+      $('#customer_sel').change();
+  }, .3);
+});
+
+
+
+
+
+
+
+
+
+
+  window.onload=function(){  
+
+    var ste="{{comp}}";
+    var plc="{{cust}}";
+    var x=ste.toLowerCase(); 
+
+    var inputstring=plc;
+    const parts = inputstring.split("-");   
+    var extractedWord = parts[1];  
+    var extractedWord1= extractedWord.trim();
+    var y=extractedWord1.toLowerCase();  
+    document.getElementById("cus_place").value=y;
+    document.getElementById("state").value=x;
+    document.getElementById("customer_id").value="{{ custo_id }}";
+    var ig="{{ estimate.igst }}";
+    var cg="{{ estimate.cgst }}";
+    var sg="{{ estimate.sgst }}";
+  if ( x == y )
+                          {
+                             document.getElementById("item_table").style.display="block"
+                             document.getElementById("item_tablee").style.display="none"
+                             //document.getElementById("label_tab1").style.display="block"
+                             //document.getElementById("label_tab2").style.display="none"
+                             document.getElementById("add-row").style.display="block"
+                             document.getElementById("add-roww").style.display="none"
+                              
+                  
+                          }
+                          else
+                          {
+                             document.getElementById("item_table").style.display="none"
+                             document.getElementById("item_tablee").style.display="block"
+                             //document.getElementById("label_tab1").style.display="none"
+                             //document.getElementById("label_tab2").style.display="block"
+                             document.getElementById("add-row").style.display="none"
+                             document.getElementById("add-roww").style.display="block"
+                          }
+
+  if ( ig != 0 ){
+    document.getElementById("tr_igst").style.display = "table-row";
+        document.getElementById("tr_sgst").style.display = "none";
+        document.getElementById("tr_cgst").style.display = "none";
+
+  }
+  else{
+
+    document.getElementById("tr_cgst").style.display = "table-row";
+        document.getElementById("tr_sgst").style.display = "table-row";
+        document.getElementById("tr_igst").style.display = "none";
+  }
+              
+}
+
+// Function to update tables based on the selected option
+function updateTables() {
+  var selectedOption = $('#customer_sel option:selected');
+  var placeOfSupply = selectedOption.data('placeofsupply').toLowerCase();
+
+  // Adjust the comparison to check for the specific value '[kl]-kerala'
+  if (placeOfSupply === 'kerala') {
+      $('#item_table').show();
+      $('#item_tablee').hide();
+      $('#add-row').show();
+      $('#add-roww').hide();
+  } else {
+      $('#item_table').hide();
+      $('#item_tablee').show();
+      $('#add-row').hide();
+      $('#add-roww').show();
+  }
+}
+
+// Trigger the updateTables function on page load
+$(document).ready(function () {
+  updateTables();
+
+  // Event handler for the change event on #customer_sel
+  $('#customer_sel').change(function () {
+      updateTables();
+  });
+});
+
+  $(document).ready(function() {
+    $('#customer_sel').change(function() {
+
+        var name = $("#customer_sel").val();
+        var na = name.split(' ')[0];
+        var table = document.getElementById("item_table");
+        $.ajax({
+
+            url: "{% url 'get_customerdet' %}", 
+
+            data: { 
+                    id : na,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' 
+                },
+
+            type : 'POST',
+
+            success: function(data) {
+
+              // $("#cemail_row").removeClass('d-none');
+              // $("#cemail_row").addClass('d-flex');
+              
+              
+              $('#customer_email').val(' '+ data.customer_email);
+              $('#samp').val(data.cust_place_supply);
+              $('#customer_id').val(data.cust_id);
+              var plc=document.getElementById("samp").value
+              
+              var ste=document.getElementById("state1").value
+              var y=ste.toLowerCase();  
+              var inputstring=plc;
+              const parts = inputstring.split("-");   
+              var extractedWord = parts[1];  
+              var extractedWord1= extractedWord.trim();
+              var x=extractedWord1.toLowerCase();  
+              $('#cus_place').val(x);
+              $('#state').val(y);
+                                if ( x == y )
+                                {
+                                   document.getElementById("item_table").style.display="block"
+                                   document.getElementById("item_tablee").style.display="none"
+                                   //document.getElementById("label_tab1").style.display="block"
+                                   //document.getElementById("label_tab2").style.display="none"
+                                   document.getElementById("add-row").style.display="block"
+                                   document.getElementById("add-roww").style.display="none"
+                                  
+
+
+                                    
+                        
+                                }
+                                else
+                                {
+                                   document.getElementById("item_table").style.display="none"
+                                   document.getElementById("item_tablee").style.display="block"
+                                   //document.getElementById("label_tab1").style.display="none"
+                                   //document.getElementById("label_tab2").style.display="block"
+                                   document.getElementById("add-row").style.display="none"
+                                   document.getElementById("add-roww").style.display="block"
+                                    
+                                    
+                                }
+                    
+              
+            }
+           
+        });
+    });
+});
+
+
+
+  function updateGst() {
+    var selectedOption = $('#customer_sel option:selected');
+    var placeOfSupply = selectedOption.data('GSTTreatment').toLowerCase();
+
+    if (placeOfSupply === 'unregistered business-not registered under gst') {
+        $('#gst_number_container1').hide();
+        $('#gst_number_container').hide();
+        
+    } else {
+        $('#gst_number_container1').show();
+        $('#gst_number_container').show();
+    }
+}
+
+// Trigger the updateTables function on page load
+$(document).ready(function () {
+    updateGst();
+
+    // Event handler for the change event on #customer_sel
+    $('#customer_sel').change(function () {
+        updateGst();
+    });
+});
+</script>
             <div class="col-sm-4">
               <a  href="" data-toggle="modal" data-target="#newcustomer"><i class="fa-solid  fa fa-plus p-2 rounded"
                   style="color: white; background-color: rgb(210, 132, 30);height: 37px;"></i></a>
@@ -434,7 +660,7 @@ $(document).ready(function () {
                   document.getElementById('inv_term').addEventListener('change', function() {
                     calculateDueDate(); // Update the due date
                     const alertElement = document.getElementById('alertMessage');
-                    alertElement.textContent = "Please re-enter the invoice date to calculate the due date."; // Set the alert message
+                   // alertElement.textContent = "Please re-enter the invoice date to calculate the due date."; // Set the alert message
                   });
                 
                   calculateDueDate(); // Calculate the initial due date
@@ -533,9 +759,9 @@ $(document).ready(function () {
            
 
 <div class="row">
-  <div class="col-sm-12">
+  <div class="col-sm-12" >
     
-<table class="table table-bordered text-white"  id="item_table" style="background-color: #b6b3b36b;table-layout: fixed;width: 100%;" onchange="calc()">
+<table class="table table-bordered text-white"  id="item_table" style="background-color: #b6b3b36b;table-layout: fixed;width: 100%; display: none;"  onchange="calc()">
 <thead >
   <tr >
       <th style="font-weight: bold;color: rgb(245, 154, 36);">Product<a href="" data-toggle="modal" data-target="#newitem">&nbsp;&nbsp;&nbsp;<i class="fa-solid  fa fa-plus fa-xl rounded p-1"
@@ -660,7 +886,7 @@ color: green;
 </table>
 
 
-<button type="button" class="btn text-white" style="background-color: rgb(210, 132, 30) ;"
+<button type="button" class="btn text-white" style="background-color: rgb(210, 132, 30) ; display: none;"
 id="add-row"><i class="fa-solid  fa fa-plus rounded"
 style="color: white; background-color: rgb(210, 132, 30);height: 20px;"></i></button>
   </div>
@@ -2696,57 +2922,77 @@ error: function(xhr, status, error) {
 }
 
 
-$(document).ready(function () {
-    // Trigger change event when the page loads
-    $('#customer_sel').change();
+$(document).ready(function() {
 
-    // Event handler for the change event on #customer_sel
-    $('#customer_sel').change(function () {
-        // Rest of your existing code
+  
+    $('#customer_sel').change(function() {
+
         var name = $("#customer_sel").val();
-
+        var na = name.split(' ')[0];
         var table = document.getElementById("item_table");
         $.ajax({
-            url: "{% url 'get_customerdet' %}",
-            data: {
-                id: name,
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            },
-            type: 'POST',
-            success: function (data) {
-                $("#cemail_row").removeClass('d-none');
-                $("#cemail_row").addClass('d-flex');
-                $('#cx_mail').val(' ' + data.customer_email);
-                $('#samp').val(data.cust_place_supply);
-                $('#customer_id').val(data.cust_id);
 
-                var plc = document.getElementById("samp").value;
-                var ste = document.getElementById("state1").value;
-                var y = ste.toLowerCase();
-                var inputstring = plc;
-                const parts = inputstring.split("-");
-                var extractedWord = parts[1];
-                var extractedWord1 = extractedWord.trim();
-                var x = extractedWord1.toLowerCase();
-                $('#cus_place').val(x);
-                $('#state1').val(y);
+            url: "{% url 'get_customerdet' %}", 
 
-                if (x == y) {
-                    document.getElementById("item_table").style.display = "block";
-                    document.getElementById("item_tablee").style.display = "none";
-                    document.getElementById("add-row").style.display = "block";
-                    document.getElementById("add-roww").style.display = "none";
-                } else {
-                    document.getElementById("item_table").style.display = "none";
-                    document.getElementById("item_tablee").style.display = "block";
-                    document.getElementById("add-row").style.display = "none";
-                    document.getElementById("add-roww").style.display = "block";
-                }
+            data: { 
+                    id : na,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' 
+                },
+
+            type : 'POST',
+
+            success: function(data) {
+
+              $("#cemail_row").removeClass('d-none');
+              $("#cemail_row").addClass('d-flex');
+              
+              
+              $('#cx_mail').val(' '+ data.customer_email);
+              $('#samp').val(data.cust_place_supply);
+              $('#customer_id').val(data.cust_id);
+              var plc=document.getElementById("samp").value
+              
+              var ste=document.getElementById("state1").value
+              var y=ste.toLowerCase();  
+              var inputstring=plc;
+              const parts = inputstring.split("-");   
+              var extractedWord = parts[1];  
+              var extractedWord1= extractedWord.trim();
+              var x=extractedWord1.toLowerCase();  
+              $('#cus_place').val(x);
+              $('#state1').val(y);
+                                if ( x == y )
+                                {
+                                   document.getElementById("item_table").style.display="block"
+                                   document.getElementById("item_tablee").style.display="none"
+                                  //  document.getElementById("label_tab1").style.display="block"
+                                  //  document.getElementById("label_tab2").style.display="none"
+                                   document.getElementById("add-row").style.display="block"
+                                   document.getElementById("add-roww").style.display="none"
+                                  
+
+
+                                    
+                        
+                                }
+                                else
+                                {
+                                   document.getElementById("item_table").style.display="none"
+                                   document.getElementById("item_tablee").style.display="block"
+                                  //  document.getElementById("label_tab1").style.display="none"
+                                  //  document.getElementById("label_tab2").style.display="block"
+                                   document.getElementById("add-row").style.display="none"
+                                   document.getElementById("add-roww").style.display="block"
+                                    
+                                    
+                                }
+                    
+              
             }
+           
         });
     });
 });
-
 
 
 
@@ -3108,6 +3354,9 @@ modalEl.addEventListener('click', (event) => {
 
 
 <script>
+
+
+  
  $(document).ready(function() {
     // add event listener to trigger calc() function whenever a change is made to input fields
     $('#item_table').on('input', 'input', calc);
