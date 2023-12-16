@@ -630,7 +630,7 @@ transition: transform 0.4s ,top 0.4s;
     <style>
         #gst_number_container {
             height: auto;
-            display: none;
+            display: flex;
         }
     </style>
     
@@ -657,10 +657,8 @@ transition: transform 0.4s ,top 0.4s;
                 gstNumberContainer.style.display = 'flex'; // Show the GST number field container
             }
         });
-    </script>
     
       </script>
-
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -2820,36 +2818,47 @@ $.ajax({
     },
 });        
 });
-
 function reloadCustomer() {
-
-  $.ajax({ 
+  $.ajax({
     url: "{% url 'customer_dropdown' %}",
     type: "GET",
     dataType: "json",
     data: $(this).serialize(),
-    csrfmiddlewaretoken: '{{ csrf_token }}',
-  
-    success: function(data) {
+    headers: { "X-CSRFToken": '{{ csrf_token }}' },
+    success: function (data) {
       var dropdown = $('#customer_sel');
       dropdown.empty();
       dropdown.append($('<option></option>').attr('value', '').text('Select'));
-      $.each(data, function(key, value) {
+
+      $.each(data, function (key, value) {
         var option = $('<option></option>').attr('value', key).text(value['customerName']).val(key);
-  
         option.data('email', value['customerEmail']);
         option.data('gsttreatment', value['GSTTreatment']);
-        option.data('gstnumber', value['GSTIN']);  
+        option.data('gstnumber', value['GSTIN']);
         option.data('placeofsupply', value['placeofsupply']);
-  
+
         dropdown.append(option);
-    });
-  },
-  error: function(xhr, status, error) {
-    console.error(xhr.responseText);
-  }
+
+        // Check GST type and hide/show GST number container
+        var gstNumberContainer = $('#gst_number_container');
+        var gstNumberField = $('#gst_number');
+
+        if (value['GSTTreatment'] === "Unregistered Business-not Registered under GST") {
+          gstNumberField.val('');  // Clear the value of the GST number field
+          gstNumberContainer.hide();  // Hide the GST number container
+        } else {
+          gstNumberField.val(value['GSTIN']);
+          gstNumberContainer.show();  // Show the GST number container
+        }
+      });
+    },
+    error: function (xhr, status, error) {
+      console.error(xhr.responseText);
+    }
   });
-  }
+}
+
+
   
 
 $(document).ready(function() {
