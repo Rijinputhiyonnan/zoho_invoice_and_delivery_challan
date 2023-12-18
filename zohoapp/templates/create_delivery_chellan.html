@@ -581,7 +581,7 @@ transition: transform 0.4s ,top 0.4s;
 <!-- Customer Name -->
      <div class="row mb-4 border-top pt-5">
             <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
-            <div class="col-sm-6">
+            <div class="col-sm-6  d-flex">
                 <select  class="registration-type form-control text-dark" id="customer_sel" name="customer_name" >
                     <option type="hidden" value="vendor">select</option>
     
@@ -606,15 +606,15 @@ transition: transform 0.4s ,top 0.4s;
           </div>
       </div>
       
-      <div class="row mb-4">
+      <div class="row mb-4" >
         <div class="col-sm-2"><label for="gst_treatment">GST Treatment</label></div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 d-flex">
             <input type="text" class="form-control text-black" id="gst_treatment" name="gst_treatment" readonly>
         </div>
     </div>
     
-    <div class="row mb-4" id="gst_number_container">
-        <div class="col-sm-2"><label for="gst_number">GST Number</label></div>
+    <div class="row mb-4 gstrow" id="gst_number_container">
+        <div class="col-sm-2 d-flex"><label for="gst_number">GST Number</label></div>
         <div class="col-sm-6">
             <input type="text" class="form-control text-black" id="gst_number" name="gst_number" readonly>
         </div>
@@ -2063,7 +2063,7 @@ transition: transform 0.4s ,top 0.4s;
 
               </div>
               <fieldset3 id="gst" style="display: none;">
-                  <div class="row mt-4">
+                  <div class="row gstrow d-none mt-4">
                       <label class="col-sm-12 col-md-3 col-lg-3 col-form-label"  style="color:rgb(214, 75, 75) ;"> GSTIN/UIN*</label>
                        
                       <div class=" col-md-6 mt-2">
@@ -2858,8 +2858,32 @@ function reloadCustomer() {
   });
 }
 
+$(document).ready(function () {
+  $("#cfname, #clname").change(function () {
+    $("#cdisplayname").text($("#ctitle").val() + " " + $("#cfname").val() + " " + $("#clname").val());
+  });
+});
+$(document).ready(function () {
+  $("#c_gsttype").change(function () {
+    var x = $('#c_gsttype').val();
+    console.log(x)
+    if (x == "Unregistered Business-not Registered under GST") {
+      $(".gstrow").addClass('d-none');
 
-  
+
+    }
+    else if (x == 'Overseas- Persons with who you do import or exports of supplies outside india') {
+      $(".gstrow").addClass('d-none');
+      console.log('poor')
+    }
+    else {
+      $(".gstrow").removeClass('d-none');
+      $(".gstrow").addClass('d-flex');
+
+    }
+
+  });
+});
 
 $(document).ready(function() {
     $('#customer_sel').change(function() {
